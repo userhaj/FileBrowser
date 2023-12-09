@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bjrj86lmibk8d"]
+
+[ext_resource type="Script" path="res://FileBrowser/thread_queue.gd" id="1_5vou8"]
+
+[node name="ThreadQueue" type="Node"]
+script = ExtResource("1_5vou8")

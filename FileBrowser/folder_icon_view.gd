@@ -10,6 +10,7 @@ signal folder_changed(folder_path: String)
 var _folder_size: int = 64
 var _full_directory_path: String
 @onready var _folder_container: HFlowContainer = $SelectBox/ScrollContainer/HFlowContainer
+@onready var _thread_queue := ThreadQueue.new()
 
 
 func get_directory() -> String:
@@ -35,6 +36,7 @@ func refresh():
 	# Add folders to view
 	for directory in DirAccess.get_directories_at(self._full_directory_path ):
 			var button = preload("res://FileBrowser/folder.tscn").instantiate()
+			button.set_thread_queue(self._thread_queue)
 			var path = self._full_directory_path  + "/" + directory
 			button.pressed.connect(set_directory.bind(path, true))
 			button.set_path(path, "📁")
@@ -45,6 +47,7 @@ func refresh():
 	# Add files to view
 	for file_name in DirAccess.get_files_at(self._full_directory_path ):
 			var button = preload("res://FileBrowser/folder.tscn").instantiate()
+			button.set_thread_queue(self._thread_queue)
 			var file_path = self._full_directory_path  + "/" + file_name
 			button.pressed.connect(emit_signal.bind("file_clicked", file_path))
 			button.set_path(file_path)
@@ -77,16 +80,16 @@ func deselect_all_children():
 	
 
 # Call select on child under position
-func select_child_by_point(position: Vector2):
-	var area = Rect2(position, Vector2(1,1))  # Single pixel area/point
+func select_child_by_point(target_position: Vector2):
+	var area = Rect2(target_position, Vector2(1,1))  # Single pixel area/point
 	for child: FolderLargeIconButton in get_folder_buttons():
 		# Guarantee object is selectable
 		if child.has_method("select"):
 			if child.get_global_rect().intersects(area, true):
 				child.select()
 
-func is_selected_point(position: Vector2):
-	var area = Rect2(position, Vector2(1,1))  # Single pixel area/point
+func is_selected_point(target_position: Vector2):
+	var area = Rect2(target_position, Vector2(1,1))  # Single pixel area/point
 	for child: FolderLargeIconButton in get_folder_buttons():
 		# Guarantee object is selectable
 		if child.has_method("select"):
@@ -109,9 +112,9 @@ func get_selected_paths():
 				all_paths.append(child.get_abs_path())
 	return all_paths
 
-func get_path_at_point(position: Vector2):
+func get_path_at_point(target_position: Vector2):
 	var path := ""
-	var area = Rect2(position, Vector2(1,1))  # Single pixel area/point
+	var area = Rect2(target_position, Vector2(1,1))  # Single pixel area/point
 	for child in get_folder_buttons():
 		if child.has_method("select"):
 			if child.get_global_rect().intersects(area, true):
@@ -119,7 +122,7 @@ func get_path_at_point(position: Vector2):
 	return path
 
 func set_folder_size(custom_size: float):
-	self._folder_size = custom_size
+	self._folder_size = int(custom_size)
 	# Set folder/file square size
 	for child:Control in get_folder_buttons():
 		child.custom_minimum_size = Vector2(custom_size, custom_size)

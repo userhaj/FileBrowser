@@ -117,6 +117,10 @@ text_overrun_behavior = 3
 position = Vector2(15, 0)
 rect = Rect2(0, 0, 35, 35)
 
+[node name="TextureDeleteTimer" type="Timer" parent="."]
+wait_time = 3.0
+
 [connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_apply_texture_image_icon"]
 [connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_remove_texture_image_icon"]
+[connection signal="timeout" from="TextureDeleteTimer" to="." method="_texture_delete"]

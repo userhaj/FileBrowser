@@ -8,9 +8,15 @@ var hover_label: Label
 var set_image_thread: Thread
 var is_image_set: bool = false
 var image_path: String
+var _thread_queue: ThreadQueue
+var _set_image_non_queue_thread: Thread
 
 func _ready():
 	_icon_scale()
+
+# Optional work queue
+func set_thread_queue(thread_queue: ThreadQueue):
+	self._thread_queue = thread_queue
 
 func _icon_scale():
 	# Resize folder icon to be size of parent
@@ -24,50 +30,93 @@ func _icon_scale():
 		$ImageLabel.scale = scale_amount
 		$VisibleOnScreenNotifier2D.scale = scale_amount
 
-func is_image_extension(extension: String):
+static func is_image_extension(extension: String):
 	return extension.to_lower() in ["png", "svg", "bmp", "jpg", "ktx", "tga", "webp"]
-
 
 func set_image(full_path: String):
 	self.image_path = full_path
 	self.is_image_set = true
+	if self._thread_queue:  # TODO remove this test false
+		self._thread_queue.enqueue(_image_texture_from_path.bind(self.image_path, $VisibleOnScreenNotifier2D.is_on_screen), set_image_texture)
+	else:
+		self._set_image_non_queue_thread = Thread.new()
+		self._set_image_non_queue_thread.start(_set_image_thread_work.bind(self.image_path, $VisibleOnScreenNotifier2D.is_on_screen))
+
+
+func _set_image_thread_work(full_path: String, is_on_screen: Callable):
+	var image_texture: ImageTexture = _image_texture_from_path(full_path, is_on_screen)
+	call_deferred("_end_non_queue_thread", image_texture)
+
+func _end_non_queue_thread(image_texture: ImageTexture):
+	set_image_texture(image_texture)
+	_set_image_non_queue_thread.wait_to_finish()
+	
 
 func _apply_texture_image_icon():
-	if is_image_set:
-		self.set_image_thread = Thread.new()
-		self.set_image_thread.start(_set_image_thread.bind(self.image_path, $VisibleOnScreenNotifier2D.is_on_screen))
+	if is_image_set and (null == $TextureRect.texture):
+		set_image(image_path)
+		
 
 func _remove_texture_image_icon():
-	set_image_thread
-	$TextureRect.texture = null
+	$TextureDeleteTimer.start()
+	
+func _texture_delete():
+	# If memory is not low, reset delete timer
+	if not _is_low_memory():
+		$TextureDeleteTimer.start()
+		return
+	# Only delete if not on screen
+	if not $VisibleOnScreenNotifier2D.is_on_screen():
+		$ImageLabel.show()
+		$TextureRect.texture = null
 
+# Check if 80%+ of memory is used
+func _is_low_memory():
+	var mem_info = OS.get_memory_info()
+	var target_low_percent = 0.2
+	var free_mem_percent = float(mem_info["free"]) / float(mem_info["physical"])
+	return free_mem_percent < target_low_percent
 
-func _set_image_thread(full_path: String, is_on_screen: Callable):
+func _slow_show(control: Control):
+	var tween = create_tween()
+	control.modulate.a = 0
+	control.show()
+	tween.tween_property(control, "modulate:a", 1.0, 0.25)
+
+func _slow_hide(control: Control):
+	var tween = create_tween()
+	control.modulate.a = 1
+	control.show()
+	tween.tween_property(control, "modulate:a", 0.0, 0.25)
+	
+
+# Creat an image texture, if texture is on screen
+func _image_texture_from_path(full_path: String, is_on_screen: Callable):
 	var extension:String = full_path.get_extension()
-	var file = FileAccess.open(full_path, FileAccess.READ)
-	if FileAccess.get_open_error() == OK && is_on_screen.call():
-		var buffer = file.get_buffer(file.get_length())
-		var image = Image.new()
-		if is_image_extension(extension) && is_on_screen.call():
-			var error = image.call("load_"+extension.to_lower()+"_from_buffer", buffer)
-			if error != OK:
-				call_deferred("set_image_end_thread")
-				return
-			image.compress(Image.COMPRESS_S3TC)
-		else:
-			call_deferred("set_image_end_thread")
+	if FolderLargeIconButton.is_image_extension(extension) && is_on_screen.call():
+		var image = Image.load_from_file(full_path)
+		
+		# Reduce image size to save ram, procesing speed
+		var image_width = float(image.get_size().x)
+		var target_width = 1024.0
+		if image_width > target_width:
+			var image_scale = target_width / image_width
+			image.resize(target_width, image.get_size().y * image_scale)
+		
+		# Create texture
 		var new_texture = ImageTexture.create_from_image(image)
-		call_deferred("set_image_texture", new_texture)
+		return new_texture
+	return null
+
+func set_image_texture(new_texture: ImageTexture):
+	if null == new_texture:
+		return
+		#_remove_texture_image_icon()
 	else:
-		call_deferred("set_image_end_thread")
-
-func set_image_texture(new_texture: Texture):
-	$TextureRect.texture = new_texture
-	$ImageLabel.hide()
-	set_image_end_thread()
-
-func set_image_end_thread():
-	set_image_thread.wait_to_finish()
+		if $TextureRect:
+			$TextureRect.texture = new_texture
+			_slow_show($TextureRect)
+			$ImageLabel.hide()
 
 func select():
 	self.is_selected = true
