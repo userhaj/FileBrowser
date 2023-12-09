@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://eeku0frgbqdp"]
+
+[ext_resource type="Script" path="res://FileBrowser/folder_tree.gd" id="1_riqgb"]
+
+[node name="FolderTree" type="Tree"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_riqgb")
+
+[connection signal="item_collapsed" from="." to="." method="_on_item_collapsed"]
+[connection signal="item_selected" from="." to="." method="_on_item_selected"]

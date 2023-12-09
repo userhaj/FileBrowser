@@ -1,0 +1,122 @@
+[gd_scene load_steps=12 format=3 uid="uid://d4fyh375x0gay"]
+
+[ext_resource type="Shader" path="res://FileBrowser/rounded_corner.gdshader" id="1_5b3et"]
+[ext_resource type="Script" path="res://FileBrowser/folder.gd" id="1_p4ow7"]
+[ext_resource type="Shader" path="res://FileBrowser/border.gdshader" id="3_05hdt"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_axquj"]
+shader = ExtResource("1_5b3et")
+shader_parameter/radius_scale = 0.2
+shader_parameter/rounded_corner_top_left = true
+shader_parameter/rounded_corner_top_right = true
+shader_parameter/rounded_corner_bottom_left = true
+shader_parameter/rounded_corner_bottom_right = true
+shader_parameter/width = 1.0
+shader_parameter/height = 1.0
+
+[sub_resource type="Gradient" id="Gradient_tldiu"]
+colors = PackedColorArray(0, 0, 0, 0.490196, 1, 1, 1, 0.490196)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_k0c74"]
+gradient = SubResource("Gradient_tldiu")
+fill_from = Vector2(1, 1)
+
+[sub_resource type="Gradient" id="Gradient_vf0y1"]
+colors = PackedColorArray(0, 0, 0, 0.509804, 1, 1, 1, 0.509804)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_5qqhj"]
+gradient = SubResource("Gradient_vf0y1")
+fill_from = Vector2(1, 0)
+fill_to = Vector2(1, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_bq7l0"]
+font_size = 24
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
+shadow_color = Color(0, 0, 0, 0.192157)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_242m3"]
+shader = ExtResource("3_05hdt")
+shader_parameter/border_size = 0.05
+shader_parameter/border_color = Color(0, 0, 0, 0.729412)
+
+[sub_resource type="LabelSettings" id="LabelSettings_ld3c6"]
+outline_size = 3
+outline_color = Color(0, 0, 0, 1)
+
+[node name="Folder" type="TextureButton"]
+material = SubResource("ShaderMaterial_axquj")
+clip_contents = true
+custom_minimum_size = Vector2(64, 64)
+offset_right = 64.0
+offset_bottom = 64.0
+mouse_filter = 1
+texture_hover = SubResource("GradientTexture2D_k0c74")
+texture_focused = SubResource("GradientTexture2D_5qqhj")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("1_p4ow7")
+metadata/_edit_vertical_guides_ = [559.0, 563.0, 590.0, 35.0, 4.0, 31.0]
+metadata/_edit_horizontal_guides_ = [27.0]
+
+[node name="ImageLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -17.5
+offset_right = 17.5
+offset_bottom = 34.0
+grow_horizontal = 2
+pivot_offset = Vector2(17.5, 0)
+size_flags_vertical = 3
+text = "📁"
+label_settings = SubResource("LabelSettings_bq7l0")
+vertical_alignment = 1
+clip_text = true
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -23.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SelectColorRect" type="ColorRect" parent="."]
+visible = false
+material = SubResource("ShaderMaterial_242m3")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
+
+[node name="NameLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -64.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 1
+text = "Default Folder"
+label_settings = SubResource("LabelSettings_ld3c6")
+horizontal_alignment = 1
+vertical_alignment = 2
+clip_text = true
+text_overrun_behavior = 3
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+position = Vector2(15, 0)
+rect = Rect2(0, 0, 35, 35)
+
+[connection signal="resized" from="." to="." method="_on_resized"]
+[connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_apply_texture_image_icon"]
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_remove_texture_image_icon"]

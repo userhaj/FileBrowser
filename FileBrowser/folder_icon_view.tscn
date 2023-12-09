@@ -1,0 +1,34 @@
+[gd_scene load_steps=3 format=3 uid="uid://c3celv4vu6p5t"]
+
+[ext_resource type="Script" path="res://FileBrowser/folder_icon_view.gd" id="1_qgpga"]
+[ext_resource type="PackedScene" uid="uid://drjwj2xhyocps" path="res://FileBrowser/select_box.tscn" id="2_q4s0j"]
+
+[node name="FolderIconView" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_qgpga")
+
+[node name="SelectBox" parent="." instance=ExtResource("2_q4s0j")]
+y_sort_enabled = true
+clip_contents = true
+layout_mode = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="SelectBox"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HFlowContainer" type="HFlowContainer" parent="SelectBox/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[connection signal="selected_area" from="SelectBox" to="." method="select_children_by_area"]

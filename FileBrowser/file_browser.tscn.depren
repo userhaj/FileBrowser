@@ -1,0 +1,140 @@
+[gd_scene load_steps=4 format=3 uid="uid://m28v1qcvhdv3"]
+
+[ext_resource type="Script" path="res://FileBrowser/file_browser.gd" id="1_83ygx"]
+[ext_resource type="PackedScene" uid="uid://eeku0frgbqdp" path="res://FileBrowser/folder_tree.tscn" id="2_fmf84"]
+[ext_resource type="PackedScene" uid="uid://duiltjevlfcxe" path="res://FileBrowser/folder_icon_view.tscn" id="4_41iyk"]
+
+[node name="FileBrowser" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_83ygx")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+
+[node name="MenuHBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="UpDirButton" type="Button" parent="VBoxContainer/MenuHBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "▲"
+
+[node name="FileButton" type="Button" parent="VBoxContainer/MenuHBoxContainer"]
+layout_mode = 2
+text = "File"
+flat = true
+
+[node name="ViewButton" type="Button" parent="VBoxContainer/MenuHBoxContainer"]
+layout_mode = 2
+text = "View/Hide"
+flat = true
+
+[node name="HSlider" type="HSlider" parent="VBoxContainer/MenuHBoxContainer"]
+custom_minimum_size = Vector2(200, 30)
+layout_mode = 2
+min_value = 64.0
+max_value = 2048.0
+value = 64.0
+exp_edit = true
+
+[node name="PathHBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="CurrentPathLineEdit" type="LineEdit" parent="VBoxContainer/PathHBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = 200
+
+[node name="FolderTree" parent="VBoxContainer/HSplitContainer" instance=ExtResource("2_fmf84")]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/HSplitContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="FolderIconViewHFlowContainer" parent="VBoxContainer/HSplitContainer/ScrollContainer" instance=ExtResource("4_41iyk")]
+layout_mode = 2
+
+[node name="FilePopupMenu" type="PopupMenu" parent="."]
+size = Vector2i(116, 100)
+item_count = 4
+item_0/text = "📁 New Folder"
+item_0/id = 0
+item_1/text = "📄 New File"
+item_1/id = 1
+item_2/text = "🗑️ Trash"
+item_2/id = 2
+item_3/text = "🚀 Open"
+item_3/id = 3
+
+[node name="NewFolderConfirmationDialog" type="ConfirmationDialog" parent="."]
+title = "New Folder Name"
+always_on_top = true
+ok_button_text = "Create Folder"
+
+[node name="NewFolderLineEdit" type="LineEdit" parent="NewFolderConfirmationDialog"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 192.0
+offset_bottom = 51.0
+placeholder_text = "Enter Folder Name"
+
+[node name="NewFileConfirmationDialog" type="ConfirmationDialog" parent="."]
+title = "New File Name"
+always_on_top = true
+ok_button_text = "Create File"
+
+[node name="NewFileLineEdit" type="LineEdit" parent="NewFileConfirmationDialog"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 192.0
+offset_bottom = 51.0
+placeholder_text = "Enter File Name"
+
+[node name="RunFileConfirmationDialog" type="ConfirmationDialog" parent="."]
+always_on_top = true
+ok_button_text = "RUN"
+
+[node name="TrashFileConfirmationDialog" type="ConfirmationDialog" parent="."]
+always_on_top = true
+ok_button_text = "TRASH"
+
+[node name="ViewPopupMenu" type="PopupMenu" parent="."]
+item_count = 2
+item_0/text = "🌲 Folder Tree"
+item_0/checkable = 1
+item_0/checked = true
+item_0/id = 0
+item_1/text = "✏️ Entry"
+item_1/checkable = 1
+item_1/checked = true
+item_1/id = 1
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[connection signal="pressed" from="VBoxContainer/MenuHBoxContainer/UpDirButton" to="." method="_on_up_dir_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/MenuHBoxContainer/FileButton" to="." method="_file_menu"]
+[connection signal="pressed" from="VBoxContainer/MenuHBoxContainer/ViewButton" to="." method="_on_view_button_pressed"]
+[connection signal="value_changed" from="VBoxContainer/MenuHBoxContainer/HSlider" to="VBoxContainer/HSplitContainer/ScrollContainer/FolderIconViewHFlowContainer" method="set_folder_size"]
+[connection signal="folder_selected" from="VBoxContainer/HSplitContainer/FolderTree" to="." method="set_current_path"]
+[connection signal="folder_changed" from="VBoxContainer/HSplitContainer/ScrollContainer/FolderIconViewHFlowContainer" to="." method="set_current_path"]
+[connection signal="id_pressed" from="FilePopupMenu" to="." method="_on_file_popup_menu_id_pressed"]
+[connection signal="confirmed" from="NewFolderConfirmationDialog" to="." method="_on_new_folder_confirmation_dialog_confirmed"]
+[connection signal="confirmed" from="NewFileConfirmationDialog" to="." method="_on_new_file_confirmation_dialog_confirmed"]
+[connection signal="confirmed" from="TrashFileConfirmationDialog" to="." method="trash_selected"]
+[connection signal="id_pressed" from="ViewPopupMenu" to="." method="_on_view_popup_menu_id_pressed"]
