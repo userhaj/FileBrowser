@@ -90,7 +90,7 @@ func _on_gui_input(event):
 	if event is InputEventMouseButton:
 		# Is right clicked
 		if event.pressed and event.button_index == 2:
-			var mouse_position = get_local_mouse_position()
+			var mouse_position = get_global_mouse_position()
 			# Additive select when holding shift or already selected
 			if (Input.is_key_pressed(KEY_SHIFT) 
 					or Input.is_key_pressed(KEY_CTRL)
@@ -102,7 +102,7 @@ func _on_gui_input(event):
 				self.folder_view.select_child_by_point(mouse_position)
 				
 			#Popups 
-			self.file_popup_menu.position = get_viewport().get_screen_transform() * mouse_position
+			self.file_popup_menu.position =  mouse_position + Vector2(get_window().position)
 			self.file_popup_menu.show()
 
 # Create new file with given file name
@@ -116,7 +116,7 @@ func _on_new_file_confirmation_dialog_confirmed():
 
 func _on_view_button_pressed():
 	# Create vuew menu below view button
-	var true_location = get_viewport().get_screen_transform() * self.view_menu_button.get_global_transform() * self.view_menu_button.position
+	var true_location = self.view_menu_button.position + Vector2(get_window().position)
 	var x_pos = true_location.x
 	# Bottom of button
 	var y_pos = true_location.y + self.view_menu_button.size.y
@@ -133,3 +133,4 @@ func _on_view_popup_menu_id_pressed(id):
 		1:
 			self.current_path_line_edit.visible = not self.current_path_line_edit.visible
 			$ViewPopupMenu.set_item_checked(1, self.current_path_line_edit.visible)
+

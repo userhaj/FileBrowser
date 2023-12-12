@@ -36,7 +36,7 @@ static func is_image_extension(extension: String):
 func set_image(full_path: String):
 	self.image_path = full_path
 	self.is_image_set = true
-	if self._thread_queue:  # TODO remove this test false
+	if self._thread_queue:
 		self._thread_queue.enqueue(_image_texture_from_path.bind(self.image_path, $VisibleOnScreenNotifier2D.is_on_screen), set_image_texture)
 	else:
 		self._set_image_non_queue_thread = Thread.new()

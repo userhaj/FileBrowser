@@ -27,7 +27,5 @@ script = ExtResource("1_lyq84")
 visible = false
 material = SubResource("ShaderMaterial_mfpcb")
 layout_mode = 0
-offset_right = 346.0
-offset_bottom = 271.0
 mouse_filter = 2
 color = Color(0.403922, 0.172549, 0.27451, 0.513726)

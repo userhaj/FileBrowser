@@ -104,10 +104,12 @@ offset_bottom = 51.0
 placeholder_text = "Enter File Name"
 
 [node name="RunFileConfirmationDialog" type="ConfirmationDialog" parent="."]
+transient = false
 always_on_top = true
 ok_button_text = "RUN"
 
 [node name="TrashFileConfirmationDialog" type="ConfirmationDialog" parent="."]
+transient = false
 always_on_top = true
 ok_button_text = "TRASH"
 
@@ -129,7 +131,9 @@ item_1/id = 1
 [connection signal="value_changed" from="VBoxContainer/MenuHBoxContainer/HSlider" to="VBoxContainer/HSplitContainer/FolderIconView" method="set_folder_size"]
 [connection signal="folder_selected" from="VBoxContainer/HSplitContainer/FolderTree" to="." method="set_current_path"]
 [connection signal="folder_changed" from="VBoxContainer/HSplitContainer/FolderIconView" to="." method="set_current_path"]
+[connection signal="close_requested" from="FilePopupMenu" to="." method="_on_file_popup_menu_close_requested"]
 [connection signal="id_pressed" from="FilePopupMenu" to="." method="_on_file_popup_menu_id_pressed"]
+[connection signal="popup_hide" from="FilePopupMenu" to="." method="_on_file_popup_menu_popup_hide"]
 [connection signal="confirmed" from="NewFolderConfirmationDialog" to="." method="_on_new_folder_confirmation_dialog_confirmed"]
 [connection signal="confirmed" from="NewFileConfirmationDialog" to="." method="_on_new_file_confirmation_dialog_confirmed"]
 [connection signal="confirmed" from="TrashFileConfirmationDialog" to="." method="trash_selected"]

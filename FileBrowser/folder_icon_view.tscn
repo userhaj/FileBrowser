@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://c3celv4vu6p5t"]
+[gd_scene load_steps=5 format=3 uid="uid://c3celv4vu6p5t"]
 
 [ext_resource type="Script" path="res://FileBrowser/folder_icon_view.gd" id="1_qgpga"]
 [ext_resource type="PackedScene" uid="uid://drjwj2xhyocps" path="res://FileBrowser/select_box.tscn" id="2_q4s0j"]
+[ext_resource type="Script" path="res://FileBrowser/drag_window.gd" id="3_j1f1o"]
+[ext_resource type="Script" path="res://FileBrowser/drop_files_confirmation_dialog.gd" id="4_ktkjh"]
 
 [node name="FolderIconView" type="Control"]
 layout_mode = 3
@@ -32,4 +34,26 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
+[node name="DragWindow" type="Window" parent="."]
+transparent_bg = true
+handle_input_locally = false
+visible = false
+unresizable = true
+borderless = true
+always_on_top = true
+transparent = true
+unfocusable = true
+mouse_passthrough = true
+script = ExtResource("3_j1f1o")
+
+[node name="DropFilesConfirmationDialog" type="ConfirmationDialog" parent="."]
+position = Vector2i(0, 36)
+popup_window = true
+ok_button_text = "Copy Files"
+script = ExtResource("4_ktkjh")
+
 [connection signal="selected_area" from="SelectBox" to="." method="select_children_by_area"]
+[connection signal="files_dragged" from="DragWindow" to="." method="_on_drag_window_files_dragged"]
+[connection signal="visibility_changed" from="DragWindow" to="DragWindow" method="_on_visibility_changed"]
+[connection signal="confirmed" from="DropFilesConfirmationDialog" to="DropFilesConfirmationDialog" method="_on_confirmed"]
+[connection signal="custom_action" from="DropFilesConfirmationDialog" to="DropFilesConfirmationDialog" method="_on_custom_action"]

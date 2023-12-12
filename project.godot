@@ -15,6 +15,11 @@ run/main_scene="res://FileBrowser/file_browser.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
+[display]
+
+window/subwindows/embed_subwindows=false
+window/per_pixel_transparency/allowed=true
+
 [gui]
 
 theme/default_font_multichannel_signed_distance_field=true

@@ -114,7 +114,7 @@ clip_text = true
 text_overrun_behavior = 3
 
 [node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
-position = Vector2(15, 0)
+scale = Vector2(1.88571, 1.94286)
 rect = Rect2(0, 0, 35, 35)
 
 [node name="TextureDeleteTimer" type="Timer" parent="."]
