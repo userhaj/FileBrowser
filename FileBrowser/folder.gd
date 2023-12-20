@@ -10,6 +10,10 @@ var is_image_set: bool = false
 var image_path: String
 var _thread_queue: ThreadQueue
 var _set_image_non_queue_thread: Thread
+var icons : Dictionary = {"dll": "📚", "txt": "🗒️", "exe": "🚀", "conf": "⚙️",\
+ "ini": "⚙️", "py": "🐍", "pyw": "🐍", "url": "🕸️", "htm": "🕸️", "html": "🕸️",\
+"lnk": "🔗", "ods": "📊", "xls": "📊", "xlsx": "📊", "json": "📔", "jar": "☕",\
+"properties": "⚙️"}
 
 func _ready():
 	_icon_scale()
@@ -136,12 +140,15 @@ func set_path(abs_path: String, text_icon: String = ""):
 	# Update folder name
 	$NameLabel.text = self.path.get_slice("/", last_index)
 	$NameLabel.tooltip_text = $NameLabel.text
+	
+
+	var ext = self.path.get_extension()
 	if text_icon != "":
 		$ImageLabel.text = text_icon
-	elif self.path.get_extension() != "":
-		# Create unique default icons for each extension here
-		$ImageLabel.text = "📄"
-
+	elif FileAccess.file_exists(abs_path):
+		# Set icon or default
+		$ImageLabel.text = icons.get(ext, "📄")
+		
 func get_abs_path():
 	return self.path
 	
