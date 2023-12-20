@@ -28,18 +28,12 @@ func files_dropped(files: PackedStringArray, target_folder: String):
 	$".".popup()
 	$".".position = get_mouse_position() + Vector2(get_window().position)
 
-func _on_custom_action(action):
-	print("Action")
-	match action:
-		"MOVE":
-			for file: String in _dropped_files:
-				var dir_access := DirAccess.open(_target_folder)
-				var err = dir_access.copy(file, self._target_folder.path_join(file.get_file()))
-				if err == OK:
-					dir_access.remove(file)
 
 # Action on copied button
 func _on_confirmed():
 	for file: String in _dropped_files:
+		var target_location = self._target_folder.path_join(file.get_file())
+		if file.simplify_path() == target_location.simplify_path():
+					continue
 		var dir_access := DirAccess.open(_target_folder)
-		dir_access.copy(file, self._target_folder.path_join(file.get_file()))
+		dir_access.copy(file, target_location)

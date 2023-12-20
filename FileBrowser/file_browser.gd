@@ -33,7 +33,7 @@ func _on_up_dir_button_pressed():
 	
 func _file_menu():
 	# Create file menu below file button
-	var true_location = get_viewport().get_screen_transform() * self.file_button.get_global_transform() * self.file_button.position
+	var true_location = Vector2(get_window().position) + self.file_button.position
 	var x_pos = true_location.x
 	# Bottom of button
 	var y_pos = true_location.y + self.file_button.size.y

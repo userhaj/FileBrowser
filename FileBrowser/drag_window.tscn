@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3 uid="uid://dcvim7n582p0g"]
+
+[ext_resource type="Script" path="res://FileBrowser/drag_window.gd" id="1_33f6o"]
+
+[node name="DragWindow" type="Window"]
+transparent_bg = true
+handle_input_locally = false
+visible = false
+unresizable = true
+borderless = true
+transparent = true
+unfocusable = true
+mouse_passthrough = true
+script = ExtResource("1_33f6o")
+
+[node name="MovingObjects" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Labels" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CopyLabel" type="Label" parent="Labels"]
+visible = false
+layout_mode = 0
+offset_right = 78.0
+offset_bottom = 23.0
+text = "Copy Files"
+
+[node name="MoveLabel" type="Label" parent="Labels"]
+layout_mode = 0
+offset_right = 81.0
+offset_bottom = 23.0
+text = "Move Files"
+
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]

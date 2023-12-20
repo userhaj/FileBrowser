@@ -21,10 +21,16 @@ func _ready():
 	get_window().files_dropped.connect(files_dropped)
 
 func files_dropped(files: PackedStringArray):
-	var drop_point = get_global_mouse_position()
-	var target = get_object_at_point(drop_point)
-	var target_folder = target.path if target != null else _full_directory_path
-	$DropFilesConfirmationDialog.files_dropped(files, target_folder)
+	if len(files) > 0:
+		var drop_point = get_global_mouse_position()
+		var target = get_object_at_point(drop_point)
+		var target_folder = target.path if target != null else _full_directory_path
+		var file_transfer = preload("res://FileBrowser/file_transfer_window.tscn").instantiate()
+		add_child(file_transfer)
+		if Input.is_key_pressed(KEY_SHIFT):
+			file_transfer.copy(files, target_folder)
+		else:
+			file_transfer.move(files, target_folder)
 	
 func _input(event):
 	# Handle drag icon event
@@ -210,6 +216,3 @@ func clear():
 	for child in get_folder_buttons():
 		child.queue_free()
 
-
-func _on_drag_window_files_dragged(files):
-	print(files)
