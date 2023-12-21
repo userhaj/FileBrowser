@@ -14,16 +14,20 @@ func enqueue(call_work: Callable, callback_content:Callable):
 	update_queue()
 
 func _thread_return_work(thread, call_work, callback_content):
-	var work = call_work.call()
-	var callback = callback_content.bind(work)
-	call_deferred("_end_thread", thread, callback)
-
+	if call_work:
+		var work = call_work.call()
+		var callback = callback_content.bind(work)
+		call_deferred("_end_thread", thread, callback)
+	else:
+		call_deferred("_end_thread", thread, null)
+		
 func _end_thread(thread:Thread, callback: Callable):
 	var thread_index = self._running_threads.find(thread)
 	if thread_index >= 0:
 		self._running_threads.remove_at(thread_index)
 	update_queue()
-	callback.call()
+	if callback:
+		callback.call_deferred()
 	thread.wait_to_finish()
 
 func update_queue():
