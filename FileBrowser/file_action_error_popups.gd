@@ -8,7 +8,7 @@ func _ready():
 
 func user_handle_error(err: Error, file: String, semaphore: Semaphore = Semaphore.new()):
 	match err:
-		ERR_ALREADY_EXISTS:
+		ERR_ALREADY_EXISTS: #  Error 32
 			$DuplicateFileAcceptDialog.dialog_text = "File Already Exists: " + file
 			$DuplicateFileAcceptDialog.popup_centered()
 			await $DuplicateFileAcceptDialog.visibility_changed

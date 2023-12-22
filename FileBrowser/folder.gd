@@ -100,16 +100,17 @@ func _image_texture_from_path(full_path: String, is_on_screen: Callable):
 	if FolderLargeIconButton.is_image_extension(extension) && is_on_screen.call():
 		var image = Image.load_from_file(full_path)
 		
+		if image:
 		# Reduce image size to save ram, procesing speed
-		var image_width = float(image.get_size().x)
-		var target_width = 1024.0
-		if image_width > target_width:
-			var image_scale = target_width / image_width
-			image.resize(target_width, image.get_size().y * image_scale)
-		
-		# Create texture
-		var new_texture = ImageTexture.create_from_image(image)
-		return new_texture
+			var image_width = float(image.get_size().x)
+			var target_width = 1024.0
+			if image_width > target_width:
+				var image_scale = target_width / image_width
+				image.resize(target_width, image.get_size().y * image_scale)
+			
+			# Create texture
+			var new_texture = ImageTexture.create_from_image(image)
+			return new_texture
 	return null
 
 func set_image_texture(new_texture: ImageTexture):

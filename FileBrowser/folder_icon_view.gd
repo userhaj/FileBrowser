@@ -21,11 +21,15 @@ func _ready():
 	get_window().files_dropped.connect(files_dropped)
 
 func files_dropped(files: PackedStringArray):
-	if len(files) > 0:
+	var mouse_pos: Vector2 = get_local_mouse_position()
+	var is_mouse_over_self = mouse_pos.x >= 0 and mouse_pos.y >= 0 and mouse_pos.x <= $".".size.x and mouse_pos.y <= $".".size.y
+	if len(files) > 0 and is_mouse_over_self:
 		var drop_point = get_global_mouse_position()
 		var target = get_object_at_point(drop_point)
 		var target_folder = target.path if target != null else _full_directory_path
 		var file_transfer = preload("res://FileBrowser/file_transfer_window.tscn").instantiate()
+		file_transfer.hide()
+		file_transfer.connect("tree_exiting", refresh)
 		add_child(file_transfer)
 		if Input.is_key_pressed(KEY_SHIFT):
 			file_transfer.copy(files, target_folder)
@@ -67,7 +71,8 @@ func _input(event):
 					folder_copy.path = self._click_start_object.path
 					$DragWindow.add_control(folder_copy)
 				$DragWindow.show()
-			
+	if event is InputEventKey and Input.is_key_pressed(KEY_F5):
+		refresh()
 
 # Current working directory
 func get_directory() -> String:
