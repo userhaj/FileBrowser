@@ -27,10 +27,10 @@ func _icon_scale():
 	if $ImageLabel:
 		var height = $".".get_rect().size.y
 		var width = $".".get_rect().size.x
-		var text_height = $NameLabel.get_line_height()
+		var text_height = $NameLabel.get_line_height() * 2 
 		var scale_y = (height - text_height) / 27
 		var scale_x = width / (ICON_DIMENSION - 4)
-		var scale_amount =  Vector2(scale_x, scale_y)
+		var scale_amount =  Vector2(scale_y, scale_y)
 		$ImageLabel.scale = scale_amount
 		$VisibleOnScreenNotifier2D.scale = scale_amount
 

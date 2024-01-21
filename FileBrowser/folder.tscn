@@ -41,7 +41,7 @@ shader_parameter/border_size = 0.05
 shader_parameter/border_color = Color(0, 0, 0, 0.729412)
 
 [sub_resource type="LabelSettings" id="LabelSettings_ld3c6"]
-outline_size = 3
+outline_size = 7
 outline_color = Color(0, 0, 0, 1)
 
 [node name="Folder" type="TextureButton"]
@@ -102,16 +102,16 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -64.0
+offset_top = -49.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 1
 text = "Default Folder"
 label_settings = SubResource("LabelSettings_ld3c6")
 horizontal_alignment = 1
-vertical_alignment = 2
-clip_text = true
-text_overrun_behavior = 3
+vertical_alignment = 1
+autowrap_mode = 1
+text_overrun_behavior = 2
 
 [node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
 scale = Vector2(1.88571, 1.94286)
