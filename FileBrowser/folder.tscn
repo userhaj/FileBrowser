@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://d4fyh375x0gay"]
+[gd_scene format=3 uid="uid://d4fyh375x0gay"]
 
-[ext_resource type="Shader" path="res://FileBrowser/rounded_corner.gdshader" id="1_5b3et"]
-[ext_resource type="Script" path="res://FileBrowser/folder.gd" id="1_p4ow7"]
-[ext_resource type="Shader" path="res://FileBrowser/border.gdshader" id="3_05hdt"]
+[ext_resource type="Shader" uid="uid://0mex374eebas" path="res://FileBrowser/rounded_corner.gdshader" id="1_5b3et"]
+[ext_resource type="Script" uid="uid://dhhshl741q82k" path="res://FileBrowser/folder.gd" id="1_p4ow7"]
+[ext_resource type="Shader" uid="uid://c0e4hq1t356ky" path="res://FileBrowser/border.gdshader" id="3_05hdt"]
+[ext_resource type="FontFile" uid="uid://0h6c0qjdknr1" path="res://Fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="3_gj022"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_axquj"]
 shader = ExtResource("1_5b3et")
@@ -30,6 +31,7 @@ fill_from = Vector2(1, 0)
 fill_to = Vector2(1, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_bq7l0"]
+font = ExtResource("3_gj022")
 font_size = 24
 outline_size = 4
 outline_color = Color(0, 0, 0, 1)
@@ -44,7 +46,7 @@ shader_parameter/border_color = Color(0, 0, 0, 0.729412)
 outline_size = 7
 outline_color = Color(0, 0, 0, 1)
 
-[node name="Folder" type="TextureButton"]
+[node name="Folder" type="TextureButton" unique_id=1829112246]
 material = SubResource("ShaderMaterial_axquj")
 clip_contents = true
 custom_minimum_size = Vector2(64, 64)
@@ -59,23 +61,20 @@ script = ExtResource("1_p4ow7")
 metadata/_edit_vertical_guides_ = [559.0, 563.0, 590.0, 35.0, 4.0, 31.0]
 metadata/_edit_horizontal_guides_ = [27.0]
 
-[node name="ImageLabel" type="Label" parent="."]
+[node name="ImageLabel" type="Label" parent="." unique_id=431873875]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -17.0
-offset_right = 18.0
-offset_bottom = 34.0
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 29.0
 grow_horizontal = 2
 pivot_offset = Vector2(17.5, 0)
 size_flags_vertical = 3
 text = "📁"
 label_settings = SubResource("LabelSettings_bq7l0")
-vertical_alignment = 1
+horizontal_alignment = 1
 clip_text = true
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="TextureRect" type="TextureRect" parent="." unique_id=810682109]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -84,7 +83,7 @@ offset_bottom = -23.0
 expand_mode = 1
 stretch_mode = 5
 
-[node name="SelectColorRect" type="ColorRect" parent="."]
+[node name="SelectColorRect" type="ColorRect" parent="." unique_id=871411156]
 visible = false
 material = SubResource("ShaderMaterial_242m3")
 layout_mode = 1
@@ -96,7 +95,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 0)
 
-[node name="NameLabel" type="Label" parent="."]
+[node name="NameLabel" type="Label" parent="." unique_id=906046220]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -113,11 +112,11 @@ vertical_alignment = 1
 autowrap_mode = 1
 text_overrun_behavior = 2
 
-[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=669960518]
 scale = Vector2(1.88571, 1.94286)
 rect = Rect2(0, 0, 35, 35)
 
-[node name="TextureDeleteTimer" type="Timer" parent="."]
+[node name="TextureDeleteTimer" type="Timer" parent="." unique_id=1935105981]
 wait_time = 3.0
 
 [connection signal="resized" from="." to="." method="_on_resized"]

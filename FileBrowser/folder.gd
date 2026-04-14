@@ -31,7 +31,7 @@ func _icon_scale():
 		var scale_y = (height - text_height) / 27
 		var scale_x = width / (ICON_DIMENSION - 4)
 		var scale_amount =  Vector2(scale_y, scale_y)
-		$ImageLabel.scale = scale_amount
+		$ImageLabel.label_settings.font_size = height / 1.2
 		$VisibleOnScreenNotifier2D.scale = scale_amount
 
 static func is_image_extension(extension: String):

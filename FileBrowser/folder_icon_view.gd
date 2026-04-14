@@ -220,4 +220,3 @@ func clear():
 	# Remove all folders/files
 	for child in get_folder_buttons():
 		child.queue_free()
-
