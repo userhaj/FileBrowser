@@ -1,10 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://m28v1qcvhdv3"]
+[gd_scene format=3 uid="uid://m28v1qcvhdv3"]
 
-[ext_resource type="Script" path="res://FileBrowser/file_browser.gd" id="1_83ygx"]
+[ext_resource type="Script" uid="uid://d20ud65y5yrro" path="res://FileBrowser/file_browser.gd" id="1_83ygx"]
 [ext_resource type="PackedScene" uid="uid://eeku0frgbqdp" path="res://FileBrowser/folder_tree.tscn" id="2_fmf84"]
 [ext_resource type="PackedScene" uid="uid://c3celv4vu6p5t" path="res://FileBrowser/folder_icon_view.tscn" id="3_fo1ef"]
 
-[node name="FileBrowser" type="Control"]
+[node name="FileBrowser" type="Control" unique_id=1090105108]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,7 +13,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_83ygx")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=171703870]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -22,26 +22,26 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 
-[node name="MenuHBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="MenuHBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=378411459]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="UpDirButton" type="Button" parent="VBoxContainer/MenuHBoxContainer"]
+[node name="UpDirButton" type="Button" parent="VBoxContainer/MenuHBoxContainer" unique_id=1689751842]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "▲"
 
-[node name="FileButton" type="Button" parent="VBoxContainer/MenuHBoxContainer"]
+[node name="FileButton" type="Button" parent="VBoxContainer/MenuHBoxContainer" unique_id=517254236]
 layout_mode = 2
 text = "File"
 flat = true
 
-[node name="ViewButton" type="Button" parent="VBoxContainer/MenuHBoxContainer"]
+[node name="ViewButton" type="Button" parent="VBoxContainer/MenuHBoxContainer" unique_id=895447087]
 layout_mode = 2
 text = "View/Hide"
 flat = true
 
-[node name="HSlider" type="HSlider" parent="VBoxContainer/MenuHBoxContainer"]
+[node name="HSlider" type="HSlider" parent="VBoxContainer/MenuHBoxContainer" unique_id=2106691180]
 custom_minimum_size = Vector2(200, 30)
 layout_mode = 2
 min_value = 64.0
@@ -49,25 +49,26 @@ max_value = 2048.0
 value = 64.0
 exp_edit = true
 
-[node name="PathHBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="PathHBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1568185623]
 layout_mode = 2
 
-[node name="CurrentPathLineEdit" type="LineEdit" parent="VBoxContainer/PathHBoxContainer"]
+[node name="CurrentPathLineEdit" type="LineEdit" parent="VBoxContainer/PathHBoxContainer" unique_id=982159103]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer"]
+[node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer" unique_id=188295582]
 layout_mode = 2
 size_flags_vertical = 3
+split_offsets = PackedInt32Array(200)
 split_offset = 200
 
-[node name="FolderTree" parent="VBoxContainer/HSplitContainer" instance=ExtResource("2_fmf84")]
+[node name="FolderTree" parent="VBoxContainer/HSplitContainer" unique_id=1360331069 instance=ExtResource("2_fmf84")]
 layout_mode = 2
 
-[node name="FolderIconView" parent="VBoxContainer/HSplitContainer" instance=ExtResource("3_fo1ef")]
+[node name="FolderIconView" parent="VBoxContainer/HSplitContainer" unique_id=1750673585 instance=ExtResource("3_fo1ef")]
 layout_mode = 2
 
-[node name="FilePopupMenu" type="PopupMenu" parent="."]
+[node name="FilePopupMenu" type="PopupMenu" parent="." unique_id=34158518]
 size = Vector2i(142, 116)
 item_count = 4
 item_0/text = "📁 New Folder"
@@ -79,41 +80,43 @@ item_2/id = 2
 item_3/text = "🚀 Open"
 item_3/id = 3
 
-[node name="NewFolderConfirmationDialog" type="ConfirmationDialog" parent="."]
+[node name="NewFolderConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1487164205]
+oversampling_override = 1.0
 title = "New Folder Name"
+size = Vector2i(205, 100)
 always_on_top = true
 ok_button_text = "Create Folder"
 
-[node name="NewFolderLineEdit" type="LineEdit" parent="NewFolderConfirmationDialog"]
+[node name="NewFolderLineEdit" type="LineEdit" parent="NewFolderConfirmationDialog" unique_id=809655013]
 offset_left = 8.0
 offset_top = 8.0
-offset_right = 192.0
+offset_right = 197.0
 offset_bottom = 51.0
 placeholder_text = "Enter Folder Name"
 
-[node name="NewFileConfirmationDialog" type="ConfirmationDialog" parent="."]
+[node name="NewFileConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1191893157]
 title = "New File Name"
 always_on_top = true
 ok_button_text = "Create File"
 
-[node name="NewFileLineEdit" type="LineEdit" parent="NewFileConfirmationDialog"]
+[node name="NewFileLineEdit" type="LineEdit" parent="NewFileConfirmationDialog" unique_id=890522029]
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 192.0
 offset_bottom = 51.0
 placeholder_text = "Enter File Name"
 
-[node name="RunFileConfirmationDialog" type="ConfirmationDialog" parent="."]
+[node name="RunFileConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=164990766]
 transient = false
 always_on_top = true
 ok_button_text = "RUN"
 
-[node name="TrashFileConfirmationDialog" type="ConfirmationDialog" parent="."]
+[node name="TrashFileConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=980480675]
 transient = false
 always_on_top = true
 ok_button_text = "TRASH"
 
-[node name="ViewPopupMenu" type="PopupMenu" parent="."]
+[node name="ViewPopupMenu" type="PopupMenu" parent="." unique_id=2084791024]
 item_count = 2
 item_0/text = "🌲 Folder Tree"
 item_0/checkable = 1

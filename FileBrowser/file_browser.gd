@@ -71,7 +71,11 @@ func ask_trash_selected_items():
 
 # Create new folder for given text
 func _on_new_folder_confirmation_dialog_confirmed():
+	# Action to create new folder
 	new_folder($NewFolderConfirmationDialog/NewFolderLineEdit.text)
+	# Clear text from popup for reuse
+	$NewFolderConfirmationDialog/NewFolderLineEdit.text = ""
+	# Show Changes
 	self.folder_view.refresh()
 
 # Sends each selected item to trash
