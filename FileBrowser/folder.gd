@@ -3,7 +3,6 @@ class_name FolderLargeIconButton
 
 var path: String
 var is_selected: bool = false
-const ICON_DIMENSION: float = 35  # Is square size of folder text icon
 var hover_label: Label
 var set_image_thread: Thread
 var is_image_set: bool = false
@@ -25,14 +24,17 @@ func set_thread_queue(thread_queue: ThreadQueue):
 func _icon_scale():
 	# Resize folder icon to be size of parent
 	if $ImageLabel:
+		# Available file/dir object height
 		var height = $".".get_rect().size.y
-		var width = $".".get_rect().size.x
+		# Height space used for 2 lines of text
 		var text_height = $NameLabel.get_line_height() * 2 
-		var scale_y = (height - text_height) / 27
-		var scale_x = width / (ICON_DIMENSION - 4)
-		var scale_amount =  Vector2(scale_y, scale_y)
-		$ImageLabel.label_settings.font_size = height / 1.2
-		$VisibleOnScreenNotifier2D.scale = scale_amount
+		# Set font size to height minus 2 lines of text height
+		$ImageLabel.label_settings.font_size = height - text_height
+		# About 20% of an icon space is empty, remove to center icon
+		$ImageLabel.label_settings.font_size *= 0.8
+		
+		#Check necessity
+		#$VisibleOnScreenNotifier2D.scale = scale_amount
 
 static func is_image_extension(extension: String):
 	return extension.to_lower() in ["png", "svg", "bmp", "jpg", "ktx", "tga", "webp"]
