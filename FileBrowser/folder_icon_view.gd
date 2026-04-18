@@ -73,6 +73,16 @@ func _input(event):
 				$DragWindow.show()
 	if event is InputEventKey and Input.is_key_pressed(KEY_F5):
 		refresh()
+	
+	# Idetify if mouse over folder icon view (self)
+	var has_mouse_focus = get_rect().has_point(get_local_mouse_position())
+	# Handle Ctrl+MouseScroll as Icon resize
+	if event is InputEventMouseButton and event.ctrl_pressed and has_mouse_focus:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			set_folder_size(_folder_size*1.1)
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			set_folder_size(_folder_size*0.9)
+			
 
 # Current working directory
 func get_directory() -> String:
@@ -206,6 +216,10 @@ func get_object_at_point(target_position: Vector2) -> Node:
 
 # Set square size of all folders in view
 func set_folder_size(custom_size: float):
+	# Minimum size 64, errors occur below this size
+	if custom_size < 64:
+		return
+		
 	self._folder_size = custom_size
 	# Set folder/file square size
 	for child:Control in get_folder_buttons():
