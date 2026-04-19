@@ -17,8 +17,15 @@ var _is_dragging: bool = false
 var _click_start_position: Vector2
 var _click_start_object: Node
 
+const SAVE_FILEPATH = "user://GDFileBrowserIconView.cfg"
+
 func _ready():
 	get_window().files_dropped.connect(files_dropped)
+	var config = ConfigFile.new()
+	var err = config.load(SAVE_FILEPATH)
+	if err == OK:
+		var folder_size = config.get_value("folder_icon_view", "_folder_size")
+		set_folder_size(folder_size)
 
 func files_dropped(files: PackedStringArray):
 	var mouse_pos: Vector2 = get_local_mouse_position()
@@ -224,7 +231,14 @@ func set_folder_size(custom_size: float):
 	# Set folder/file square size
 	for child:Control in get_folder_buttons():
 		child.custom_minimum_size = Vector2(custom_size, custom_size)
-
+	save_settings()
+	
+func save_settings():
+	var config = ConfigFile.new()
+	config.set_value("folder_icon_view", "_folder_size", _folder_size)
+	config.save(SAVE_FILEPATH)
+	
+	
 # Square size of folder object
 func get_folder_size() -> float:
 	return self._folder_size
