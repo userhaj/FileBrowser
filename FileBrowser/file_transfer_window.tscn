@@ -1,15 +1,16 @@
-[gd_scene load_steps=3 format=3 uid="uid://5bl4nmd56lgq"]
+[gd_scene format=3 uid="uid://5bl4nmd56lgq"]
 
-[ext_resource type="Script" path="res://FileBrowser/file_transfer_window.gd" id="1_ehr5l"]
+[ext_resource type="Script" uid="uid://5jpeusfndejj" path="res://FileBrowser/file_transfer_window.gd" id="1_ehr5l"]
 [ext_resource type="PackedScene" uid="uid://bbm5568rewkr7" path="res://FileBrowser/file_action_error_popups.tscn" id="2_ldkfg"]
 
-[node name="FileTransferWindow" type="Window"]
+[node name="FileTransferWindow" type="Window" unique_id=1796436374]
+oversampling_override = 1.0
 title = "Transfering Files"
 initial_position = 2
 size = Vector2i(300, 100)
 script = ExtResource("1_ehr5l")
 
-[node name="PercentLabel" type="Label" parent="."]
+[node name="PercentLabel" type="Label" parent="." unique_id=303433070]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -25,6 +26,10 @@ size_flags_horizontal = 6
 size_flags_vertical = 6
 text = "0%"
 
-[node name="FileActionErrorPopups" parent="." instance=ExtResource("2_ldkfg")]
+[node name="FileActionErrorPopups" parent="." unique_id=1798431503 instance=ExtResource("2_ldkfg")]
+
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1160495838]
 
 [connection signal="close_requested" from="." to="." method="queue_free"]
+[connection signal="canceled" from="ConfirmationDialog" to="." method="_on_confirmation_dialog_canceled"]
+[connection signal="confirmed" from="ConfirmationDialog" to="." method="_on_confirmation_dialog_confirmed"]
