@@ -1,29 +1,40 @@
 extends Control
 
-signal color_changed()
-
 const SAVE_FILEPATH = "user://GDFileBrowserColors.cfg"
 
-const COLOR_DEFAULT = {
-	"Icon View Background": Color(0.198, 0.198, 0.198, 1.0), 
-	"Icon View Font": Color(0.784, 0.784, 0.784, 1.0)
-	}
+const THEME_DEFAULT = {
+	"Icon View Background": {
+		"name": "panel", 
+		"theme_type": "ScrollContainer", 
+		"theme_path": "res://FileBrowser/Themes/folder_icon_view_theme.tres",
+		"default": Color(0.198, 0.198, 0.198, 1.0)
+		}
+		}
 
-var color_values: Dictionary = {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	load_colors()
 
+func set_color(setting_name: String, color: Color):
+	# New Test Content
+	var flat_box: StyleBoxFlat = StyleBoxFlat.new()
+	flat_box.bg_color = color
+	var theme_path = THEME_DEFAULT[setting_name]["theme_path"]
+	var new_theme: Theme = load(theme_path)
+	new_theme.set_stylebox(THEME_DEFAULT[setting_name]["name"], THEME_DEFAULT[setting_name]["theme_type"], flat_box )
+	ResourceSaver.save(new_theme, THEME_DEFAULT[setting_name]["theme_path"])
+	
+
 func load_colors():
 	var config: ConfigFile = ConfigFile.new()
 	var err = config.load(SAVE_FILEPATH)
 	if err == OK:
-		for ui_name in COLOR_DEFAULT.keys():
+		for ui_name in THEME_DEFAULT.keys():
 			var ui_color = config.get_value("Colors", ui_name, "")
 			# If color is not found, use default
 			if ui_color == "":
-				ui_color = COLOR_DEFAULT[ui_name]
+				ui_color = THEME_DEFAULT[ui_name]["default"]
 			
 			var single_color_gui = preload("res://FileBrowser/Color/single_color_choice_gui.tscn").instantiate()
 			single_color_gui.setup(ui_name, ui_color)
@@ -31,9 +42,9 @@ func load_colors():
 			$VBoxContainer.add_child(single_color_gui)
 	else:
 		# If opening config failed, save a new config
-		for ui_name in COLOR_DEFAULT.keys():
-			config.set_value("Color", ui_name, COLOR_DEFAULT[ui_name])
+		for ui_name in THEME_DEFAULT.keys():
+			config.set_value("Color", ui_name, THEME_DEFAULT[ui_name]["default"])
 		config.save(SAVE_FILEPATH)
 
-func a_color_changed(_color: Color):
-	emit_signal("color_changed")
+func a_color_changed(color: Color, ui_name: String):
+	set_color(ui_name, color)

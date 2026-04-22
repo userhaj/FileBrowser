@@ -1,11 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://c3celv4vu6p5t"]
+[gd_scene format=3 uid="uid://c3celv4vu6p5t"]
 
-[ext_resource type="Script" path="res://FileBrowser/folder_icon_view.gd" id="1_qgpga"]
+[ext_resource type="Theme" uid="uid://bhcvynjriadwp" path="res://FileBrowser/Themes/folder_icon_view_theme.tres" id="1_osl2x"]
+[ext_resource type="Script" uid="uid://cf281dx06gmp1" path="res://FileBrowser/folder_icon_view.gd" id="1_qgpga"]
 [ext_resource type="PackedScene" uid="uid://drjwj2xhyocps" path="res://FileBrowser/select_box.tscn" id="2_q4s0j"]
 [ext_resource type="PackedScene" uid="uid://dcvim7n582p0g" path="res://FileBrowser/drag_window.tscn" id="3_j67m5"]
-[ext_resource type="Script" path="res://FileBrowser/drop_files_confirmation_dialog.gd" id="4_ktkjh"]
+[ext_resource type="Script" uid="uid://bwigx801m6owr" path="res://FileBrowser/drop_files_confirmation_dialog.gd" id="4_ktkjh"]
 
-[node name="FolderIconView" type="Control"]
+[node name="FolderIconView" type="Control" unique_id=475031514]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,14 +14,15 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
+theme = ExtResource("1_osl2x")
 script = ExtResource("1_qgpga")
 
-[node name="SelectBox" parent="." instance=ExtResource("2_q4s0j")]
+[node name="SelectBox" parent="." unique_id=2145880977 instance=ExtResource("2_q4s0j")]
 y_sort_enabled = true
 clip_contents = true
 layout_mode = 1
 
-[node name="ScrollContainer" type="ScrollContainer" parent="SelectBox"]
+[node name="ScrollContainer" type="ScrollContainer" parent="SelectBox" unique_id=1301195325]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -29,14 +31,14 @@ grow_horizontal = 2
 grow_vertical = 2
 follow_focus = true
 
-[node name="HFlowContainer" type="HFlowContainer" parent="SelectBox/ScrollContainer"]
+[node name="HFlowContainer" type="HFlowContainer" parent="SelectBox/ScrollContainer" unique_id=1554125111]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="DragWindow" parent="." instance=ExtResource("3_j67m5")]
+[node name="DragWindow" parent="." unique_id=1661482121 instance=ExtResource("3_j67m5")]
 
-[node name="DropFilesConfirmationDialog" type="ConfirmationDialog" parent="."]
+[node name="DropFilesConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=997916298]
 position = Vector2i(0, 36)
 popup_window = true
 ok_button_text = "Copy Files"

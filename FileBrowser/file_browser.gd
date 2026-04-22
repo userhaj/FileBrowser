@@ -137,3 +137,8 @@ func _on_view_popup_menu_id_pressed(id):
 		1:
 			self.current_path_line_edit.visible = not self.current_path_line_edit.visible
 			$ViewPopupMenu.set_item_checked(1, self.current_path_line_edit.visible)
+
+
+func _on_settings_button_pressed() -> void:
+	var settings_window: Window = preload("res://FileBrowser/Settings/settings_window.tscn").instantiate()
+	add_child(settings_window)

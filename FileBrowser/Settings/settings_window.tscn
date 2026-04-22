@@ -39,4 +39,5 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
+[connection signal="close_requested" from="." to="." method="_on_close_requested"]
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/ButtonColors" to="." method="_on_button_colors_pressed"]

@@ -1,5 +1,5 @@
 extends HBoxContainer
-signal color_changed(color: Color)
+signal color_changed(color: Color, ui_name: String)
 
 var default_value: Color
 var ui_name: String
@@ -19,7 +19,7 @@ func setup(ui_name: String, default: Color)-> void:
 	$ColorPickerButton.color = default
 
 func _on_color_picker_button_color_changed(color: Color) -> void:
-	emit_signal("color_changed", color)
+	emit_signal("color_changed", color, self.ui_name)
 
 
 func _on_button_reset_pressed() -> void:
