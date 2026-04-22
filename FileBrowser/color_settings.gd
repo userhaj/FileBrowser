@@ -1,6 +1,6 @@
 extends Control
 
-signal color_changed
+signal color_changed()
 
 const SAVE_FILEPATH = "user://GDFileBrowserColors.cfg"
 
@@ -20,9 +20,9 @@ func load_colors():
 	var err = config.load(SAVE_FILEPATH)
 	if err == OK:
 		for ui_name in COLOR_DEFAULT.keys():
-			var ui_color = config.get_value("Colors", ui_name, null)
+			var ui_color = config.get_value("Colors", ui_name, "")
 			# If color is not found, use default
-			if ui_color == null:
+			if ui_color == "":
 				ui_color = COLOR_DEFAULT[ui_name]
 			
 			var single_color_gui = preload("res://FileBrowser/Color/single_color_choice_gui.tscn").instantiate()
@@ -35,9 +35,5 @@ func load_colors():
 			config.set_value("Color", ui_name, COLOR_DEFAULT[ui_name])
 		config.save(SAVE_FILEPATH)
 
-func a_color_changed():
+func a_color_changed(_color: Color):
 	emit_signal("color_changed")
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
