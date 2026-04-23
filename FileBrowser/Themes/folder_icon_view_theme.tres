@@ -1,3 +1,7 @@
-[gd_resource type="Theme" format=3 uid="uid://njifx2hfgxvl"]
+[gd_resource type="Theme" format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jbdnb"]
+bg_color = Color(0.198, 0.198, 0.198, 1)
 
 [resource]
+ScrollContainer/styles/panel = SubResource("StyleBoxFlat_jbdnb")

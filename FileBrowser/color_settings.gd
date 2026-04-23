@@ -8,6 +8,12 @@ const THEME_DEFAULT = {
 		"theme_type": "ScrollContainer", 
 		"theme_path": "res://FileBrowser/Themes/folder_icon_view_theme.tres",
 		"default": Color(0.198, 0.198, 0.198, 1.0)
+		},
+	"Folder Tree Background": {
+		"name": "panel", 
+		"theme_type": "Tree", 
+		"theme_path": "res://FileBrowser/Themes/folder_tree_theme.tres",
+		"default": Color(0.212, 0.212, 0.212, 1.0)
 		}
 		}
 

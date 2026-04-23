@@ -1,13 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://eeku0frgbqdp"]
+[gd_scene format=3 uid="uid://eeku0frgbqdp"]
 
-[ext_resource type="Script" path="res://FileBrowser/folder_tree.gd" id="1_riqgb"]
+[ext_resource type="Theme" uid="uid://cgr5tnc8a7je8" path="res://FileBrowser/Themes/folder_tree_theme.tres" id="1_4dy67"]
+[ext_resource type="Script" uid="uid://cb7vp082pcrks" path="res://FileBrowser/folder_tree.gd" id="1_riqgb"]
 
-[node name="FolderTree" type="Tree"]
+[node name="FolderTree" type="Tree" unique_id=1822229957]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_4dy67")
 script = ExtResource("1_riqgb")
 
 [connection signal="item_collapsed" from="." to="." method="_on_item_collapsed"]
