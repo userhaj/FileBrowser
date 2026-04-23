@@ -23,4 +23,7 @@ func _on_color_picker_button_color_changed(color: Color) -> void:
 
 
 func _on_button_reset_pressed() -> void:
+	# Set color to default value
 	$ColorPickerButton.color = self.default_value
+	# Emit notification of change
+	$ColorPickerButton.emit_signal("color_changed", $ColorPickerButton.color)
