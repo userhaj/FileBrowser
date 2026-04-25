@@ -2,16 +2,18 @@ extends Control
 
 @onready var folder_view: FolderIconView = $PanelContainer/VBoxContainer/HSplitContainer/FolderIconView
 @onready var current_path: String = DirAccess.get_drive_name(0)
-@onready var current_path_line_edit: LineEdit = $PanelContainer/VBoxContainer/PathHBoxContainer/CurrentPathLineEdit
+@onready var current_path_line_edit: LineEditPlus = $PanelContainer/VBoxContainer/PathHBoxContainer/CurrentPathLineEdit
 @onready var file_popup_menu: PopupMenu = $FilePopupMenu
 @onready var file_button: Button = $PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton
 @onready var view_menu_button = $PanelContainer/VBoxContainer/MenuHBoxContainer/ViewButton
 @onready var folder_tree: Tree = $PanelContainer/VBoxContainer/HSplitContainer/FolderTree
 
+var is_shoot_laser_left: bool = true
 
 func _ready():
 	set_current_path(current_path.simplify_path())
 	self.folder_view.file_clicked.connect(_run_file)
+	
 
 func set_current_path(full_path: String):
 	self.current_path = full_path.simplify_path()
@@ -108,6 +110,8 @@ func _on_gui_input(event):
 			#Popups 
 			self.file_popup_menu.position =  mouse_position + Vector2(get_window().position)
 			self.file_popup_menu.show()
+	
+	
 
 # Create new file with given file name
 func _on_new_file_confirmation_dialog_confirmed():
@@ -142,3 +146,16 @@ func _on_view_popup_menu_id_pressed(id):
 func _on_settings_button_pressed() -> void:
 	var settings_window: Window = preload("res://FileBrowser/Settings/settings_window.tscn").instantiate()
 	add_child(settings_window)
+
+
+func _on_line_edit_text_position_changed(pos: Vector2) -> void:
+	var laser = preload("res://Laser/laser.tscn").instantiate()
+	add_child(laser)
+	var lower_right = size + Vector2(get_window().position)
+	var lower_left = Vector2(lower_right.x - get_window().size.x, lower_right.y)
+	var position_below_text = Vector2(pos.x, pos.y + 20)
+	if is_shoot_laser_left:
+		laser.shoot_laser(lower_left, position_below_text + Vector2(get_window().position))
+	else:
+		laser.shoot_laser(lower_right, position_below_text + Vector2(get_window().position))
+	is_shoot_laser_left = !is_shoot_laser_left

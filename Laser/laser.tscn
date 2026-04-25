@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://cmyh2748byy4w"]
+
+[ext_resource type="Script" uid="uid://dlo8alcwokx3" path="res://Laser/laser.gd" id="1_b3m3o"]
+[ext_resource type="Script" uid="uid://d08l7fr5jsjmy" path="res://Laser/laser_draw_node_2d.gd" id="2_8uxad"]
+
+[node name="Laser" type="Window" unique_id=110418255]
+transparent_bg = true
+oversampling_override = 1.0
+size = Vector2i(300, 300)
+borderless = true
+always_on_top = true
+transparent = true
+unfocusable = true
+mouse_passthrough = true
+script = ExtResource("1_b3m3o")
+
+[node name="LaserNode2D" type="Node2D" parent="." unique_id=527192791]
+modulate = Color(1, 1, 1, 0)
+script = ExtResource("2_8uxad")
+
+[node name="Timer" type="Timer" parent="LaserNode2D" unique_id=677195105]
+wait_time = 0.6
+autostart = true
+
+[connection signal="timeout" from="LaserNode2D/Timer" to="." method="_on_timer_timeout"]

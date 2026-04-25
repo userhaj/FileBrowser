@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://eeku0frgbqdp"]
 
-[ext_resource type="Theme" uid="uid://cgr5tnc8a7je8" path="res://FileBrowser/Themes/folder_tree_theme.tres" id="1_4dy67"]
+[ext_resource type="Theme" uid="uid://dwfumcqj87e5d" path="res://FileBrowser/Themes/folder_tree_theme.tres" id="1_4dy67"]
 [ext_resource type="Script" uid="uid://cb7vp082pcrks" path="res://FileBrowser/folder_tree.gd" id="1_riqgb"]
 
 [node name="FolderTree" type="Tree" unique_id=1822229957]
