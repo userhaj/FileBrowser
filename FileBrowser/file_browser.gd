@@ -1,12 +1,12 @@
 extends Control
 
-@onready var folder_view: FolderIconView = $VBoxContainer/HSplitContainer/FolderIconView
+@onready var folder_view: FolderIconView = $PanelContainer/VBoxContainer/HSplitContainer/FolderIconView
 @onready var current_path: String = DirAccess.get_drive_name(0)
-@onready var current_path_line_edit: LineEdit = $VBoxContainer/PathHBoxContainer/CurrentPathLineEdit
+@onready var current_path_line_edit: LineEdit = $PanelContainer/VBoxContainer/PathHBoxContainer/CurrentPathLineEdit
 @onready var file_popup_menu: PopupMenu = $FilePopupMenu
-@onready var file_button: Button = $VBoxContainer/MenuHBoxContainer/FileButton
-@onready var view_menu_button = $VBoxContainer/MenuHBoxContainer/ViewButton
-@onready var folder_tree: Tree = $VBoxContainer/HSplitContainer/FolderTree
+@onready var file_button: Button = $PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton
+@onready var view_menu_button = $PanelContainer/VBoxContainer/MenuHBoxContainer/ViewButton
+@onready var folder_tree: Tree = $PanelContainer/VBoxContainer/HSplitContainer/FolderTree
 
 
 func _ready():

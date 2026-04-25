@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://m28v1qcvhdv3"]
 
 [ext_resource type="Script" uid="uid://d20ud65y5yrro" path="res://FileBrowser/file_browser.gd" id="1_83ygx"]
+[ext_resource type="Theme" path="res://FileBrowser/Themes/base_theme.tres" id="1_njuki"]
 [ext_resource type="PackedScene" uid="uid://eeku0frgbqdp" path="res://FileBrowser/folder_tree.tscn" id="2_fmf84"]
 [ext_resource type="PackedScene" uid="uid://c3celv4vu6p5t" path="res://FileBrowser/folder_icon_view.tscn" id="3_fo1ef"]
 [ext_resource type="FontFile" uid="uid://0h6c0qjdknr1" path="res://Fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="4_r42i3"]
@@ -29,37 +30,41 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_njuki")
 script = ExtResource("1_83ygx")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=171703870]
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=93632493]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=171703870]
+layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MenuHBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=378411459]
+[node name="MenuHBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer" unique_id=378411459]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="UpDirButton" type="Button" parent="VBoxContainer/MenuHBoxContainer" unique_id=1689751842]
+[node name="UpDirButton" type="Button" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=1689751842]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "▲"
 
-[node name="FileButton" type="Button" parent="VBoxContainer/MenuHBoxContainer" unique_id=517254236]
+[node name="FileButton" type="Button" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=517254236]
 layout_mode = 2
 text = "File"
 flat = true
 
-[node name="ViewButton" type="Button" parent="VBoxContainer/MenuHBoxContainer" unique_id=895447087]
+[node name="ViewButton" type="Button" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=895447087]
 layout_mode = 2
 text = "View/Hide"
 flat = true
 
-[node name="HSlider" type="HSlider" parent="VBoxContainer/MenuHBoxContainer" unique_id=2106691180]
+[node name="HSlider" type="HSlider" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=2106691180]
 custom_minimum_size = Vector2(200, 30)
 layout_mode = 2
 min_value = 64.0
@@ -67,28 +72,28 @@ max_value = 2048.0
 value = 64.0
 exp_edit = true
 
-[node name="SettingsButton" type="Button" parent="VBoxContainer/MenuHBoxContainer" unique_id=1697488648]
+[node name="SettingsButton" type="Button" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=1697488648]
 layout_mode = 2
 text = "Settings"
 flat = true
 
-[node name="PathHBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1568185623]
+[node name="PathHBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer" unique_id=1568185623]
 layout_mode = 2
 
-[node name="CurrentPathLineEdit" type="LineEdit" parent="VBoxContainer/PathHBoxContainer" unique_id=982159103]
+[node name="CurrentPathLineEdit" type="LineEdit" parent="PanelContainer/VBoxContainer/PathHBoxContainer" unique_id=982159103]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer" unique_id=188295582]
+[node name="HSplitContainer" type="HSplitContainer" parent="PanelContainer/VBoxContainer" unique_id=188295582]
 layout_mode = 2
 size_flags_vertical = 3
 split_offsets = PackedInt32Array(200)
 split_offset = 200
 
-[node name="FolderTree" parent="VBoxContainer/HSplitContainer" unique_id=1360331069 instance=ExtResource("2_fmf84")]
+[node name="FolderTree" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=1360331069 instance=ExtResource("2_fmf84")]
 layout_mode = 2
 
-[node name="FolderIconView" parent="VBoxContainer/HSplitContainer" unique_id=1750673585 instance=ExtResource("3_fo1ef")]
+[node name="FolderIconView" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=1750673585 instance=ExtResource("3_fo1ef")]
 layout_mode = 2
 
 [node name="FilePopupMenu" type="PopupMenu" parent="." unique_id=34158518]
@@ -263,13 +268,13 @@ item_1/checked = true
 item_1/id = 1
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
-[connection signal="pressed" from="VBoxContainer/MenuHBoxContainer/UpDirButton" to="." method="_on_up_dir_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/MenuHBoxContainer/FileButton" to="." method="_file_menu"]
-[connection signal="pressed" from="VBoxContainer/MenuHBoxContainer/ViewButton" to="." method="_on_view_button_pressed"]
-[connection signal="value_changed" from="VBoxContainer/MenuHBoxContainer/HSlider" to="VBoxContainer/HSplitContainer/FolderIconView" method="set_folder_size"]
-[connection signal="pressed" from="VBoxContainer/MenuHBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
-[connection signal="folder_selected" from="VBoxContainer/HSplitContainer/FolderTree" to="." method="set_current_path"]
-[connection signal="folder_changed" from="VBoxContainer/HSplitContainer/FolderIconView" to="." method="set_current_path"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/UpDirButton" to="." method="_on_up_dir_button_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton" to="." method="_file_menu"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/ViewButton" to="." method="_on_view_button_pressed"]
+[connection signal="value_changed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/HSlider" to="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" method="set_folder_size"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="folder_selected" from="PanelContainer/VBoxContainer/HSplitContainer/FolderTree" to="." method="set_current_path"]
+[connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" to="." method="set_current_path"]
 [connection signal="close_requested" from="FilePopupMenu" to="." method="_on_file_popup_menu_close_requested"]
 [connection signal="id_pressed" from="FilePopupMenu" to="." method="_on_file_popup_menu_id_pressed"]
 [connection signal="popup_hide" from="FilePopupMenu" to="." method="_on_file_popup_menu_popup_hide"]

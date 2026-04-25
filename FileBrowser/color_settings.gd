@@ -14,6 +14,18 @@ const THEME_DEFAULT = {
 		"theme_type": "Tree", 
 		"theme_path": "res://FileBrowser/Themes/folder_tree_theme.tres",
 		"default": Color(0.212, 0.212, 0.212, 1.0)
+		},
+	"Adjustable Divider Background": {
+		"name": "split_bar_background", 
+		"theme_type": "HSplitContainer", 
+		"theme_path": "res://FileBrowser/Themes/base_theme.tres",
+		"default": Color(0.212, 0.212, 0.212, 1.0)
+		},
+	"Base App Background": {
+		"name": "panel", 
+		"theme_type": "PanelContainer", 
+		"theme_path": "res://FileBrowser/Themes/base_theme.tres",
+		"default": Color(0.339, 0.339, 0.339, 1.0)
 		}
 		}
 

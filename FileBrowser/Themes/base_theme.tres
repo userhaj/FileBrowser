@@ -1,0 +1,11 @@
+[gd_resource type="Theme" format=3 uid="uid://dtiofaufbhpc2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bwe63"]
+bg_color = Color(0.212, 0.212, 0.212, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y10mo"]
+bg_color = Color(0.339, 0.339, 0.339, 1)
+
+[resource]
+HSplitContainer/styles/split_bar_background = SubResource("StyleBoxFlat_bwe63")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_y10mo")
