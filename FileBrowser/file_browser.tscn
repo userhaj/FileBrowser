@@ -101,6 +101,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="FilePopupMenu" type="PopupMenu" parent="." unique_id=34158518]
+oversampling_override = 1.0
 size = Vector2i(142, 116)
 item_count = 4
 item_0/text = "New Folder"
@@ -241,6 +242,7 @@ script = ExtResource("3_cveyf")
 metadata/_custom_type_script = "uid://cvbxs2ydf6ksb"
 
 [node name="NewFileConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1191893157]
+oversampling_override = 1.0
 title = "New File Name"
 always_on_top = true
 ok_button_text = "Create File"
@@ -255,16 +257,20 @@ script = ExtResource("3_cveyf")
 metadata/_custom_type_script = "uid://cvbxs2ydf6ksb"
 
 [node name="RunFileConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=164990766]
+oversampling_override = 1.0
 transient = false
 always_on_top = true
 ok_button_text = "RUN"
 
 [node name="TrashFileConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=980480675]
+oversampling_override = 1.0
 transient = false
 always_on_top = true
 ok_button_text = "TRASH"
 
 [node name="ViewPopupMenu" type="PopupMenu" parent="." unique_id=2084791024]
+oversampling_override = 1.0
+size = Vector2i(152, 100)
 item_count = 2
 item_0/text = "🌲 Folder Tree"
 item_0/checkable = 1
@@ -286,6 +292,7 @@ item_1/id = 1
 [connection signal="text_submitted" from="PanelContainer/VBoxContainer/PathHBoxContainer/CurrentPathLineEdit" to="." method="_on_current_path_line_edit_text_submitted"]
 [connection signal="folder_selected" from="PanelContainer/VBoxContainer/HSplitContainer/FolderTree" to="." method="set_current_path"]
 [connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" to="." method="set_current_path"]
+[connection signal="gui_input" from="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" to="." method="_on_gui_input"]
 [connection signal="close_requested" from="FilePopupMenu" to="." method="_on_file_popup_menu_close_requested"]
 [connection signal="id_pressed" from="FilePopupMenu" to="." method="_on_file_popup_menu_id_pressed"]
 [connection signal="popup_hide" from="FilePopupMenu" to="." method="_on_file_popup_menu_popup_hide"]

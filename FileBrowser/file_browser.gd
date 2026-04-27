@@ -123,7 +123,7 @@ func _on_new_file_confirmation_dialog_confirmed():
 
 
 func _on_view_button_pressed():
-	# Create vuew menu below view button
+	# Create view menu below view button
 	var true_location = self.view_menu_button.position + Vector2(get_window().position)
 	var x_pos = true_location.x
 	# Bottom of button
