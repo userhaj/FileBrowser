@@ -159,3 +159,7 @@ func _on_line_edit_text_position_changed(pos: Vector2) -> void:
 	else:
 		laser.shoot_laser(lower_right, position_below_text)
 	is_shoot_laser_left = !is_shoot_laser_left
+
+
+func _on_current_path_line_edit_text_submitted(new_text: String) -> void:
+	set_current_path(new_text)

@@ -283,6 +283,7 @@ item_1/id = 1
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="gui_input" from="PanelContainer/VBoxContainer/PathHBoxContainer/CurrentPathLineEdit" to="." method="_on_gui_input"]
 [connection signal="text_position_changed" from="PanelContainer/VBoxContainer/PathHBoxContainer/CurrentPathLineEdit" to="." method="_on_line_edit_text_position_changed"]
+[connection signal="text_submitted" from="PanelContainer/VBoxContainer/PathHBoxContainer/CurrentPathLineEdit" to="." method="_on_current_path_line_edit_text_submitted"]
 [connection signal="folder_selected" from="PanelContainer/VBoxContainer/HSplitContainer/FolderTree" to="." method="set_current_path"]
 [connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" to="." method="set_current_path"]
 [connection signal="close_requested" from="FilePopupMenu" to="." method="_on_file_popup_menu_close_requested"]
