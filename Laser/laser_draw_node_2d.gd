@@ -22,8 +22,6 @@ func _draw():
 	draw_circle(end_laser, width/2, laser_color)
 	draw_line(start_laser, end_laser, outline_color, width*1.5)
 	draw_line(start_laser, end_laser, laser_color, width)
-	
-
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

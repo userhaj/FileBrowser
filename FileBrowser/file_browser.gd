@@ -155,7 +155,7 @@ func _on_line_edit_text_position_changed(pos: Vector2) -> void:
 	var lower_left = Vector2(lower_right.x - get_window().size.x, lower_right.y)
 	var position_below_text = Vector2(pos.x, pos.y + 20)
 	if is_shoot_laser_left:
-		laser.shoot_laser(lower_left, position_below_text + Vector2(get_window().position))
+		laser.shoot_laser(lower_left, position_below_text)
 	else:
-		laser.shoot_laser(lower_right, position_below_text + Vector2(get_window().position))
+		laser.shoot_laser(lower_right, position_below_text)
 	is_shoot_laser_left = !is_shoot_laser_left

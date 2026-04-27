@@ -16,7 +16,8 @@ func get_position_of_last_character():
 	var font_size = get_theme_font_size("font_size")
 	var entry_size = font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
 	var last_char_pos = Vector2(entry_size.x + get_scroll_offset(), entry_size.y/2)
-	return global_position + last_char_pos
+	
+	return Vector2(get_window().position) + global_position + last_char_pos
 	
 func text_position_changed_callable(new_text: String):
 	emit_signal("text_position_changed", get_position_of_last_character())

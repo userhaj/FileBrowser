@@ -231,24 +231,28 @@ size = Vector2i(205, 100)
 always_on_top = true
 ok_button_text = "Create Folder"
 
-[node name="NewFolderLineEdit" type="LineEdit" parent="NewFolderConfirmationDialog" unique_id=809655013]
+[node name="NewFolderLineEdit" type="LineEdit" parent="NewFolderConfirmationDialog" unique_id=796698646]
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 197.0
 offset_bottom = 51.0
 placeholder_text = "Enter Folder Name"
+script = ExtResource("3_cveyf")
+metadata/_custom_type_script = "uid://cvbxs2ydf6ksb"
 
 [node name="NewFileConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1191893157]
 title = "New File Name"
 always_on_top = true
 ok_button_text = "Create File"
 
-[node name="NewFileLineEdit" type="LineEdit" parent="NewFileConfirmationDialog" unique_id=890522029]
+[node name="NewFileLineEdit" type="LineEdit" parent="NewFileConfirmationDialog" unique_id=733661858]
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 192.0
 offset_bottom = 51.0
 placeholder_text = "Enter File Name"
+script = ExtResource("3_cveyf")
+metadata/_custom_type_script = "uid://cvbxs2ydf6ksb"
 
 [node name="RunFileConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=164990766]
 transient = false
@@ -285,6 +289,8 @@ item_1/id = 1
 [connection signal="id_pressed" from="FilePopupMenu" to="." method="_on_file_popup_menu_id_pressed"]
 [connection signal="popup_hide" from="FilePopupMenu" to="." method="_on_file_popup_menu_popup_hide"]
 [connection signal="confirmed" from="NewFolderConfirmationDialog" to="." method="_on_new_folder_confirmation_dialog_confirmed"]
+[connection signal="text_position_changed" from="NewFolderConfirmationDialog/NewFolderLineEdit" to="." method="_on_line_edit_text_position_changed"]
 [connection signal="confirmed" from="NewFileConfirmationDialog" to="." method="_on_new_file_confirmation_dialog_confirmed"]
+[connection signal="text_position_changed" from="NewFileConfirmationDialog/NewFileLineEdit" to="." method="_on_line_edit_text_position_changed"]
 [connection signal="confirmed" from="TrashFileConfirmationDialog" to="." method="trash_selected"]
 [connection signal="id_pressed" from="ViewPopupMenu" to="." method="_on_view_popup_menu_id_pressed"]
