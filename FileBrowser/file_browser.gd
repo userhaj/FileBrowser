@@ -111,7 +111,6 @@ func _on_gui_input(event):
 			self.file_popup_menu.position =  mouse_position + Vector2(get_window().position)
 			self.file_popup_menu.show()
 	
-	
 
 # Create new file with given file name
 func _on_new_file_confirmation_dialog_confirmed():

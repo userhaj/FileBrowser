@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://ddk0ywblxmssm"]
+
+[ext_resource type="Script" uid="uid://dsh0p0c20idh3" path="res://FallingLetters/falling_letters.gd" id="1_8re64"]
+
+[node name="FallingLetters" type="Window" unique_id=409981690]
+transparent_bg = true
+oversampling_override = 1.0
+size = Vector2i(300, 300)
+borderless = true
+always_on_top = true
+transparent = true
+unfocusable = true
+mouse_passthrough = true
+script = ExtResource("1_8re64")
