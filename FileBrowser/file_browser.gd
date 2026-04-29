@@ -10,16 +10,32 @@ extends Control
 
 var is_shoot_laser_left: bool = true
 
+# Folders to go to when going "Back"
+var folder_past_list = []
+# Folders to go to when going "Forward"
+var folder_future_list = []
+
 func _ready():
 	set_current_path(current_path.simplify_path())
 	self.folder_view.file_clicked.connect(_run_file)
 	
 
 func set_current_path(full_path: String):
+	# Set current path
 	self.current_path = full_path.simplify_path()
 	current_path_line_edit.text = self.current_path
 	if self.current_path != self.folder_view.get_directory():
 		self.folder_view.set_directory(self.current_path)
+	
+	
+	# Update folder history (if not already there)
+	if folder_past_list.size() > 0:
+		if folder_past_list.back() != self.current_path:
+			folder_past_list.append(self.current_path)
+	else:
+		folder_past_list.append(self.current_path)
+	
+	print("Path Set")
 	
 func _run_file(file_path: String):
 	$RunFileConfirmationDialog.dialog_text = "Confirm run file:\n" + file_path
@@ -90,6 +106,35 @@ func trash_selected():
 func _on_h_slider_value_changed(value):
 	self.folder_view.set_folder_size(value)
 
+func history_back():
+	if folder_past_list.size() > 0:
+		var past_folder = folder_past_list.pop_back()
+		while past_folder == current_path and folder_past_list.size() > 0:
+			past_folder = folder_past_list.pop_back()
+		folder_future_list.append(current_path)
+		set_current_path(past_folder)
+
+func history_forward():
+	if folder_future_list.size() > 0:
+		set_current_path(folder_future_list.back())
+		
+	
+
+func _input(event: InputEvent) -> void:
+	# Capture and perform go back history
+	# Left key
+	if event is InputEventKey and event.key_label == Key.KEY_LEFT:
+		if event.is_pressed():
+			# While alt is being held down
+			if Input.is_key_pressed(KEY_ALT):
+				history_back()
+	
+	if event is InputEventKey and event.key_label == Key.KEY_RIGHT:
+		if event.is_pressed():
+			# While alt is being held down
+			if Input.is_key_pressed(KEY_ALT):
+				history_forward()
+				accept_event()
 
 func _on_gui_input(event):
 	# Show menu on right click
@@ -110,7 +155,6 @@ func _on_gui_input(event):
 			#Popups 
 			self.file_popup_menu.position =  mouse_position + Vector2(get_window().position)
 			self.file_popup_menu.show()
-	
 
 # Create new file with given file name
 func _on_new_file_confirmation_dialog_confirmed():
