@@ -1,20 +1,41 @@
 [gd_scene format=3 uid="uid://cmyh2748byy4w"]
 
-[ext_resource type="Script" uid="uid://dlo8alcwokx3" path="res://Laser/laser.gd" id="1_b3m3o"]
 [ext_resource type="Script" uid="uid://d08l7fr5jsjmy" path="res://Laser/laser_draw_node_2d.gd" id="2_8uxad"]
+
+[sub_resource type="GDScript" id="GDScript_fuwpu"]
+script/source = "extends Window
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	
+	size = DisplayServer.screen_get_size()
+	#DisplayServer.window_set_size(screen_size)
+	#DisplayServer.window_set_position(Vector2i(0, 0))
+	pass
+
+func shoot_laser(start: Vector2, end: Vector2):
+	$LaserNode2D.shoot_laser(start, end)
+	show()
+
+func _on_timer_timeout() -> void:
+	queue_free()
+"
 
 [node name="Laser" type="Window" unique_id=110418255]
 transparent_bg = true
 oversampling_override = 1.0
 size = Vector2i(300, 300)
+visible = false
 borderless = true
 always_on_top = true
 transparent = true
 unfocusable = true
 mouse_passthrough = true
-script = ExtResource("1_b3m3o")
+script = SubResource("GDScript_fuwpu")
 
 [node name="LaserNode2D" type="Node2D" parent="." unique_id=527192791]
+visible = false
 modulate = Color(1, 1, 1, 0)
 script = ExtResource("2_8uxad")
 

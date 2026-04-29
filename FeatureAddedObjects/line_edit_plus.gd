@@ -32,11 +32,11 @@ func text_position_changed_callable(_new_text: String):
 func animate_action(_new_text: String):
 	if is_need_drop:
 		is_need_drop = false
-		var letter_fall: Window = preload("res://FallingLetters/falling_letters.tscn").instantiate()
+		var letter_fall = preload("res://FallingLetters/falling_letters.gd").new()
 		var length_deleted_string: int = text_before_delete.length() - text.length()
 		var first_index: int = self.text_before_delete.length()-length_deleted_string
 		var letters: String = self.text_before_delete.substr(first_index, length_deleted_string)
-		add_child(letter_fall)
+		EffectsOverlayWindow.add_child(letter_fall)
 		letter_fall.drop_letters(letters, theme, get_position_of_last_character())
 
 

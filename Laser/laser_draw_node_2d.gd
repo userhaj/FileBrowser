@@ -14,6 +14,7 @@ func shoot_laser(start_vector: Vector2, end_vector: Vector2) -> void:
 	tween.set_ease(tween.EASE_OUT)
 	tween.tween_property(self, "modulate", Color(1,1,1,1), 0.05)
 	tween.tween_property(self, "modulate", Color(1,1,1,0), 0.55).set_delay(0.1)
+	tween.tween_callback(queue_free).set_delay(0.6)
 
 func _draw():
 	draw_circle(start_laser, width/1.5, outline_color)
