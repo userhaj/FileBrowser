@@ -35,8 +35,6 @@ func set_current_path(full_path: String):
 	else:
 		folder_past_list.append(self.current_path)
 	
-	print("Path Set")
-	
 func _run_file(file_path: String):
 	$RunFileConfirmationDialog.dialog_text = "Confirm run file:\n" + file_path
 	$RunFileConfirmationDialog.popup_centered()
@@ -116,7 +114,7 @@ func history_back():
 
 func history_forward():
 	if folder_future_list.size() > 0:
-		set_current_path(folder_future_list.back())
+		set_current_path(folder_future_list.pop_back())
 		
 	
 
