@@ -12,9 +12,9 @@ func _ready() -> void:
 func set_default(color: Color):
 	self.default_value = color
 
-func setup(ui_name: String, default: Color)-> void:
-	self.ui_name = ui_name
-	$Label.text = ui_name
+func setup(ui_visual_name: String, default: Color)-> void:
+	self.ui_name = ui_visual_name
+	$Label.text = ui_visual_name
 	self.default_value = default
 	$ColorPickerButton.color = default
 

@@ -7,7 +7,7 @@ var is_need_drop: bool= false
 
 func _enter_tree() -> void:
 	connect("text_changed", text_position_changed_callable)
-	connect("text_changed", drop_letters)
+	connect("text_changed", animate_action)
 	connect("gui_input", _on_gui_input)
 
 #func gui_input_text_entry_position(event: InputEvent):
@@ -26,11 +26,10 @@ func get_position_of_last_character(is_position_below_character=false):
 	
 	return Vector2(get_window().position) + global_position + last_char_pos
 	
-func text_position_changed_callable(new_text: String):
+func text_position_changed_callable(_new_text: String):
 	emit_signal("text_position_changed", get_position_of_last_character(true))
-	
 
-func drop_letters(dropping_text: String):
+func animate_action(_new_text: String):
 	if is_need_drop:
 		is_need_drop = false
 		var letter_fall: Window = preload("res://FallingLetters/falling_letters.tscn").instantiate()
@@ -39,7 +38,8 @@ func drop_letters(dropping_text: String):
 		var letters: String = self.text_before_delete.substr(first_index, length_deleted_string)
 		add_child(letter_fall)
 		letter_fall.drop_letters(letters, theme, get_position_of_last_character())
-		
+
+
 
 func _on_gui_input(event):
 	if event is InputEventKey and event.key_label == Key.KEY_BACKSPACE:
