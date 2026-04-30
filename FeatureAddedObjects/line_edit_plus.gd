@@ -15,10 +15,10 @@ func _enter_tree() -> void:
 		#emit_signal("text_changed_position", get_position_of_last_character())
 	#pass
 
-func get_position_of_last_character(is_position_below_character=false):
+func get_position_of_last_character(is_position_below_character=false, _text: String=self.text):
 	var font = get_theme_font("font")
 	var font_size = get_theme_font_size("font_size")
-	var entry_size = font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
+	var entry_size = font.get_string_size(_text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
 	
 	var y_offset = entry_size.y/2 if is_position_below_character else 0
 		
@@ -34,15 +34,22 @@ func animate_action(_new_text: String):
 		is_need_drop = false
 		var letter_fall = preload("res://FallingLetters/falling_letters.gd").new()
 		var length_deleted_string: int = text_before_delete.length() - text.length()
-		var first_index: int = self.text_before_delete.length()-length_deleted_string
+		var first_index: int = _first_different_index(self.text_before_delete, _new_text)
 		var letters: String = self.text_before_delete.substr(first_index, length_deleted_string)
 		EffectsOverlayWindow.add_child(letter_fall)
-		letter_fall.drop_letters(letters, theme, get_position_of_last_character())
+		var text_position = get_position_of_last_character(false, self.text.substr(0, first_index))
+		letter_fall.drop_letters(letters, theme, text_position)
 
-
+func _first_different_index(str1: String, str2: String):
+	for i in range(str1.length()):
+		if i >= str2.length():
+			return i
+		if str1[i] != str2[i]:
+			return i
+	return str1.length()
 
 func _on_gui_input(event):
-	if event is InputEventKey and event.key_label == Key.KEY_BACKSPACE:
+	if event is InputEventKey:
 		if event.is_pressed():
 			text_before_delete = text
 			is_need_drop = true
