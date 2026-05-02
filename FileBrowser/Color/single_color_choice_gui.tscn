@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cnqx10qrkvlge" path="res://FileBrowser/Color/single_color_choice_gui.gd" id="1_8insv"]
 
 [node name="HBoxContainer" type="HBoxContainer" unique_id=598966507]
+custom_minimum_size = Vector2(12, 31)
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 31.0
@@ -16,11 +17,17 @@ text = "Reset"
 
 [node name="Label" type="Label" parent="." unique_id=1023446036]
 layout_mode = 2
+size_flags_horizontal = 0
 text = "UI Name"
+
+[node name="Control" type="Control" parent="." unique_id=905250463]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="ColorPickerButton" type="ColorPickerButton" parent="." unique_id=1543294501]
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
+size_flags_horizontal = 8
 
 [connection signal="pressed" from="ButtonReset" to="." method="_on_button_reset_pressed"]
 [connection signal="color_changed" from="ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]

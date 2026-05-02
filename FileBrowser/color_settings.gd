@@ -57,7 +57,7 @@ func load_colors():
 			var single_color_gui = preload("res://FileBrowser/Color/single_color_choice_gui.tscn").instantiate()
 			single_color_gui.setup(ui_name, ui_color)
 			single_color_gui.connect("color_changed", a_color_changed)
-			$VBoxContainer.add_child(single_color_gui)
+			$ScrollContainer/VBoxContainer.add_child(single_color_gui)
 	else:
 		# If opening config failed, save a new config
 		for ui_name in THEME_DEFAULT.keys():
