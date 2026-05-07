@@ -200,6 +200,11 @@ func _on_line_edit_text_position_changed(pos: Vector2) -> void:
 	else:
 		laser.shoot_laser(lower_right, position_below_text)
 	is_shoot_laser_left = !is_shoot_laser_left
+	
+	var star = preload("res://FileBrowser/Effects/bounce_off_star.gd").new()
+	EffectsOverlayWindow.add_child(star)
+	star.global_position = position_below_text
+	star.random_bounce_star(32)
 
 
 func _on_current_path_line_edit_text_submitted(new_text: String) -> void:
