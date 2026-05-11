@@ -37,13 +37,14 @@ func fade_throw(object: Node2D, throw_y=100, throw_x=50, throw_time=2):
 	tween_move_y.set_trans(Tween.TRANS_EXPO)
 	tween_move_y.set_ease(Tween.EASE_OUT)
 	tween_move_y.tween_property(self, "global_position:y", throw_y, throw_time).as_relative()
+
 	
 	 #Hide and delete object
 	var tween_hide = object.create_tween()
 	tween_hide.set_trans(Tween.TRANS_EXPO)
 	tween_hide.set_ease(Tween.EASE_OUT)
-	tween_hide.tween_property(self, "modulate",Color(1,1,1,0), throw_time)
-	tween_hide.tween_callback(queue_free).set_delay(throw_time)
+	tween_hide.tween_property(self, "modulate",Color(1,1,1,0), throw_time*0.7).set_delay(throw_time*0.2)
+	tween_hide.tween_callback(queue_free)
 	
 	# Rotate object
 	var tween_rotate = get_tree().create_tween()
