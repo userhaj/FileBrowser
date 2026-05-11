@@ -133,6 +133,13 @@ func _input(event: InputEvent) -> void:
 			if Input.is_key_pressed(KEY_ALT):
 				history_forward()
 				accept_event()
+	
+	if event is InputEventMouseButton:
+		if event.button_index == 8 and event.is_pressed():
+			history_back()
+		if event.button_index == 9 and event.is_pressed():
+			history_forward()
+		
 
 func _on_gui_input(event):
 	# Show menu on right click
