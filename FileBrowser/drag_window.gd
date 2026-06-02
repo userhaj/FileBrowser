@@ -3,7 +3,7 @@ extends Window
 signal files_dragged(files:PackedStringArray)
 
 func _process(_delta):
-	$".".position = get_mouse_position() + Vector2(get_window().position) - Vector2(get_window().size)/2
+	position = DisplayServer.mouse_get_position() - size/2
 	if Input.is_key_pressed(KEY_SHIFT) and not $Labels/CopyLabel.is_visible_in_tree():
 		$Labels/CopyLabel.show()
 		$Labels/MoveLabel.hide()
