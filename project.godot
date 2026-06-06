@@ -16,7 +16,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="File Browser"
 run/main_scene="res://FileBrowser/file_browser.tscn"
-config/features=PackedStringArray("4.6", "Forward Plus")
+config/features=PackedStringArray("4.7", "Forward Plus")
 run/low_processor_mode=true
 config/icon="res://icon.svg"
 

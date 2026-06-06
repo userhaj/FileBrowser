@@ -10,6 +10,9 @@ func _process(_delta):
 	elif not Input.is_key_pressed(KEY_SHIFT) and not $Labels/MoveLabel.is_visible_in_tree():
 		$Labels/MoveLabel.show()
 		$Labels/CopyLabel.hide()
+	
+	if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		end_drag()
 
 func add_control(control:Control):
 	$MovingObjects.add_child(control)
@@ -32,8 +35,10 @@ func end_drag():
 # When godot adds drag and drop this needs to be changed
 # Emit files dropped on the window they were dropped on
 func dropped_files_emitter(files, window_id):
-	if window_id == get_tree().root.get_window_id():
-		get_tree().root.emit_signal("files_dropped", files)
+	# Only perform fake drag if real drag unavailable
+	if(not get_window().has_method("drag_files")):
+		if window_id == get_tree().root.get_window_id():
+			get_tree().root.emit_signal("files_dropped", files)
 
 func _on_visibility_changed():
 	size = Vector2((64 * get_child_count()) * 2, size.y)

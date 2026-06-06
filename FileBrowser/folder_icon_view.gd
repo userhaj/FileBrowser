@@ -68,16 +68,20 @@ func _input(event):
 		if self._click_start_object and not self._is_dragging:
 			if not $DragWindow.visible:
 				# Add selected items to drag
+				var all_files: PackedStringArray
 				for folder in get_selected_objects():
 					var folder_copy = folder.duplicate()
 					folder_copy.path = folder.path
 					$DragWindow.add_control(folder_copy)
+					all_files.append(folder.path)
 				# If the start object is not selected, include it too
 				if not self._click_start_object.is_selected:
 					var folder_copy = self._click_start_object.duplicate()
 					folder_copy.path = self._click_start_object.path
+					all_files.append(folder_copy.path)
 					$DragWindow.add_control(folder_copy)
 				$DragWindow.show()
+				get_window().drag_files(all_files)
 	if event is InputEventKey and Input.is_key_pressed(KEY_F5):
 		refresh()
 	

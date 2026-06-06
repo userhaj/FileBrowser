@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://dcvim7n582p0g"]
+[gd_scene format=3 uid="uid://dcvim7n582p0g"]
 
-[ext_resource type="Script" path="res://FileBrowser/drag_window.gd" id="1_33f6o"]
+[ext_resource type="Script" uid="uid://dckqaqopprar4" path="res://FileBrowser/drag_window.gd" id="1_33f6o"]
 
-[node name="DragWindow" type="Window"]
+[node name="DragWindow" type="Window" unique_id=697517336]
 transparent_bg = true
 handle_input_locally = false
 visible = false
@@ -13,26 +13,26 @@ unfocusable = true
 mouse_passthrough = true
 script = ExtResource("1_33f6o")
 
-[node name="MovingObjects" type="Control" parent="."]
+[node name="MovingObjects" type="Control" parent="." unique_id=1635353339]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="Labels" type="Control" parent="."]
+[node name="Labels" type="Control" parent="." unique_id=1247606396]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="CopyLabel" type="Label" parent="Labels"]
+[node name="CopyLabel" type="Label" parent="Labels" unique_id=1733780071]
 visible = false
 layout_mode = 0
 offset_right = 78.0
 offset_bottom = 23.0
 text = "Copy Files"
 
-[node name="MoveLabel" type="Label" parent="Labels"]
+[node name="MoveLabel" type="Label" parent="Labels" unique_id=1953721063]
 layout_mode = 0
 offset_right = 81.0
 offset_bottom = 23.0
