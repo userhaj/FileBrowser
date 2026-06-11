@@ -48,8 +48,8 @@ outline_color = Color(0, 0, 0, 1)
 
 [node name="Folder" type="TextureButton" unique_id=1829112246]
 material = SubResource("ShaderMaterial_axquj")
-clip_contents = true
 custom_minimum_size = Vector2(64, 64)
+clip_contents = true
 offset_right = 64.0
 offset_bottom = 64.0
 mouse_filter = 1

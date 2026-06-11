@@ -20,15 +20,12 @@ config/features=PackedStringArray("4.7", "Forward Plus")
 run/low_processor_mode=true
 config/icon="res://icon.svg"
 
-[autoload]
-
-EffectsOverlayWindow="*uid://bm6bi67op1m3a"
-
 [display]
 
 window/size/transparent=true
 window/subwindows/embed_subwindows=false
 window/per_pixel_transparency/allowed=true
+display_server/driver.linuxbsd="wayland"
 
 [gui]
 

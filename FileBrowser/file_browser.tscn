@@ -229,7 +229,6 @@ autowrap_trim_flags = 0
 oversampling_override = 1.0
 title = "New Folder Name"
 size = Vector2i(205, 100)
-always_on_top = true
 ok_button_text = "Create Folder"
 
 [node name="NewFolderLineEdit" type="LineEdit" parent="NewFolderConfirmationDialog" unique_id=796698646]
@@ -244,7 +243,6 @@ metadata/_custom_type_script = "uid://cvbxs2ydf6ksb"
 [node name="NewFileConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1191893157]
 oversampling_override = 1.0
 title = "New File Name"
-always_on_top = true
 ok_button_text = "Create File"
 
 [node name="NewFileLineEdit" type="LineEdit" parent="NewFileConfirmationDialog" unique_id=733661858]
@@ -258,14 +256,10 @@ metadata/_custom_type_script = "uid://cvbxs2ydf6ksb"
 
 [node name="RunFileConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=164990766]
 oversampling_override = 1.0
-transient = false
-always_on_top = true
 ok_button_text = "RUN"
 
 [node name="TrashFileConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=980480675]
 oversampling_override = 1.0
-transient = false
-always_on_top = true
 ok_button_text = "TRASH"
 
 [node name="ViewPopupMenu" type="PopupMenu" parent="." unique_id=2084791024]

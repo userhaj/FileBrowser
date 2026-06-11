@@ -196,23 +196,5 @@ func _on_settings_button_pressed() -> void:
 	add_child(settings_window)
 
 
-func _on_line_edit_text_position_changed(pos: Vector2) -> void:
-	var laser = preload("res://Laser/laser_draw_node_2d.gd").new()
-	EffectsOverlayWindow.add_child(laser)
-	var lower_right = size + Vector2(get_window().position)
-	var lower_left = Vector2(lower_right.x - get_window().size.x, lower_right.y)
-	var position_below_text = Vector2(pos.x, pos.y + 20)
-	if is_shoot_laser_left:
-		laser.shoot_laser(lower_left, position_below_text)
-	else:
-		laser.shoot_laser(lower_right, position_below_text)
-	is_shoot_laser_left = !is_shoot_laser_left
-	
-	var star = preload("res://FileBrowser/Effects/bounce_off_star.gd").new()
-	EffectsOverlayWindow.add_child(star)
-	star.global_position = position_below_text
-	star.random_bounce_star(32)
-
-
 func _on_current_path_line_edit_text_submitted(new_text: String) -> void:
 	set_current_path(new_text)
