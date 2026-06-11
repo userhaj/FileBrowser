@@ -1,6 +1,8 @@
 extends TextureButton
 class_name FolderLargeIconButton
 
+signal double_clicked
+
 var path: String
 var is_selected: bool = false
 var hover_label: Label
@@ -16,9 +18,11 @@ var icons : Dictionary = {"dll": "📚", "txt": "🗒️", "exe": "🚀", "conf"
 "3gp": "🎞️", "amv": "🎞️", "asf": "🎞️", "avi": "🎞️", "gifv": "🎞️", "m4v": "🎞️",\
  "mov": "🎞️", "qt": "🎞️", "mpg": "🎞️", "mpeg": "🎞️", "mts": "🎞️", "m2ts": "🎞️",\
  "ts": "🎞️", "ogv": "🎞️", "rmvb": "🎞️", "wmv": "🎞️", "mp4": "🎞️"}
+var clicked: bool = false
 
 func _ready():
 	_icon_scale()
+
 
 # Optional work queue
 func set_thread_queue(thread_queue: ThreadQueue):
@@ -158,3 +162,14 @@ func set_path(abs_path: String, text_icon: String = ""):
 func get_abs_path():
 	return self.path
 	
+
+func _on_pressed() -> void:
+	if clicked:
+		emit_signal("double_clicked")
+		clicked = false
+	else:
+		clicked = true
+		$DoubleClickTimer.start(0.5)
+		
+func _on_double_click_timer_timeout() -> void:
+	clicked = false

@@ -122,7 +122,8 @@ func refresh():
 			var button = preload("res://FileBrowser/folder.tscn").instantiate()
 			button.set_thread_queue(self._thread_queue)
 			var path = self._full_directory_path  + "/" + directory
-			button.pressed.connect(set_directory.bind(path))
+			button.double_clicked.connect(set_directory.bind(path))
+			button.pressed.connect(button.select)
 			button.set_path(path, "📁")
 			var icon_size = get_folder_size()
 			button.custom_minimum_size = Vector2(icon_size, icon_size)
@@ -133,7 +134,7 @@ func refresh():
 			var button = preload("res://FileBrowser/folder.tscn").instantiate()
 			button.set_thread_queue(self._thread_queue)
 			var file_path = self._full_directory_path  + "/" + file_name
-			button.pressed.connect(emit_signal.bind("file_clicked", file_path))
+			button.double_clicked.connect(emit_signal.bind("file_clicked", file_path))
 			button.set_path(file_path)
 			var icon_size = get_folder_size()
 			button.custom_minimum_size = Vector2(icon_size, icon_size)

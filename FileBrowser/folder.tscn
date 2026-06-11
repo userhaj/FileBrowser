@@ -119,7 +119,12 @@ rect = Rect2(0, 0, 35, 35)
 [node name="TextureDeleteTimer" type="Timer" parent="." unique_id=1935105981]
 wait_time = 3.0
 
+[node name="DoubleClickTimer" type="Timer" parent="." unique_id=1606758192]
+wait_time = 0.5
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]
 [connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_apply_texture_image_icon"]
 [connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_remove_texture_image_icon"]
 [connection signal="timeout" from="TextureDeleteTimer" to="." method="_texture_delete"]
+[connection signal="timeout" from="DoubleClickTimer" to="." method="_on_double_click_timer_timeout"]
