@@ -1,10 +1,11 @@
 [gd_scene format=3 uid="uid://c3celv4vu6p5t"]
 
-[ext_resource type="Theme" uid="uid://milxx7h4x7bd" path="res://FileBrowser/Themes/folder_icon_view_theme.tres" id="1_osl2x"]
+[ext_resource type="Theme" uid="uid://cs0xlc7621wv8" path="res://FileBrowser/Themes/folder_icon_view_theme.tres" id="1_osl2x"]
 [ext_resource type="Script" uid="uid://cf281dx06gmp1" path="res://FileBrowser/folder_icon_view.gd" id="1_qgpga"]
 [ext_resource type="PackedScene" uid="uid://drjwj2xhyocps" path="res://FileBrowser/select_box.tscn" id="2_q4s0j"]
 [ext_resource type="PackedScene" uid="uid://dcvim7n582p0g" path="res://FileBrowser/drag_window.tscn" id="3_j67m5"]
 [ext_resource type="Script" uid="uid://bwigx801m6owr" path="res://FileBrowser/drop_files_confirmation_dialog.gd" id="4_ktkjh"]
+[ext_resource type="Script" uid="uid://cvbxs2ydf6ksb" path="res://FeatureAddedObjects/line_edit_plus.gd" id="6_ispsu"]
 
 [node name="FolderIconView" type="Control" unique_id=475031514]
 layout_mode = 3
@@ -44,6 +45,31 @@ popup_window = true
 ok_button_text = "Copy Files"
 script = ExtResource("4_ktkjh")
 
+[node name="CtrlFPanelContainer" type="PanelContainer" parent="." unique_id=258569168]
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -298.0
+offset_bottom = 40.0
+grow_horizontal = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CtrlFPanelContainer" unique_id=1539999094]
+layout_mode = 2
+
+[node name="CtrlFLineEditPlus" type="LineEdit" parent="CtrlFPanelContainer/HBoxContainer" unique_id=655140013]
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("6_ispsu")
+metadata/_custom_type_script = "uid://cvbxs2ydf6ksb"
+
+[node name="CtrlFExitButton" type="Button" parent="CtrlFPanelContainer/HBoxContainer" unique_id=2096943317]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "x"
+
 [connection signal="selected_area" from="SelectBox" to="." method="select_children_by_area"]
 [connection signal="confirmed" from="DropFilesConfirmationDialog" to="DropFilesConfirmationDialog" method="_on_confirmed"]
 [connection signal="custom_action" from="DropFilesConfirmationDialog" to="DropFilesConfirmationDialog" method="_on_custom_action"]
+[connection signal="text_changed" from="CtrlFPanelContainer/HBoxContainer/CtrlFLineEditPlus" to="." method="_on_ctrl_f_line_edit_plus_text_changed"]

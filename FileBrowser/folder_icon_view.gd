@@ -11,6 +11,10 @@ var _folder_size: float = 64.0
 var _full_directory_path: String
 @onready var _folder_container: HFlowContainer = $SelectBox/ScrollContainer/HFlowContainer
 @onready var _thread_queue := ThreadQueue.new()
+@onready var ctrl_f_line_edit_plus: LineEditPlus = $CtrlFPanelContainer/HBoxContainer/CtrlFLineEditPlus
+@onready var ctrl_f_exit_button: Button = $CtrlFPanelContainer/HBoxContainer/CtrlFExitButton
+@onready var ctrl_f_panel_container: PanelContainer = $CtrlFPanelContainer
+
 
 # Dragging tracking variables
 var _is_dragging: bool = false
@@ -26,6 +30,8 @@ func _ready():
 	if err == OK:
 		var folder_size = config.get_value("folder_icon_view", "_folder_size")
 		set_folder_size(folder_size)
+
+	ctrl_f_exit_button.pressed.connect(ctrl_f_panel_container.hide)
 
 func files_dropped(files: PackedStringArray):
 	var mouse_pos: Vector2 = get_local_mouse_position()
@@ -90,9 +96,20 @@ func _input(event):
 	# Handle Ctrl+MouseScroll as Icon resize
 	if event is InputEventMouseButton and event.ctrl_pressed and has_mouse_focus:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			set_folder_size(_folder_size*1.1)
+			set_folder_size(_folder_size * 1.1)
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			set_folder_size(_folder_size*0.9)
+			set_folder_size(_folder_size * 0.9)
+			
+	# Ctrl F Search input handling
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F and event.ctrl_pressed:
+		ctrl_f_panel_container.show()
+		# Prevent 'f' from typing into search
+		accept_event()
+		# Target search for typing
+		ctrl_f_line_edit_plus.grab_focus()
+	# User hit escape
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		ctrl_f_panel_container.hide()
 			
 
 # Current working directory
@@ -118,10 +135,10 @@ func refresh():
 	# Remove current directory content
 	clear()
 	# Add folders to view
-	for directory in DirAccess.get_directories_at(self._full_directory_path ):
+	for directory in DirAccess.get_directories_at(self._full_directory_path):
 			var button = preload("res://FileBrowser/folder.tscn").instantiate()
 			button.set_thread_queue(self._thread_queue)
-			var path = self._full_directory_path  + "/" + directory
+			var path = self._full_directory_path + "/" + directory
 			button.double_clicked.connect(set_directory.bind(path))
 			button.pressed.connect(button.select)
 			button.set_path(path, "📁")
@@ -130,11 +147,12 @@ func refresh():
 			add_folder_button(button)
 
 	# Add files to view
-	for file_name in DirAccess.get_files_at(self._full_directory_path ):
+	for file_name in DirAccess.get_files_at(self._full_directory_path):
 			var button = preload("res://FileBrowser/folder.tscn").instantiate()
 			button.set_thread_queue(self._thread_queue)
-			var file_path = self._full_directory_path  + "/" + file_name
+			var file_path = self._full_directory_path + "/" + file_name
 			button.double_clicked.connect(emit_signal.bind("file_clicked", file_path))
+			button.pressed.connect(button.select)
 			button.set_path(file_path)
 			var icon_size = get_folder_size()
 			button.custom_minimum_size = Vector2(icon_size, icon_size)
@@ -151,7 +169,7 @@ func select_children_by_area(area: Rect2):
 		if child.has_method("select"):
 			if child.get_global_rect().intersects(area, true):
 				child.select()
-			elif (not Input.is_key_pressed(KEY_SHIFT) 
+			elif (not Input.is_key_pressed(KEY_SHIFT)
 					and not Input.is_key_pressed(KEY_CTRL)):
 				child.deselect()
 
@@ -164,7 +182,7 @@ func deselect_all_children():
 
 # Call select on child under position
 func select_child_by_point(target_position: Vector2):
-	var area = Rect2(target_position, Vector2(1,1))  # Single pixel area/point
+	var area = Rect2(target_position, Vector2(1, 1)) # Single pixel area/point
 	for child: FolderLargeIconButton in get_folder_buttons():
 		# Guarantee object is selectable
 		if child.has_method("select"):
@@ -173,7 +191,7 @@ func select_child_by_point(target_position: Vector2):
 
 # True if item under point is_selected, or false if no child
 func is_selected_point(target_position: Vector2) -> bool:
-	var area = Rect2(target_position, Vector2(1,1))  # Single pixel area/point
+	var area = Rect2(target_position, Vector2(1, 1)) # Single pixel area/point
 	for child: FolderLargeIconButton in get_folder_buttons():
 		# Guarantee object is selectable
 		if child.has_method("select"):
@@ -210,7 +228,7 @@ func get_selected_objects() -> Array[Control]:
 # Gets path under position
 func get_path_at_point(target_position: Vector2) -> String:
 	var path := ""
-	var area = Rect2(target_position, Vector2(1,1))  # Single pixel area/point
+	var area = Rect2(target_position, Vector2(1, 1)) # Single pixel area/point
 	for child in get_folder_buttons():
 		if child.has_method("select"):
 			if child.get_global_rect().intersects(area, true):
@@ -219,7 +237,7 @@ func get_path_at_point(target_position: Vector2) -> String:
 
 # Gets folder/file object under position
 func get_object_at_point(target_position: Vector2) -> Node:
-	var area = Rect2(target_position, Vector2(1,1))  # Single pixel area/point
+	var area = Rect2(target_position, Vector2(1, 1)) # Single pixel area/point
 	for child in get_folder_buttons():
 		if child.has_method("select"):
 			if child.get_global_rect().intersects(area, true):
@@ -234,7 +252,7 @@ func set_folder_size(custom_size: float):
 		
 	self._folder_size = custom_size
 	# Set folder/file square size
-	for child:Control in get_folder_buttons():
+	for child: Control in get_folder_buttons():
 		child.custom_minimum_size = Vector2(custom_size, custom_size)
 	save_settings()
 	
@@ -253,3 +271,12 @@ func clear():
 	# Remove all folders/files
 	for child in get_folder_buttons():
 		child.queue_free()
+
+
+func _on_ctrl_f_line_edit_plus_text_changed(new_text: String) -> void:
+	for child: FolderLargeIconButton in get_folder_buttons():
+		if (child.has_method("get_abs_path")):
+			if new_text.to_lower() in child.get_abs_path().get_file().to_lower():
+				child.select()
+			else:
+				child.deselect()
