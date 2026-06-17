@@ -29,6 +29,7 @@ func _ready():
 	var err = config.load(SAVE_FILEPATH)
 	if err == OK:
 		var folder_size = config.get_value("folder_icon_view", "_folder_size")
+		$"../../MenuHBoxContainer/FolderSizeHSlider".value = folder_size
 		set_folder_size(folder_size)
 
 	ctrl_f_exit_button.pressed.connect(ctrl_f_panel_container.hide)

@@ -65,7 +65,7 @@ layout_mode = 2
 text = "View/Hide"
 flat = true
 
-[node name="HSlider" type="HSlider" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=2106691180]
+[node name="FolderSizeHSlider" type="HSlider" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=2106691180]
 custom_minimum_size = Vector2(200, 30)
 layout_mode = 2
 min_value = 64.0
@@ -279,7 +279,7 @@ item_1/id = 1
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/UpDirButton" to="." method="_on_up_dir_button_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton" to="." method="_file_menu"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/ViewButton" to="." method="_on_view_button_pressed"]
-[connection signal="value_changed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/HSlider" to="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" method="set_folder_size"]
+[connection signal="value_changed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/FolderSizeHSlider" to="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" method="set_folder_size"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="gui_input" from="PanelContainer/VBoxContainer/PathHBoxContainer/CurrentPathLineEdit" to="." method="_on_gui_input"]
 [connection signal="text_position_changed" from="PanelContainer/VBoxContainer/PathHBoxContainer/CurrentPathLineEdit" to="." method="_on_line_edit_text_position_changed"]
