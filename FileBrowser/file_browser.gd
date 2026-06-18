@@ -38,6 +38,7 @@ func set_current_path(full_path: String):
 func _run_file(file_path: String):
 	$RunFileConfirmationDialog.dialog_text = "Confirm run file:\n" + file_path
 	$RunFileConfirmationDialog.popup_centered()
+	$RunFileConfirmationDialog.position = DisplayServer.mouse_get_position()
 	if $RunFileConfirmationDialog.confirmed.is_connected(OS.shell_open):
 		$RunFileConfirmationDialog.confirmed.disconnect(OS.shell_open)
 	$RunFileConfirmationDialog.confirmed.connect(OS.shell_open.bind(file_path))
@@ -66,8 +67,12 @@ func _on_file_popup_menu_id_pressed(id):
 	match id:
 		0:  # New Folder
 			$NewFolderConfirmationDialog.popup_centered()
+			$NewFolderConfirmationDialog.position = DisplayServer.mouse_get_position()
+			$NewFolderConfirmationDialog/NewFolderLineEdit.grab_focus()
 		1:  # New File
 			$NewFileConfirmationDialog.popup_centered()
+			$NewFileConfirmationDialog.position = DisplayServer.mouse_get_position()
+			$NewFileConfirmationDialog/NewFileLineEdit.grab_focus()
 		2:  # Trash Item(s)
 			ask_trash_selected_items()
 
@@ -81,9 +86,11 @@ func ask_trash_selected_items():
 		var path_string = "\n".join(paths)
 		$TrashFileConfirmationDialog.dialog_text = "Trash File:\n" + path_string
 		$TrashFileConfirmationDialog.popup_centered()
+		$TrashFileConfirmationDialog.position = DisplayServer.mouse_get_position()
 	else:
 		$TrashFileConfirmationDialog.dialog_text = "Trash " + str(len(paths)) + " files?"
 		$TrashFileConfirmationDialog.popup_centered()
+		$TrashFileConfirmationDialog.position = DisplayServer.mouse_get_position()
 
 # Create new folder for given text
 func _on_new_folder_confirmation_dialog_confirmed():
