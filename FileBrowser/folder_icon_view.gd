@@ -46,9 +46,9 @@ func files_dropped(files: PackedStringArray):
 		file_transfer.connect("tree_exiting", refresh)
 		add_child(file_transfer)
 		if Input.is_key_pressed(KEY_SHIFT):
-			file_transfer.copy(files, target_folder)
-		else:
 			file_transfer.move(files, target_folder)
+		else:
+			file_transfer.copy(files, target_folder)
 	
 func _input(event):
 	# Handle drag icon event

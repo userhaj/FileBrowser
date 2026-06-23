@@ -4,12 +4,12 @@ signal files_dragged(files:PackedStringArray)
 
 func _process(_delta):
 	position = DisplayServer.mouse_get_position() - size/2
-	if Input.is_key_pressed(KEY_SHIFT) and not $Labels/CopyLabel.is_visible_in_tree():
-		$Labels/CopyLabel.show()
-		$Labels/MoveLabel.hide()
-	elif not Input.is_key_pressed(KEY_SHIFT) and not $Labels/MoveLabel.is_visible_in_tree():
-		$Labels/MoveLabel.show()
+	if Input.is_key_pressed(KEY_SHIFT) and not $Labels/MoveLabel.is_visible_in_tree():
 		$Labels/CopyLabel.hide()
+		$Labels/MoveLabel.show()
+	elif not Input.is_key_pressed(KEY_SHIFT) and not $Labels/CopyLabel.is_visible_in_tree():
+		$Labels/MoveLabel.hide()
+		$Labels/CopyLabel.show()
 	
 	if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		end_drag()
