@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://dphc3o5ah7f3l"]
+
+[sub_resource type="GDScript" id="GDScript_htdkq"]
+script/source = "extends Control
+
+const SAVE_FILEPATH = \"user://GDFileBrowserAcc.cfg\"
+
+const ACCESS_DEFAULT: Dictionary = {
+	\"Accessibility Lasers\": {
+		\"Enabled\": true
+		},
+	\"Accessibility Confetti\": {
+		\"Enabled\": true
+	}
+}
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	load_cfg()
+
+
+func load_cfg():
+	var config: ConfigFile = ConfigFile.new()
+	var err = config.load(SAVE_FILEPATH)
+	for key: String in ACCESS_DEFAULT.keys():
+		var row = HBoxContainer.new()
+		var label = Label.new()
+		label.text = key
+		
+		$ScrollContainer/VBoxContainer.add_child(row)
+		row.add_child(label)
+		
+		if ACCESS_DEFAULT[key].has(\"Enabled\"):
+			var enabled = CheckButton.new()
+			enabled.button_pressed = ACCESS_DEFAULT[key][\"Enabled\"]
+			row.add_child(enabled)
+			
+"
+
+[node name="AccessibilitySettings" type="Control" unique_id=763189195]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_htdkq")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=729457620]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer" unique_id=646732223]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3

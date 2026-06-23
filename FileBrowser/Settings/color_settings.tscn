@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://din11ftas4xqy"]
 
-[ext_resource type="Script" uid="uid://bvx70n2coxufv" path="res://FileBrowser/color_settings.gd" id="1_wf70a"]
+[ext_resource type="Script" uid="uid://bvx70n2coxufv" path="res://FileBrowser/Settings/color_settings.gd" id="1_wf70a"]
 
 [node name="ColorSettings" type="Control" unique_id=1064623610]
 custom_minimum_size = Vector2(0, 64)

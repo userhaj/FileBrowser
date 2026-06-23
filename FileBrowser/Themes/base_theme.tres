@@ -1,7 +1,7 @@
-[gd_resource type="Theme" format=3 uid="uid://cg6qtkr25q5hq"]
+[gd_resource type="Theme" format=3 uid="uid://b17wob7amnhga"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bwe63"]
-bg_color = Color(0.212, 0.212, 0.212, 1)
+bg_color = Color(0.703125, 0.69763184, 0.69763184, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y10mo"]
 bg_color = Color(0.339, 0.339, 0.339, 1)

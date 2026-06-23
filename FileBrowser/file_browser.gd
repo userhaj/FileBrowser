@@ -56,7 +56,8 @@ func _file_menu():
 	var y_pos = true_location.y + self.file_button.size.y
 	#var pos = Vector2(+ , 0)
 	self.file_popup_menu.position = Vector2(x_pos, y_pos)
-	self.file_popup_menu.show()
+	self.file_popup_menu.popup()
+	accept_event()
 	
 func new_folder(folder_name: String):
 	DirAccess.make_dir_absolute(self.current_path + "/" + folder_name)
@@ -150,7 +151,7 @@ func _input(event: InputEvent) -> void:
 
 func _on_gui_input(event):
 	# Show menu on right click
-	if event is InputEventMouseButton:
+	if event is InputEventMouseButton and not event.is_echo():
 		# Is right clicked
 		if event.pressed and event.button_index == 2:
 			var mouse_position = get_global_mouse_position()
@@ -164,9 +165,10 @@ func _on_gui_input(event):
 				self.folder_view.deselect_all_children()
 				self.folder_view.select_child_by_point(mouse_position)
 				
-			#Popups 
+			#Popups fix issue https://github.com/godotengine/godot/issues/87875
 			self.file_popup_menu.position =  mouse_position + Vector2(get_window().position)
-			self.file_popup_menu.show()
+			self.file_popup_menu.popup()
+			accept_event()
 
 # Create new file with given file name
 func _on_new_file_confirmation_dialog_confirmed():
@@ -183,9 +185,9 @@ func _on_view_button_pressed():
 	var x_pos = true_location.x
 	# Bottom of button
 	var y_pos = true_location.y + self.view_menu_button.size.y
-	#var pos = Vector2(+ , 0)
+	$ViewPopupMenu.popup()
 	$ViewPopupMenu.position = Vector2(x_pos, y_pos)
-	$ViewPopupMenu.show()
+	
 
 
 func _on_view_popup_menu_id_pressed(id):
@@ -197,10 +199,15 @@ func _on_view_popup_menu_id_pressed(id):
 			self.current_path_line_edit.visible = not self.current_path_line_edit.visible
 			$ViewPopupMenu.set_item_checked(1, self.current_path_line_edit.visible)
 
-
+# Settings clicked
 func _on_settings_button_pressed() -> void:
-	var settings_window: Window = preload("res://FileBrowser/Settings/settings_window.tscn").instantiate()
-	add_child(settings_window)
+	# Popup above everything else (prevent hidden pop under)
+	$SettingsWindow.popup()
+	# Center on window, Must be done after shown on screen
+	var pos_delta_x = (get_window().size.x - $SettingsWindow.size.x) / 2.0
+	var pos_delta_y = (get_window().size.y - $SettingsWindow.size.y) / 2.0
+	$SettingsWindow.position = get_window().position + Vector2i(pos_delta_x, pos_delta_y)
+	
 
 
 func _on_current_path_line_edit_text_submitted(new_text: String) -> void:

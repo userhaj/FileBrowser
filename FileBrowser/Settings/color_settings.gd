@@ -53,6 +53,7 @@ func load_colors():
 			# If color is not found, use default
 			if ui_color == "":
 				ui_color = THEME_DEFAULT[ui_name]["default"]
+				config.set_value("Color", ui_name, THEME_DEFAULT[ui_name]["default"])
 			
 			var single_color_gui = preload("res://FileBrowser/Color/single_color_choice_gui.tscn").instantiate()
 			single_color_gui.setup(ui_name, ui_color)
