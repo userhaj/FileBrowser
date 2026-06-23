@@ -85,6 +85,11 @@ layout_mode = 2
 text = "Settings"
 flat = true
 
+[node name="RefreshButton" type="Button" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=1166627171]
+layout_mode = 2
+text = "↻"
+flat = true
+
 [node name="PathHBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer" unique_id=1568185623]
 layout_mode = 2
 
@@ -348,6 +353,7 @@ visible = false
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/ViewButton" to="." method="_on_view_button_pressed"]
 [connection signal="value_changed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/FolderSizeHSlider" to="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" method="set_folder_size"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/RefreshButton" to="." method="_on_refresh_button_pressed"]
 [connection signal="gui_input" from="PanelContainer/VBoxContainer/PathHBoxContainer/CurrentPathLineEdit" to="." method="_on_gui_input"]
 [connection signal="text_position_changed" from="PanelContainer/VBoxContainer/PathHBoxContainer/CurrentPathLineEdit" to="." method="_on_line_edit_text_position_changed"]
 [connection signal="text_submitted" from="PanelContainer/VBoxContainer/PathHBoxContainer/CurrentPathLineEdit" to="." method="_on_current_path_line_edit_text_submitted"]

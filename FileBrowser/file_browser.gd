@@ -212,3 +212,8 @@ func _on_settings_button_pressed() -> void:
 
 func _on_current_path_line_edit_text_submitted(new_text: String) -> void:
 	set_current_path(new_text)
+
+
+func _on_refresh_button_pressed() -> void:
+	folder_view.refresh()
+	folder_tree.refresh()
