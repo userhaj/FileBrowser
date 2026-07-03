@@ -87,7 +87,12 @@ func _input(event):
 					folder_copy.path = self._click_start_object.path
 					all_files.append(folder_copy.path)
 					$DragWindow.add_control(folder_copy)
-				$DragWindow.show()
+					
+				# Mac and Windows require OS integration for drag windows
+				if not "mac" in OS.get_name() and not "Win" in OS.get_name():
+					$DragWindow.show()
+				
+				# https://github.com/godotengine/godot-proposals/issues/50
 				get_window().drag_files(all_files)
 	if event is InputEventKey and Input.is_key_pressed(KEY_F5):
 		refresh()
