@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://dhhshl741q82k" path="res://FileBrowser/folder.gd" id="1_p4ow7"]
 [ext_resource type="Shader" uid="uid://c0e4hq1t356ky" path="res://FileBrowser/border.gdshader" id="3_05hdt"]
 [ext_resource type="FontFile" uid="uid://0h6c0qjdknr1" path="res://Fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="3_gj022"]
+[ext_resource type="Script" uid="uid://cvbxs2ydf6ksb" path="res://FeatureAddedObjects/line_edit_plus.gd" id="5_oifgm"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_axquj"]
 shader = ExtResource("1_5b3et")
@@ -122,9 +123,27 @@ wait_time = 3.0
 [node name="DoubleClickTimer" type="Timer" parent="." unique_id=1606758192]
 wait_time = 0.5
 
+[node name="NameLineEditPlus" type="LineEdit" parent="." unique_id=628184420]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -2.25
+offset_top = -30.333336
+offset_right = 2.25
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("5_oifgm")
+metadata/_custom_type_script = "uid://cvbxs2ydf6ksb"
+
 [connection signal="pressed" from="." to="." method="_on_pressed"]
 [connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_apply_texture_image_icon"]
 [connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_remove_texture_image_icon"]
 [connection signal="timeout" from="TextureDeleteTimer" to="." method="_texture_delete"]
 [connection signal="timeout" from="DoubleClickTimer" to="." method="_on_double_click_timer_timeout"]
+[connection signal="focus_exited" from="NameLineEditPlus" to="." method="_on_name_line_edit_plus_focus_exited"]
+[connection signal="text_change_rejected" from="NameLineEditPlus" to="." method="_on_name_line_edit_plus_text_change_rejected"]
+[connection signal="text_submitted" from="NameLineEditPlus" to="." method="_on_name_line_edit_plus_text_submitted"]

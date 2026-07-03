@@ -142,6 +142,13 @@ func _input(event: InputEvent) -> void:
 				history_forward()
 				accept_event()
 	
+	# On F2 rename file if only 1 is selected
+	if event is InputEventKey and event.key_label == Key.KEY_F2:
+			if event.is_pressed() and not event.is_echo():
+				var selected_folders = self.folder_view.get_selected_objects()
+				if selected_folders.size() == 1:
+					selected_folders[0].start_rename()
+	
 	if event is InputEventMouseButton:
 		if event.button_index == 8 and event.is_pressed():
 			history_back()

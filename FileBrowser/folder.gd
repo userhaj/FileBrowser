@@ -173,3 +173,27 @@ func _on_pressed() -> void:
 		
 func _on_double_click_timer_timeout() -> void:
 	clicked = false
+
+func start_rename():
+	$NameLineEditPlus.text =  path.get_file()
+	$NameLineEditPlus.show()
+	$NameLineEditPlus.grab_focus()
+
+# Rename rejected
+func _on_name_line_edit_plus_text_change_rejected(rejected_substring: String) -> void:
+	$NameLineEditPlus.text = ""
+	$NameLineEditPlus.hide()
+
+# Rename rejected
+func _on_name_line_edit_plus_focus_exited() -> void:
+	_on_name_line_edit_plus_text_change_rejected("")
+
+# Rename Submitted
+func _on_name_line_edit_plus_text_submitted(new_filename: String) -> void:
+	var folder = path.get_base_dir()
+	var new_path = folder.path_join(new_filename)
+	var rename_attempt = DirAccess.rename_absolute(path, new_path)
+	$NameLineEditPlus.hide()
+	if rename_attempt == OK:
+		set_path(new_path)
+		
