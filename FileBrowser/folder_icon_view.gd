@@ -73,6 +73,7 @@ func _input(event):
 	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and self._click_start_position.distance_to(get_global_mouse_position()) > 24:
 		# If clicked on an object and not yet
 		if self._click_start_object and not self._is_dragging:
+			_is_dragging = true
 			if not $DragWindow.visible:
 				# Add selected items to drag
 				var all_files: PackedStringArray
