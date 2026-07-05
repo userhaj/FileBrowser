@@ -208,12 +208,14 @@ func _on_view_popup_menu_id_pressed(id):
 
 # Settings clicked
 func _on_settings_button_pressed() -> void:
+	popup_true_centered($SettingsWindow, get_window())
+
+# Place first window centered on second window
+func popup_true_centered(popup: Window, window: Window):
 	# Popup above everything else (prevent hidden pop under)
-	$SettingsWindow.popup()
+	popup.popup()
 	# Center on window, Must be done after shown on screen
-	var pos_delta_x = (get_window().size.x - $SettingsWindow.size.x) / 2.0
-	var pos_delta_y = (get_window().size.y - $SettingsWindow.size.y) / 2.0
-	$SettingsWindow.position = get_window().position + Vector2i(pos_delta_x, pos_delta_y)
+	popup.position = window.position + Vector2i(window.size - popup.size) / 2
 	
 
 
