@@ -31,9 +31,9 @@ func get_user_confirmation():
 	$ConfirmationDialog.dialog_text = dialog
 	$ConfirmationDialog.get_label().tooltip_text = all_file_names
 	$ConfirmationDialog.get_ok_button().tooltip_text = all_file_names
-	$ConfirmationDialog.get_window()
-	$ConfirmationDialog.popup_centered()
-
+	$ConfirmationDialog.popup() # Force on top
+	# Force at mouse 
+	$ConfirmationDialog.position = DisplayServer.mouse_get_position()
 
 func copy(files, target_folder):
 	show() # Fixes secondary pop window transparent draw bug
