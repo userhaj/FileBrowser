@@ -8,7 +8,6 @@
 [ext_resource type="PackedScene" uid="uid://bmro1s4aghein" path="res://FileBrowser/bookmark_item_list.tscn" id="4_nvgqa"]
 [ext_resource type="FontFile" uid="uid://0h6c0qjdknr1" path="res://Fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="4_r42i3"]
 [ext_resource type="PackedScene" uid="uid://ds45fvtgt8nk7" path="res://FileBrowser/Settings/settings_window.tscn" id="7_cus0t"]
-[ext_resource type="Script" uid="uid://bajp0ahg4g46q" path="res://Audio/audio_stream_player_window_movement.gd" id="9_2acyp"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_njuki"]
 viewport_path = NodePath("FilePopupMenu/SubViewportFolder")
@@ -431,13 +430,6 @@ autowrap_trim_flags = 0
 
 [node name="SettingsWindow" parent="." unique_id=1594888349 instance=ExtResource("7_cus0t")]
 visible = false
-
-[node name="AudioStreamPlayer2DWindowMovement" type="AudioStreamPlayer2D" parent="." unique_id=1361627968]
-volume_db = -10.0
-panning_strength = 3.0
-playback_type = 1
-script = ExtResource("9_2acyp")
-metadata/_custom_type_script = "uid://bajp0ahg4g46q"
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/UpDirButton" to="." method="_on_up_dir_button_pressed"]
