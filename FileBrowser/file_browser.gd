@@ -6,7 +6,9 @@ extends Control
 @onready var file_popup_menu: PopupMenu = $FilePopupMenu
 @onready var file_button: Button = $PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton
 @onready var view_menu_button = $PanelContainer/VBoxContainer/MenuHBoxContainer/ViewButton
-@onready var folder_tree: Tree = $PanelContainer/VBoxContainer/HSplitContainer/FolderTree
+@onready var folder_tree: Tree = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/FolderTree
+@onready var bookmarks: BookmarkItemList = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer/BookmarkItemList
+@onready var bookmark_container = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer
 
 var is_shoot_laser_left: bool = true
 
@@ -76,6 +78,19 @@ func _on_file_popup_menu_id_pressed(id):
 			$NewFileConfirmationDialog/NewFileLineEdit.grab_focus()
 		2:  # Trash Item(s)
 			ask_trash_selected_items()
+		4:
+			ask_bookmark_selected_items()
+
+# Actions for bookmarking
+func ask_bookmark_selected_items():
+	var paths = self.folder_view.get_selected_paths()
+	if len(paths) == 0:
+		# TODO Make this a popup warning
+		print("No items selected")
+	else:
+		for path in paths:
+			if DirAccess.dir_exists_absolute(path):
+				bookmarks.add_folder(path)
 
 # Creates text on confirmation dialog about trashing files
 func ask_trash_selected_items():
@@ -205,6 +220,9 @@ func _on_view_popup_menu_id_pressed(id):
 		1:
 			self.current_path_line_edit.visible = not self.current_path_line_edit.visible
 			$ViewPopupMenu.set_item_checked(1, self.current_path_line_edit.visible)
+		2:
+			self.bookmark_container.visible = not self.bookmark_container.visible
+			$ViewPopupMenu.set_item_checked(2, self.bookmark_container.visible)
 
 # Settings clicked
 func _on_settings_button_pressed() -> void:

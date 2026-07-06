@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bmro1s4aghein"]
+
+[ext_resource type="Script" uid="uid://dtmxivrkct34w" path="res://FileBrowser/bookmark_item_list.gd" id="1_ijnof"]
+
+[node name="BookmarkItemList" type="ItemList" unique_id=609976274]
+allow_rmb_select = true
+script = ExtResource("1_ijnof")
+
+[node name="PopupMenu" type="PopupMenu" parent="." unique_id=357063614]
+oversampling_override = 1.0
+size = Vector2i(142, 100)
+item_count = 1
+item_0/text = "Unbookmark"
+item_0/id = 0
+
+[connection signal="item_clicked" from="." to="." method="_on_item_clicked"]
+[connection signal="item_selected" from="." to="." method="_on_item_selected"]
+[connection signal="index_pressed" from="PopupMenu" to="." method="_on_popup_menu_index_pressed"]
