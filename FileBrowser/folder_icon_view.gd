@@ -4,6 +4,7 @@ class_name FolderIconView
 
 # TODO Handle Delete File/Folder
 
+@warning_ignore("unused_signal")
 signal file_clicked(file_path: String)
 signal folder_changed(folder_path: String)
 

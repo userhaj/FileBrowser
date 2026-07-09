@@ -180,7 +180,7 @@ func start_rename():
 	$NameLineEditPlus.grab_focus()
 
 # Rename rejected
-func _on_name_line_edit_plus_text_change_rejected(rejected_substring: String) -> void:
+func _on_name_line_edit_plus_text_change_rejected(_rejected_substring: String) -> void:
 	$NameLineEditPlus.text = ""
 	$NameLineEditPlus.hide()
 

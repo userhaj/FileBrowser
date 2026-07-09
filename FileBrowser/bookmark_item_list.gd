@@ -19,7 +19,7 @@ func _ready() -> void:
 func _get_drag_data(at_position: Vector2) -> Variant:
 	return get_item_at_position(at_position)
 
-func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
+func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	return typeof(data) == TYPE_INT
 
 func _drop_data(at_position: Vector2, data: Variant) -> void:
@@ -60,7 +60,7 @@ func add_folder(path:String):
 	
 	_save_path_to_settings(path, item_count-1)
 
-func _on_item_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
+func _on_item_clicked(_index: int, _at_position: Vector2, mouse_button_index: int) -> void:
 	# On right click offer bookmark removal
 	if mouse_button_index == 2:
 		$PopupMenu.popup()

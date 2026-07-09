@@ -25,6 +25,10 @@ config/icon="uid://d0m58fc76sbcv"
 
 ClickEffects="*uid://5xlyp81r41rn"
 
+[debug]
+
+gdscript/warnings/integer_division=0
+
 [display]
 
 window/size/transparent=true

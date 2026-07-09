@@ -23,19 +23,20 @@ func _ready() -> void:
 func load_cfg():
 	var config: ConfigFile = ConfigFile.new()
 	var err = config.load(SAVE_FILEPATH)
-	for key: String in ACCESS_DEFAULT.keys():
-		var row = HBoxContainer.new()
-		var label = Label.new()
-		label.text = key
-		
-		$ScrollContainer/VBoxContainer.add_child(row)
-		row.add_child(label)
-		
-		if ACCESS_DEFAULT[key].has(\"Enabled\"):
-			var enabled = CheckButton.new()
-			enabled.button_pressed = ACCESS_DEFAULT[key][\"Enabled\"]
-			row.add_child(enabled)
+	if err == OK:
+		for key: String in ACCESS_DEFAULT.keys():
+			var row = HBoxContainer.new()
+			var label = Label.new()
+			label.text = key
 			
+			$ScrollContainer/VBoxContainer.add_child(row)
+			row.add_child(label)
+			
+			if ACCESS_DEFAULT[key].has(\"Enabled\"):
+				var enabled = CheckButton.new()
+				enabled.button_pressed = ACCESS_DEFAULT[key][\"Enabled\"]
+				row.add_child(enabled)
+				
 "
 
 [node name="AccessibilitySettings" type="Control" unique_id=763189195]

@@ -14,7 +14,7 @@ func _ready() -> void:
 	pass
 	
 func shoot_star(degrees, distance, time, star_width=24, star_points=5, star_color: Color = Color.YELLOW):
-	set_star(star_points, star_width/2, star_width/4, star_color, 3)
+	set_star(star_points, star_width/2.0, star_width/4.0, star_color, 3)
 	var radian = deg_to_rad(degrees)
 	var move_x = cos(radian)
 	var move_y = sin(radian)
@@ -48,7 +48,7 @@ func random_bounce_star(star_width=24) -> Node2D:
 		)
 
 func _bounce_off_star(y_move, x_move, time, star_width=24, star_points=5, star_color: Color = Color.YELLOW):
-	set_star(star_points, star_width/2, star_width/4, star_color, 3)
+	set_star(star_points, star_width/2.0, star_width/4.0, star_color, 3)
 	_fade_throw(self, y_move, x_move, time)
 
 
