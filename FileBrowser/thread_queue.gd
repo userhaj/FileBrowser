@@ -18,8 +18,9 @@ func enqueue(call_work: Callable, callback_content:Callable):
 	_update_queue()
 
 # Runs work, then calls cleanup methods
-func _thread_return_work(thread, call_work, callback_content):
-	if call_work:
+func _thread_return_work(thread, call_work: Callable, callback_content):
+	# Work may be null/stale, validate before calling
+	if call_work and call_work.is_valid():
 		var work = call_work.call()
 		var callback = callback_content.bind(work)
 		call_deferred("_end_thread", thread, callback)
@@ -27,7 +28,7 @@ func _thread_return_work(thread, call_work, callback_content):
 		call_deferred("_end_thread", thread, null)
 
 # Called upon end of work; removes thread from queue
-func _end_thread(thread:Thread, callback: Callable):
+func _end_thread(thread:Thread, callback):
 	var thread_index = self._running_threads.find(thread)
 	if thread_index >= 0:
 		self._running_threads.remove_at(thread_index)
