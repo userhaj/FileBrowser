@@ -71,7 +71,11 @@ func _input(event):
 		if event.is_released() and $SelectBox.is_selecting:
 			$SelectBox.stop_selecting()
 	
-	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and self._click_start_position.distance_to(get_global_mouse_position()) > 24:
+	# Handle drag and drop files
+	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and\
+	self._click_start_position.distance_to(get_global_mouse_position()) > 24 and\
+	# Stops drag start if not within area, avoid clicking through objects
+	get_global_rect().has_point(self._click_start_position): 
 		# If clicked on an object and not yet
 		if self._click_start_object and not self._is_dragging:
 			_is_dragging = true
