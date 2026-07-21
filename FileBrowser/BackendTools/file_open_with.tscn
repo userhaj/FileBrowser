@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://bjae06o3ok3dq"]
+
+[ext_resource type="Script" uid="uid://ddaciju2uwrn2" path="res://FileBrowser/BackendTools/file_open_with.gd" id="1_axi84"]
+
+[node name="FileOpenWithPopupMenu" type="PopupMenu" unique_id=1581817408]
+oversampling_override = 1.0
+visible = true
+script = ExtResource("1_axi84")
+
+[connection signal="index_pressed" from="." to="." method="_on_index_pressed"]

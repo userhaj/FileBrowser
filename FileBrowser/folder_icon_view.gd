@@ -122,6 +122,8 @@ func _input(event):
 	# User hit escape
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		ctrl_f_panel_container.hide()
+		# TODO Use focus to determine search or deselect
+		deselect_all_children()
 			
 
 # Current working directory

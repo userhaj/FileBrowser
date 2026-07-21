@@ -27,6 +27,8 @@ ClickEffects="*uid://5xlyp81r41rn"
 
 [debug]
 
+file_logging/enable_file_logging.pc=false
+file_logging/max_log_files=1
 gdscript/warnings/integer_division=0
 
 [display]

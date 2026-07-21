@@ -93,6 +93,12 @@ func _on_file_popup_menu_id_pressed(id):
 			$NewFileConfirmationDialog/NewFileLineEdit.grab_focus()
 		2:  # Trash Item(s)
 			ask_trash_selected_items()
+		3:
+			print("OPEN")
+			var selected_paths = folder_view.get_selected_paths()
+			if selected_paths.size() > 0:
+				$FileOpenWithPopupMenu.popup_absolute_filepath(selected_paths[0])
+			
 		4:
 			ask_bookmark_selected_items()
 
