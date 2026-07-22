@@ -25,13 +25,21 @@ func popup_absolute_filepath(absolute_file_path: String):
 		var mime_type = linux_file_mime_type_get(absolute_file_path)
 		for app in mimes.get(mime_type, ""):
 			index += 1
-			var nice_name = app.get(AppProperties.NAME)
-			add_item(nice_name)
-			var run_app_callable = linux_run_desktop_file.bind(app.get(AppProperties.PATH), absolute_file_path)
-			set_item_metadata(index, run_app_callable)
+			add_open_with_menu_item(index, app, absolute_file_path)
+		# Treat everything as possible to open with plain text editor
+		if mime_type != "text/plain":
+			for app in mimes.get("text/plain", ""):
+				index += 1
+				add_open_with_menu_item(index, app, absolute_file_path)
 	else:
 		clear(true)
 		hide()
+
+func add_open_with_menu_item(index, app, file_to_open):
+	var nice_name = app.get(AppProperties.NAME)
+	add_item(nice_name)
+	var run_app_callable = linux_run_desktop_file.bind(app.get(AppProperties.PATH), file_to_open)
+	set_item_metadata(index, run_app_callable)
 
 func linux_run_desktop_file(desktop_file, open_file):
 	print(desktop_file)
@@ -78,7 +86,7 @@ func linux_find_mimes():
 
 func linux_apps_in_directory_recursive(directory: String):
 	var folders = []
-	OS.execute("find", [directory, "-readable" ,"-type", "f", "-name", "*.desktop"], folders)
+	OS.execute("find", [directory, "-type", "f", "-name", "*.desktop"], folders)
 	if folders.size() > 0:
 		folders = str(folders[0]).split("\n")
 	return folders
