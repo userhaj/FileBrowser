@@ -11,9 +11,10 @@ func _ready() -> void:
 	var config = ConfigFile.new()
 	var err = config.load(SAVE_FILE)
 	if err == OK:
-		var all_bookmarks = config.get_section_keys("bookmark")
-		for path in all_bookmarks:
-			add_folder(path)
+		if config.has_section("bookmark"):
+			var all_bookmarks = config.get_section_keys("bookmark")
+			for path in all_bookmarks:
+				add_folder(path)
 			
 
 func _get_drag_data(at_position: Vector2) -> Variant:
