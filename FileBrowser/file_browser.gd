@@ -71,10 +71,19 @@ func _file_menu():
 	var x_pos = true_location.x
 	# Bottom of button
 	var y_pos = true_location.y + self.file_button.size.y
-	#var pos = Vector2(+ , 0)
-	self.file_popup_menu.position = Vector2(x_pos, y_pos)
+	
+	# Popup file menu
+	var below_file_menu =  Vector2(x_pos, y_pos)
+	file_popup_menu_popup(below_file_menu)
+
+func file_popup_menu_popup(new_position: Vector2):
+	var paths = PackedStringArray(folder_view.get_selected_paths())
+	self.file_popup_menu.pre_popup(paths)
+	#Popups fix issue https://github.com/godotengine/godot/issues/87875
+	self.file_popup_menu.position = new_position
 	self.file_popup_menu.popup()
 	accept_event()
+	
 	
 func new_folder(folder_name: String):
 	DirAccess.make_dir_absolute(self.current_path + "/" + folder_name)
@@ -83,23 +92,17 @@ func new_folder(folder_name: String):
 
 func _on_file_popup_menu_id_pressed(id):
 	match id:
-		0:  # New Folder
+		file_popup_menu.NEW_FOLDER:  # New Folder
 			$NewFolderConfirmationDialog.popup_centered()
 			$NewFolderConfirmationDialog.position = DisplayServer.mouse_get_position()
 			$NewFolderConfirmationDialog/NewFolderLineEdit.grab_focus()
-		1:  # New File
+		file_popup_menu.NEW_FILE:  # New File
 			$NewFileConfirmationDialog.popup_centered()
 			$NewFileConfirmationDialog.position = DisplayServer.mouse_get_position()
 			$NewFileConfirmationDialog/NewFileLineEdit.grab_focus()
-		2:  # Trash Item(s)
+		file_popup_menu.TRASH:  # Trash Item(s)
 			ask_trash_selected_items()
-		3:
-			print("OPEN")
-			var selected_paths = folder_view.get_selected_paths()
-			if selected_paths.size() > 0:
-				$FileOpenWithPopupMenu.popup_absolute_filepath(selected_paths[0])
-			
-		4:
+		file_popup_menu.BOOKMARK:
 			ask_bookmark_selected_items()
 
 # Actions for bookmarking
@@ -208,10 +211,8 @@ func _on_gui_input(event):
 				self.folder_view.deselect_all_children()
 				self.folder_view.select_child_by_point(mouse_position)
 				
-			#Popups fix issue https://github.com/godotengine/godot/issues/87875
-			self.file_popup_menu.position =  mouse_position + Vector2(get_window().position)
-			self.file_popup_menu.popup()
-			accept_event()
+			var true_mouse_position =  mouse_position + Vector2(get_window().position)
+			file_popup_menu_popup(true_mouse_position)
 
 # Create new file with given file name
 func _on_new_file_confirmation_dialog_confirmed():

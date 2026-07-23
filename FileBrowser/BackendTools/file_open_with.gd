@@ -9,17 +9,12 @@ func _ready() -> void:
 		var thread = Thread.new()
 		thread.start(linux_find_mimes)
 
-func popup_absolute_filepath(absolute_file_path: String):
+func setup(absolute_file_path: String):
 	clear(true)
 	var index = 0
 	# File to be opened
 	add_item(absolute_file_path)
 	set_item_as_separator(0, true)
-	
-	# Place Menu
-	popup()
-	position = DisplayServer.mouse_get_position()
-	
 	# Linux menu open with
 	if "nux" in OS.get_name():
 		var mime_type = linux_file_mime_type_get(absolute_file_path)

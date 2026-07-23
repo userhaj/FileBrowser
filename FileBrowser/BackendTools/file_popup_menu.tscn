@@ -1,0 +1,208 @@
+[gd_scene format=3 uid="uid://behydyevo5qgt"]
+
+[ext_resource type="FontFile" uid="uid://0h6c0qjdknr1" path="res://Fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="1_a3yg3"]
+[ext_resource type="Script" uid="uid://cbnseylg5e0cq" path="res://FileBrowser/BackendTools/file_popup_menu.gd" id="1_h775i"]
+[ext_resource type="PackedScene" uid="uid://bjae06o3ok3dq" path="res://FileBrowser/BackendTools/file_open_with.tscn" id="3_7b2hh"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_7b2hh"]
+viewport_path = NodePath("SubViewportFolder")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_cfoe0"]
+viewport_path = NodePath("SubViewportFile")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_4ogjx"]
+viewport_path = NodePath("SubViewportBook")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_6tldu"]
+viewport_path = NodePath("SubViewportTrash")
+
+[sub_resource type="LabelSettings" id="LabelSettings_njuki"]
+line_spacing = 0.0
+font = ExtResource("1_a3yg3")
+font_size = 15
+
+[node name="FilePopupMenu" type="PopupMenu" unique_id=1803370902]
+oversampling_override = 1.0
+size = Vector2i(142, 147)
+visible = true
+allow_search = false
+item_count = 5
+item_0/text = "New Folder"
+item_0/icon = SubResource("ViewportTexture_7b2hh")
+item_0/id = 0
+item_1/text = "New File"
+item_1/icon = SubResource("ViewportTexture_cfoe0")
+item_1/id = 1
+item_2/text = "Bookmark"
+item_2/icon = SubResource("ViewportTexture_4ogjx")
+item_2/id = 4
+item_3/id = 4
+item_3/separator = true
+item_4/text = "Trash"
+item_4/icon = SubResource("ViewportTexture_6tldu")
+item_4/id = 5
+script = ExtResource("1_h775i")
+
+[node name="SubViewportFolder" type="SubViewport" parent="." unique_id=527019696]
+disable_3d = true
+transparent_bg = true
+size = Vector2i(16, 16)
+
+[node name="PanelContainer" type="PanelContainer" parent="SubViewportFolder" unique_id=1111907836]
+self_modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1.5
+offset_top = -1.5
+offset_right = 1.5
+offset_bottom = 1.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="SubViewportFolder/PanelContainer" unique_id=457913943]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 6
+text = "📁"
+label_settings = SubResource("LabelSettings_njuki")
+autowrap_trim_flags = 0
+
+[node name="SubViewportFile" type="SubViewport" parent="." unique_id=1901372393]
+disable_3d = true
+transparent_bg = true
+size = Vector2i(16, 16)
+
+[node name="PanelContainer" type="PanelContainer" parent="SubViewportFile" unique_id=888475803]
+self_modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1.5
+offset_top = -1.5
+offset_right = 1.5
+offset_bottom = 1.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="SubViewportFile/PanelContainer" unique_id=189145949]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 6
+text = "📄"
+label_settings = SubResource("LabelSettings_njuki")
+autowrap_trim_flags = 0
+
+[node name="SubViewportTrash" type="SubViewport" parent="." unique_id=523136024]
+disable_3d = true
+transparent_bg = true
+size = Vector2i(16, 16)
+
+[node name="PanelContainer" type="PanelContainer" parent="SubViewportTrash" unique_id=57344739]
+self_modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1.5
+offset_top = -1.5
+offset_right = 1.5
+offset_bottom = 1.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="SubViewportTrash/PanelContainer" unique_id=198295707]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 6
+text = "🗑️"
+label_settings = SubResource("LabelSettings_njuki")
+autowrap_trim_flags = 0
+
+[node name="SubViewportRocket" type="SubViewport" parent="." unique_id=2080258996]
+disable_3d = true
+transparent_bg = true
+size = Vector2i(16, 16)
+
+[node name="PanelContainer" type="PanelContainer" parent="SubViewportRocket" unique_id=1515790975]
+self_modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1.5
+offset_top = -1.5
+offset_right = 1.5
+offset_bottom = 1.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="SubViewportRocket/PanelContainer" unique_id=1332023315]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 6
+text = "🚀"
+label_settings = SubResource("LabelSettings_njuki")
+autowrap_trim_flags = 0
+
+[node name="SubViewportBook" type="SubViewport" parent="." unique_id=1215657137]
+disable_3d = true
+transparent_bg = true
+size = Vector2i(16, 16)
+
+[node name="PanelContainer" type="PanelContainer" parent="SubViewportBook" unique_id=194848136]
+self_modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1.5
+offset_top = -1.5
+offset_right = 1.5
+offset_bottom = 1.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="SubViewportBook/PanelContainer" unique_id=1472571131]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 6
+text = "📘"
+label_settings = SubResource("LabelSettings_njuki")
+autowrap_trim_flags = 0
+
+[node name="SubViewportPeopleBunny" type="SubViewport" parent="." unique_id=1277179599]
+disable_3d = true
+transparent_bg = true
+size = Vector2i(16, 16)
+
+[node name="PanelContainer" type="PanelContainer" parent="SubViewportPeopleBunny" unique_id=966691772]
+self_modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1.5
+offset_top = -1.5
+offset_right = 1.5
+offset_bottom = 1.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="SubViewportPeopleBunny/PanelContainer" unique_id=598323005]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 6
+text = "👯"
+label_settings = SubResource("LabelSettings_njuki")
+autowrap_trim_flags = 0
+
+[node name="FileOpenWithPopupMenu" parent="." unique_id=1581817408 instance=ExtResource("3_7b2hh")]

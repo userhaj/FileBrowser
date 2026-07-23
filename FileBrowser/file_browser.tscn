@@ -8,27 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bmro1s4aghein" path="res://FileBrowser/bookmark_item_list.tscn" id="4_nvgqa"]
 [ext_resource type="FontFile" uid="uid://0h6c0qjdknr1" path="res://Fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="4_r42i3"]
 [ext_resource type="PackedScene" uid="uid://ds45fvtgt8nk7" path="res://FileBrowser/Settings/settings_window.tscn" id="7_cus0t"]
-[ext_resource type="PackedScene" uid="uid://bjae06o3ok3dq" path="res://FileBrowser/BackendTools/file_open_with.tscn" id="9_2acyp"]
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_njuki"]
-viewport_path = NodePath("FilePopupMenu/SubViewportFolder")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_r42i3"]
-viewport_path = NodePath("FilePopupMenu/SubViewportFile")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_cus0t"]
-viewport_path = NodePath("FilePopupMenu/SubViewportRocket")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_nvgqa"]
-viewport_path = NodePath("FilePopupMenu/SubViewportBook")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_cveyf"]
-viewport_path = NodePath("FilePopupMenu/SubViewportTrash")
-
-[sub_resource type="LabelSettings" id="LabelSettings_njuki"]
-line_spacing = 0.0
-font = ExtResource("4_r42i3")
-font_size = 15
+[ext_resource type="PackedScene" uid="uid://behydyevo5qgt" path="res://FileBrowser/BackendTools/file_popup_menu.tscn" id="7_nvgqa"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_0y5oy"]
 viewport_path = NodePath("ViewPopupMenu/SubViewportTree")
@@ -38,6 +18,23 @@ viewport_path = NodePath("ViewPopupMenu/SubViewportPencil")
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_v5c3w"]
 viewport_path = NodePath("ViewPopupMenu/SubViewportBook")
+
+[sub_resource type="LabelSettings" id="LabelSettings_njuki"]
+line_spacing = 0.0
+font = ExtResource("4_r42i3")
+font_size = 15
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_nvgqa"]
+viewport_path = NodePath("SubViewportFolder")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_n7rbv"]
+viewport_path = NodePath("SubViewportFile")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_6iqhl"]
+viewport_path = NodePath("SubViewportBook")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_cfoe0"]
+viewport_path = NodePath("SubViewportTrash")
 
 [node name="FileBrowser" type="Control" unique_id=1090105108]
 layout_mode = 3
@@ -131,164 +128,6 @@ layout_mode = 2
 [node name="FolderIconView" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=1750673585 instance=ExtResource("3_fo1ef")]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="FilePopupMenu" type="PopupMenu" parent="." unique_id=34158518]
-oversampling_override = 1.0
-size = Vector2i(142, 147)
-allow_search = false
-item_count = 6
-item_0/text = "New Folder"
-item_0/icon = SubResource("ViewportTexture_njuki")
-item_0/id = 0
-item_1/text = "New File"
-item_1/icon = SubResource("ViewportTexture_r42i3")
-item_1/id = 1
-item_2/text = "Open"
-item_2/icon = SubResource("ViewportTexture_cus0t")
-item_2/id = 3
-item_3/text = "Bookmark"
-item_3/icon = SubResource("ViewportTexture_nvgqa")
-item_3/id = 4
-item_4/id = 5
-item_4/separator = true
-item_5/text = "Trash"
-item_5/icon = SubResource("ViewportTexture_cveyf")
-item_5/id = 2
-
-[node name="SubViewportFolder" type="SubViewport" parent="FilePopupMenu" unique_id=1149321497]
-disable_3d = true
-transparent_bg = true
-size = Vector2i(16, 16)
-
-[node name="PanelContainer" type="PanelContainer" parent="FilePopupMenu/SubViewportFolder" unique_id=574863637]
-self_modulate = Color(1, 1, 1, 0)
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -1.5
-offset_top = -1.5
-offset_right = 1.5
-offset_bottom = 1.5
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="Label" type="Label" parent="FilePopupMenu/SubViewportFolder/PanelContainer" unique_id=1891929733]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 6
-text = "📁"
-label_settings = SubResource("LabelSettings_njuki")
-autowrap_trim_flags = 0
-
-[node name="SubViewportFile" type="SubViewport" parent="FilePopupMenu" unique_id=1384039620]
-disable_3d = true
-transparent_bg = true
-size = Vector2i(16, 16)
-
-[node name="PanelContainer" type="PanelContainer" parent="FilePopupMenu/SubViewportFile" unique_id=1657039065]
-self_modulate = Color(1, 1, 1, 0)
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -1.5
-offset_top = -1.5
-offset_right = 1.5
-offset_bottom = 1.5
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="Label" type="Label" parent="FilePopupMenu/SubViewportFile/PanelContainer" unique_id=1228929085]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 6
-text = "📄"
-label_settings = SubResource("LabelSettings_njuki")
-autowrap_trim_flags = 0
-
-[node name="SubViewportTrash" type="SubViewport" parent="FilePopupMenu" unique_id=1181910365]
-disable_3d = true
-transparent_bg = true
-size = Vector2i(16, 16)
-
-[node name="PanelContainer" type="PanelContainer" parent="FilePopupMenu/SubViewportTrash" unique_id=54491392]
-self_modulate = Color(1, 1, 1, 0)
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -1.5
-offset_top = -1.5
-offset_right = 1.5
-offset_bottom = 1.5
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="Label" type="Label" parent="FilePopupMenu/SubViewportTrash/PanelContainer" unique_id=497697180]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 6
-text = "🗑️"
-label_settings = SubResource("LabelSettings_njuki")
-autowrap_trim_flags = 0
-
-[node name="SubViewportRocket" type="SubViewport" parent="FilePopupMenu" unique_id=1340086235]
-disable_3d = true
-transparent_bg = true
-size = Vector2i(16, 16)
-
-[node name="PanelContainer" type="PanelContainer" parent="FilePopupMenu/SubViewportRocket" unique_id=306289798]
-self_modulate = Color(1, 1, 1, 0)
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -1.5
-offset_top = -1.5
-offset_right = 1.5
-offset_bottom = 1.5
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="Label" type="Label" parent="FilePopupMenu/SubViewportRocket/PanelContainer" unique_id=97131305]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 6
-text = "🚀"
-label_settings = SubResource("LabelSettings_njuki")
-autowrap_trim_flags = 0
-
-[node name="SubViewportBook" type="SubViewport" parent="FilePopupMenu" unique_id=16160527]
-disable_3d = true
-transparent_bg = true
-size = Vector2i(16, 16)
-
-[node name="PanelContainer" type="PanelContainer" parent="FilePopupMenu/SubViewportBook" unique_id=110034198]
-self_modulate = Color(1, 1, 1, 0)
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -1.5
-offset_top = -1.5
-offset_right = 1.5
-offset_bottom = 1.5
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="Label" type="Label" parent="FilePopupMenu/SubViewportBook/PanelContainer" unique_id=1849309745]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 6
-text = "📘"
-label_settings = SubResource("LabelSettings_njuki")
-autowrap_trim_flags = 0
 
 [node name="NewFolderConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1487164205]
 oversampling_override = 1.0
@@ -431,8 +270,11 @@ autowrap_trim_flags = 0
 [node name="SettingsWindow" parent="." unique_id=1594888349 instance=ExtResource("7_cus0t")]
 visible = false
 
-[node name="FileOpenWithPopupMenu" parent="." unique_id=1581817408 instance=ExtResource("9_2acyp")]
-visible = false
+[node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("7_nvgqa")]
+item_0/icon = SubResource("ViewportTexture_nvgqa")
+item_1/icon = SubResource("ViewportTexture_n7rbv")
+item_2/icon = SubResource("ViewportTexture_6iqhl")
+item_4/icon = SubResource("ViewportTexture_cfoe0")
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton" to="." method="_file_menu"]
@@ -450,12 +292,10 @@ visible = false
 [connection signal="folder_selected" from="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/FolderTree" to="." method="set_current_path"]
 [connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" to="." method="set_current_path"]
 [connection signal="gui_input" from="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" to="." method="_on_gui_input"]
-[connection signal="focus_exited" from="FilePopupMenu" to="." method="_on_file_popup_menu_focus_exited"]
-[connection signal="id_pressed" from="FilePopupMenu" to="." method="_on_file_popup_menu_id_pressed"]
-[connection signal="popup_hide" from="FilePopupMenu" to="." method="_on_file_popup_menu_popup_hide"]
 [connection signal="confirmed" from="NewFolderConfirmationDialog" to="." method="_on_new_folder_confirmation_dialog_confirmed"]
 [connection signal="text_position_changed" from="NewFolderConfirmationDialog/NewFolderLineEdit" to="." method="_on_line_edit_text_position_changed"]
 [connection signal="confirmed" from="NewFileConfirmationDialog" to="." method="_on_new_file_confirmation_dialog_confirmed"]
 [connection signal="text_position_changed" from="NewFileConfirmationDialog/NewFileLineEdit" to="." method="_on_line_edit_text_position_changed"]
 [connection signal="confirmed" from="TrashFileConfirmationDialog" to="." method="trash_selected"]
 [connection signal="id_pressed" from="ViewPopupMenu" to="." method="_on_view_popup_menu_id_pressed"]
+[connection signal="id_pressed" from="FilePopupMenu" to="." method="_on_file_popup_menu_id_pressed"]
