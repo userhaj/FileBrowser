@@ -122,7 +122,7 @@ layout_mode = 2
 [node name="BookmarkItemList" parent="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer" unique_id=609976274 instance=ExtResource("4_nvgqa")]
 layout_mode = 2
 
-[node name="FolderTree" parent="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer" unique_id=1360331069 instance=ExtResource("2_fmf84")]
+[node name="FolderTree" parent="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer" unique_id=1822229957 instance=ExtResource("2_fmf84")]
 layout_mode = 2
 
 [node name="FolderIconView" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=1750673585 instance=ExtResource("3_fo1ef")]

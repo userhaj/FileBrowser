@@ -1,11 +1,35 @@
 [gd_resource type="Theme" format=3 uid="uid://b17wob7amnhga"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bwe63"]
-bg_color = Color(0.703125, 0.69763184, 0.69763184, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4dy67"]
+bg_color = Color(0.12156863, 0.12156863, 0.12156863, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y10mo"]
 bg_color = Color(0.339, 0.339, 0.339, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jbdnb"]
+bg_color = Color(0.12156863, 0.12156863, 0.12156863, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jovve"]
+bg_color = Color(0.12156863, 0.12156863, 0.12156863, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [resource]
-HSplitContainer/styles/split_bar_background = SubResource("StyleBoxFlat_bwe63")
+ItemList/styles/panel = SubResource("StyleBoxFlat_4dy67")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_y10mo")
+ScrollContainer/styles/panel = SubResource("StyleBoxFlat_jbdnb")
+Tree/styles/panel = SubResource("StyleBoxFlat_jovve")
