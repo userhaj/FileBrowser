@@ -286,7 +286,6 @@ func clear():
 	for child in get_folder_buttons():
 		child.queue_free()
 
-
 func _on_ctrl_f_line_edit_plus_text_changed(new_text: String) -> void:
 	for child: FolderLargeIconButton in get_folder_buttons():
 		if (child.has_method("get_abs_path")):

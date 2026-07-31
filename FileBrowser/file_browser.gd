@@ -9,6 +9,8 @@ extends Control
 @onready var folder_tree: Tree = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/FolderTree
 @onready var bookmarks: BookmarkItemList = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer/BookmarkItemList
 @onready var bookmark_container = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer
+@onready var tree_file_view: Tree = $PanelContainer/VBoxContainer/HSplitContainer/TreeFileView
+
 var settings_file_name = "user://SETTINGS.cfg"
 
 var is_shoot_laser_left: bool = true
@@ -43,6 +45,8 @@ func set_current_path(full_path: String):
 	current_path_line_edit.text = self.current_path
 	if self.current_path != self.folder_view.get_directory():
 		self.folder_view.set_directory(self.current_path)
+	if self.current_path != $PanelContainer/VBoxContainer/HSplitContainer/TreeFileView._full_directory_path:
+		$PanelContainer/VBoxContainer/HSplitContainer/TreeFileView.set_directory(self.current_path)
 	
 	
 	# Update folder history (if not already there)
@@ -77,7 +81,7 @@ func _file_menu():
 	file_popup_menu_popup(below_file_menu)
 
 func file_popup_menu_popup(new_position: Vector2):
-	var paths = PackedStringArray(folder_view.get_selected_paths())
+	var paths = PackedStringArray(get_selected_paths())
 	self.file_popup_menu.pre_popup(paths)
 	#Popups fix issue https://github.com/godotengine/godot/issues/87875
 	self.file_popup_menu.position = new_position
@@ -107,7 +111,7 @@ func _on_file_popup_menu_id_pressed(id):
 
 # Actions for bookmarking
 func ask_bookmark_selected_items():
-	var paths = self.folder_view.get_selected_paths()
+	var paths = get_selected_paths()
 	if len(paths) == 0:
 		# TODO Make this a popup warning
 		print("No items selected")
@@ -118,7 +122,7 @@ func ask_bookmark_selected_items():
 
 # Creates text on confirmation dialog about trashing files
 func ask_trash_selected_items():
-	var paths = self.folder_view.get_selected_paths()
+	var paths = get_selected_paths()
 	if len(paths) == 0:
 		# TODO Make this a popup warning
 		print("No items selected")
@@ -143,7 +147,7 @@ func _on_new_folder_confirmation_dialog_confirmed():
 
 # Sends each selected item to trash
 func trash_selected():
-	var paths = self.folder_view.get_selected_paths()
+	var paths = get_selected_paths()
 	for path in paths:
 		OS.move_to_trash(path)
 	self.folder_view.refresh()
@@ -162,6 +166,15 @@ func history_back():
 func history_forward():
 	if folder_future_list.size() > 0:
 		set_current_path(folder_future_list.pop_back())
+
+
+func get_selected_paths():
+	var mouse = get_global_mouse_position()
+	var is_tree_files_selected = tree_file_view.get_global_rect().has_point(mouse)
+	if is_tree_files_selected:
+		return tree_file_view.get_selected_paths()
+	else:
+		return folder_view.get_selected_paths()
 		
 	
 
@@ -195,7 +208,6 @@ func _input(event: InputEvent) -> void:
 			history_forward()
 		
 
-func _on_gui_input(event):
 	# Show menu on right click
 	if event is InputEventMouseButton and not event.is_echo():
 		# Is right clicked
@@ -212,7 +224,9 @@ func _on_gui_input(event):
 				self.folder_view.select_child_by_point(mouse_position)
 				
 			var true_mouse_position =  mouse_position + Vector2(get_window().position)
-			file_popup_menu_popup(true_mouse_position)
+			if tree_file_view.get_global_rect().has_point(get_global_mouse_position()) or \
+					folder_view.get_global_rect().has_point(get_global_mouse_position()):
+				file_popup_menu_popup(true_mouse_position)
 
 # Create new file with given file name
 func _on_new_file_confirmation_dialog_confirmed():
@@ -237,14 +251,25 @@ func _on_view_button_pressed():
 func _on_view_popup_menu_id_pressed(id):
 	match id:
 		0:
+			var idx = $ViewPopupMenu.get_item_index(id)
 			self.folder_tree.visible = not self.folder_tree.visible
-			$ViewPopupMenu.set_item_checked(0, self.folder_tree.visible)
+			$ViewPopupMenu.set_item_checked(idx, self.folder_tree.visible)
 		1:
+			var idx = $ViewPopupMenu.get_item_index(id)
 			self.current_path_line_edit.visible = not self.current_path_line_edit.visible
-			$ViewPopupMenu.set_item_checked(1, self.current_path_line_edit.visible)
+			$ViewPopupMenu.set_item_checked(idx, self.current_path_line_edit.visible)
 		2:
+			var idx = $ViewPopupMenu.get_item_index(id)
 			self.bookmark_container.visible = not self.bookmark_container.visible
-			$ViewPopupMenu.set_item_checked(2, self.bookmark_container.visible)
+			$ViewPopupMenu.set_item_checked(idx, self.bookmark_container.visible)
+		3:
+			var idx = $ViewPopupMenu.get_item_index(id)
+			self.tree_file_view.visible = not self.tree_file_view.visible
+			$ViewPopupMenu.set_item_checked(idx, self.tree_file_view.visible)
+		4:
+			var idx = $ViewPopupMenu.get_item_index(id)
+			self.folder_view.visible = not self.folder_view.visible
+			$ViewPopupMenu.set_item_checked(idx, self.folder_view.visible)
 
 # Settings clicked
 func _on_settings_button_pressed() -> void:
@@ -265,6 +290,7 @@ func _on_current_path_line_edit_text_submitted(new_text: String) -> void:
 func _on_refresh_button_pressed() -> void:
 	folder_view.refresh()
 	folder_tree.refresh()
+	tree_file_view.refresh()
 
 
 func _on_v_split_container_drag_ended() -> void:

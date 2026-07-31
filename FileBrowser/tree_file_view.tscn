@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://byylub0x8vqh0"]
+
+[ext_resource type="Script" uid="uid://bsmobc4ur5ywq" path="res://FileBrowser/tree_file_view.gd" id="1_6nfik"]
+[ext_resource type="PackedScene" uid="uid://cnrjg1q6m5y36" path="res://FileBrowser/sub_viewport_single_label.tscn" id="2_wxgul"]
+
+[node name="TreeFileView" type="Tree" unique_id=1822229957]
+propagate_maximum_size = true
+clip_contents = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+column_titles_visible = true
+allow_reselect = true
+allow_rmb_select = true
+enable_recursive_folding = false
+enable_drag_unfolding = false
+hide_root = true
+select_mode = 2
+tile_scroll_hint = true
+script = ExtResource("1_6nfik")
+
+[node name="PopupMenu" type="PopupMenu" parent="." unique_id=588652292]
+oversampling_override = 1.0
+hide_on_item_selection = false
+hide_on_checkable_item_selection = false
+item_count = 1
+item_0/text = "Size"
+item_0/checkable = 1
+item_0/checked = true
+item_0/id = 1
+
+[node name="SubViewport" parent="." unique_id=1823223691 instance=ExtResource("2_wxgul")]
+
+[node name="TimerDoubleClick" type="Timer" parent="." unique_id=319486497]
+wait_time = 0.5
+one_shot = true
+
+[connection signal="column_title_clicked" from="." to="." method="_on_column_title_clicked"]
+[connection signal="item_activated" from="." to="." method="_on_item_activated"]
+[connection signal="item_collapsed" from="." to="." method="_on_item_collapsed"]
+[connection signal="item_icon_double_clicked" from="." to="." method="_on_item_icon_double_clicked"]
+[connection signal="id_pressed" from="PopupMenu" to="." method="_on_popup_menu_id_pressed"]
+[connection signal="index_pressed" from="PopupMenu" to="." method="_on_popup_menu_index_pressed"]

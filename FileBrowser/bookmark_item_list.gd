@@ -4,6 +4,7 @@ class_name BookmarkItemList
 signal folder_selected(full_path:String)
 
 const SAVE_FILE: String = "user://Settings"
+var last_item_clicked: int = -1
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -61,18 +62,23 @@ func add_folder(path:String):
 	
 	_save_path_to_settings(path, item_count-1)
 
-func _on_item_clicked(_index: int, _at_position: Vector2, mouse_button_index: int) -> void:
+func _on_item_clicked(_index: int, at_position: Vector2, mouse_button_index: int) -> void:
+	last_item_clicked = get_item_at_position(at_position)
 	# On right click offer bookmark removal
 	if mouse_button_index == 2:
 		$PopupMenu.popup()
 		$PopupMenu.position = DisplayServer.mouse_get_position()
+		
 
 func _on_popup_menu_index_pressed(index: int) -> void:
 	# User chose "unbookmark"
 	if index == 0:
-		for bookmark_index in get_selected_items():
-			_remove_path_from_settings(get_item_tooltip(bookmark_index))
-			remove_item(bookmark_index)
+		# # Multi line bookmark removal
+		#for bookmark_index in get_selected_items():
+			#_remove_path_from_settings(get_item_tooltip(bookmark_index))
+			#remove_item(bookmark_index)
+		_remove_path_from_settings(get_item_tooltip(last_item_clicked))
+		remove_item(last_item_clicked)
 
 
 func _on_item_selected(index: int) -> void:
