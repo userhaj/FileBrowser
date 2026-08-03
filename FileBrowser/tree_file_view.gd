@@ -11,7 +11,7 @@ extends Tree
 signal folder_changed(folder_path: String)
 @onready var old_min_width = {}
 var _full_directory_path: String
-var tree_root: TreeItem
+@onready var tree_root: TreeItem = create_item()
 var column_titles = ["Name", "Size"]
 @onready var folder: Label = $SubViewport/PanelContainer/Label
 
@@ -177,7 +177,8 @@ func _create_file(base_tree_item, full_path: String):
 	
 
 func _on_column_title_clicked(column: int, mouse_button_index: int) -> void:
-	if mouse_button_index == 1:
+	if mouse_button_index == MOUSE_BUTTON_RIGHT:
+		accept_event()
 		var mouse = DisplayServer.mouse_get_position()
 		$PopupMenu.position = mouse
 		$PopupMenu.popup()
@@ -231,15 +232,28 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 			folders.append(full_path)
 	
 	if folders:
+		# Use OS instead of Godot for drag and drop (if available)
 		if get_window().has_method("drag_files"):
 			get_window().drag_files(PackedStringArray(folders))
-	else:
-		return null
-	return selected
+		else:
+			return PackedStringArray(folders)
+	return null
 
 # Prevent cancel mouse icon
-func _can_drop_data(_at_position: Vector2, _data: Variant) -> bool:
-	return true
+func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
+	# Verify paths are being dragged, and allow dropping
+	if typeof(data) == TYPE_PACKED_STRING_ARRAY:
+		for path: String in data:
+			if not path.is_absolute_path():
+				return false
+		return true
+	return false
+
+func _drop_data(_at_position: Vector2, data: Variant) -> void:
+	# Hand-off dropping to OS
+	if typeof(data) == TYPE_PACKED_STRING_ARRAY:
+		get_tree().root.emit_signal("files_dropped", data)
+	
 
 func path_from_TreeItem(given_item: TreeItem) -> String:
 	return given_item.get_metadata(0)
@@ -251,3 +265,33 @@ func get_selected_paths() -> Array[String]:
 	for child in selected:
 		all_paths.append(path_from_TreeItem(child))
 	return all_paths
+
+# Location of file/folders in gui
+func get_global_file_area_rect() -> Rect2:
+	# Remove height of title row
+	var root_y = get_item_area_rect(get_root()).position.y
+	var scroll_y = get_scroll().y
+	var title_row_height = root_y + scroll_y
+	
+	# Remove width of scroll bar
+	var bar_width = _get_v_scroll_bar_width()
+
+	# Adjust rect
+	var file_rect = get_global_rect()
+	file_rect.position.y += title_row_height
+	file_rect.size.y -= title_row_height
+	file_rect.size.x -= bar_width
+	
+	return file_rect
+	
+
+func _get_v_scroll_bar_width() -> int:
+	# Sum margins of scrollbar to get width
+	# Object hides scroll bar access, must make sacrificial bar to get proper width
+	var temp_scroll = VScrollBar.new()
+	add_child(temp_scroll)
+	var style_box = temp_scroll.get_theme_stylebox("scroll")
+	remove_child(temp_scroll)
+	return style_box.content_margin_left + style_box.content_margin_right
+
+	

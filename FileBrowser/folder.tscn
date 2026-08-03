@@ -54,6 +54,7 @@ clip_contents = true
 offset_right = 64.0
 offset_bottom = 64.0
 mouse_filter = 1
+button_mask = 3
 texture_hover = SubResource("GradientTexture2D_k0c74")
 texture_focused = SubResource("GradientTexture2D_5qqhj")
 ignore_texture_size = true

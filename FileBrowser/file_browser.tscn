@@ -60,6 +60,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=171703870]
 layout_mode = 2
@@ -67,7 +68,6 @@ size_flags_horizontal = 3
 
 [node name="MenuHBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer" unique_id=378411459]
 layout_mode = 2
-mouse_filter = 2
 
 [node name="FileButton" type="Button" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=517254236]
 layout_mode = 2
@@ -117,6 +117,7 @@ split_offset = 215
 
 [node name="PanelContainer" type="PanelContainer" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=333553009]
 layout_mode = 2
+mouse_filter = 1
 
 [node name="VSplitContainer" type="VSplitContainer" parent="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer" unique_id=2110446224]
 layout_mode = 2
@@ -125,14 +126,17 @@ split_offset = 156
 
 [node name="PanelContainer" type="PanelContainer" parent="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer" unique_id=2023527765]
 layout_mode = 2
+mouse_filter = 1
 
 [node name="BookmarkItemList" parent="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer" unique_id=609976274 instance=ExtResource("4_nvgqa")]
 layout_mode = 2
+mouse_filter = 1
 allow_reselect = true
 allow_rmb_select = false
 
 [node name="FolderTree" parent="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer" unique_id=1822229957 instance=ExtResource("2_fmf84")]
 layout_mode = 2
+mouse_filter = 1
 
 [node name="TreeFileView" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=1209735265 instance=ExtResource("7_n7rbv")]
 layout_mode = 2
@@ -347,6 +351,7 @@ autowrap_trim_flags = 0
 visible = false
 
 [node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("7_nvgqa")]
+size = Vector2i(373, 147)
 item_0/icon = SubResource("ViewportTexture_nvgqa")
 item_1/icon = SubResource("ViewportTexture_n7rbv")
 item_2/icon = SubResource("ViewportTexture_6iqhl")

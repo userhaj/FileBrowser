@@ -39,9 +39,8 @@ func files_dropped(files: PackedStringArray):
 	var mouse_pos: Vector2 = get_local_mouse_position()
 	var is_mouse_over_self = mouse_pos.x >= 0 and mouse_pos.y >= 0 and mouse_pos.x <= $".".size.x and mouse_pos.y <= $".".size.y
 	if len(files) > 0 and is_mouse_over_self:
-		var drop_point = get_global_mouse_position()
-		var target = get_object_at_point(drop_point)
-		var target_folder = target.path if target != null else _full_directory_path
+		var target: FolderLargeIconButton = get_object_at_point(mouse_pos)
+		var target_folder: String = target.path if target != null else _full_directory_path
 		var file_transfer = preload("res://FileBrowser/file_transfer_window.tscn").instantiate()
 		file_transfer.hide()
 		file_transfer.connect("tree_exiting", refresh)
@@ -54,8 +53,10 @@ func files_dropped(files: PackedStringArray):
 func _input(event):
 	# Handle drag icon event
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed:
-			self._click_start_position = get_global_mouse_position()
+		if event.pressed and \
+		# Prevent starting SelectBox outside of file area
+		get_global_file_area_rect().has_point(get_global_mouse_position()):
+			self._click_start_position = get_local_mouse_position()
 			var folder = get_object_at_point(self._click_start_position)
 			# If you did not click a folder, do nothing
 			if null != folder:
@@ -70,36 +71,7 @@ func _input(event):
 		$DragWindow.end_drag()
 		if event.is_released() and $SelectBox.is_selecting:
 			$SelectBox.stop_selecting()
-	
-	# Handle drag and drop files
-	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and\
-	self._click_start_position.distance_to(get_global_mouse_position()) > 24 and\
-	# Stops drag start if not within area, avoid clicking through objects
-	get_global_rect().has_point(self._click_start_position): 
-		# If clicked on an object and not yet
-		if self._click_start_object and not self._is_dragging:
-			_is_dragging = true
-			if not $DragWindow.visible:
-				# Add selected items to drag
-				var all_files: PackedStringArray
-				for folder in get_selected_objects():
-					var folder_copy = folder.duplicate()
-					folder_copy.path = folder.path
-					$DragWindow.add_control(folder_copy)
-					all_files.append(folder.path)
-				# If the start object is not selected, include it too
-				if not self._click_start_object.is_selected:
-					var folder_copy = self._click_start_object.duplicate()
-					folder_copy.path = self._click_start_object.path
-					all_files.append(folder_copy.path)
-					$DragWindow.add_control(folder_copy)
-					
-				# Mac and Windows require OS integration for drag windows
-				if not "mac" in OS.get_name() and not "Win" in OS.get_name():
-					$DragWindow.show()
-				
-				# https://github.com/godotengine/godot-proposals/issues/50
-				get_window().drag_files(all_files)
+
 	if event is InputEventKey and Input.is_key_pressed(KEY_F5):
 		refresh()
 	
@@ -154,7 +126,9 @@ func refresh():
 			button.set_thread_queue(self._thread_queue)
 			var path = self._full_directory_path + "/" + directory
 			button.double_clicked.connect(set_directory.bind(path))
-			button.pressed.connect(button.select)
+			# Force allow left and right click
+			button.button_mask = MOUSE_BUTTON_MASK_LEFT + MOUSE_BUTTON_MASK_RIGHT
+			button.button_down.connect(button.select)
 			button.set_path(path, "📁")
 			var icon_size = get_folder_size()
 			button.custom_minimum_size = Vector2(icon_size, icon_size)
@@ -166,7 +140,9 @@ func refresh():
 			button.set_thread_queue(self._thread_queue)
 			var file_path = self._full_directory_path + "/" + file_name
 			button.double_clicked.connect(emit_signal.bind("file_clicked", file_path))
-			button.pressed.connect(button.select)
+			# Force allow left and right click
+			button.button_mask = MOUSE_BUTTON_MASK_LEFT + MOUSE_BUTTON_MASK_RIGHT
+			button.button_down.connect(button.select)
 			button.set_path(file_path)
 			var icon_size = get_folder_size()
 			button.custom_minimum_size = Vector2(icon_size, icon_size)
@@ -243,18 +219,18 @@ func get_selected_objects() -> Array[Control]:
 func get_path_at_point(target_position: Vector2) -> String:
 	var path := ""
 	var area = Rect2(target_position, Vector2(1, 1)) # Single pixel area/point
-	for child in get_folder_buttons():
+	for child: Control in get_folder_buttons():
 		if child.has_method("select"):
-			if child.get_global_rect().intersects(area, true):
+			if child.get_rect().intersects(area, true):
 				path = child.get_abs_path()
 	return path
 
 # Gets folder/file object under position
-func get_object_at_point(target_position: Vector2) -> Node:
+func get_object_at_point(target_position: Vector2) -> FolderLargeIconButton:
 	var area = Rect2(target_position, Vector2(1, 1)) # Single pixel area/point
-	for child in get_folder_buttons():
+	for child: Control in get_folder_buttons():
 		if child.has_method("select"):
-			if child.get_global_rect().intersects(area, true):
+			if child.get_rect().intersects(area, true):
 				return child
 	return null
 
@@ -293,3 +269,58 @@ func _on_ctrl_f_line_edit_plus_text_changed(new_text: String) -> void:
 				child.select()
 			else:
 				child.deselect()
+
+func _get_drag_data(at_position: Vector2) -> Variant:
+	var initial_drag_item: FolderLargeIconButton = get_object_at_point(at_position)
+	# If drag started at nothing, do nothing
+	if not initial_drag_item:
+		return null
+	
+	# Get selected folders/files
+	var selected: Array[String] = get_selected_paths()
+	if selected.size() < 1:
+		selected = [initial_drag_item.path]
+	
+	# Use OS instead of Godot for drag and drop (if available)
+	if get_window().has_method("drag_files"):
+		get_window().drag_files(PackedStringArray(selected))
+	else:
+		return PackedStringArray(selected)
+	
+	return null
+
+func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
+	# Verify paths are being dragged, and allow dropping
+	if typeof(data) == TYPE_PACKED_STRING_ARRAY:
+		for path: String in data:
+			if not path.is_absolute_path():
+				return false
+		return true
+	return false
+
+func _drop_data(_at_position: Vector2, data: Variant) -> void:
+	# Hand-off dropping to OS
+	if typeof(data) == TYPE_PACKED_STRING_ARRAY:
+		get_tree().root.emit_signal("files_dropped", data)
+
+
+# Location of file/folders in gui
+func get_global_file_area_rect() -> Rect2:
+	# Remove width of scroll bar
+	var bar_width = _get_v_scroll_bar_width()
+
+	# Adjust rect
+	var file_rect = get_global_rect()
+	file_rect.size.x -= bar_width
+	
+	return file_rect
+	
+
+func _get_v_scroll_bar_width() -> int:
+	# Sum margins of scrollbar to get width
+	# Object hides scroll bar access, must make sacrificial bar to get proper width
+	var temp_scroll = VScrollBar.new()
+	add_child(temp_scroll)
+	var style_box = temp_scroll.get_theme_stylebox("scroll")
+	remove_child(temp_scroll)
+	return style_box.content_margin_left + style_box.content_margin_right

@@ -25,7 +25,6 @@ func _ready():
 	self.folder_view.file_clicked.connect(_run_file)
 	visual_load()
 	
-
 func visual_load():
 	var config: ConfigFile = ConfigFile.new()
 	var err = config.load(settings_file_name)
@@ -206,10 +205,9 @@ func _input(event: InputEvent) -> void:
 			history_back()
 		if event.button_index == 9 and event.is_pressed():
 			history_forward()
-		
 
 	# Show menu on right click
-	if event is InputEventMouseButton and not event.is_echo():
+	if event is InputEventMouseButton:
 		# Is right clicked
 		if event.pressed and event.button_index == 2:
 			var mouse_position = get_global_mouse_position()
@@ -224,8 +222,9 @@ func _input(event: InputEvent) -> void:
 				self.folder_view.select_child_by_point(mouse_position)
 				
 			var true_mouse_position =  mouse_position + Vector2(get_window().position)
-			if tree_file_view.get_global_rect().has_point(get_global_mouse_position()) or \
-					folder_view.get_global_rect().has_point(get_global_mouse_position()):
+			
+			if tree_file_view.get_global_file_area_rect().has_point(get_global_mouse_position()) or \
+					folder_view.get_global_file_area_rect().has_point(get_global_mouse_position()):
 				file_popup_menu_popup(true_mouse_position)
 
 # Create new file with given file name
