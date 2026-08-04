@@ -2,13 +2,12 @@
 
 [ext_resource type="Script" uid="uid://d20ud65y5yrro" path="res://FileBrowser/file_browser.gd" id="1_83ygx"]
 [ext_resource type="Theme" uid="uid://b17wob7amnhga" path="res://FileBrowser/Themes/base_theme.tres" id="1_njuki"]
-[ext_resource type="PackedScene" uid="uid://eeku0frgbqdp" path="res://FileBrowser/folder_tree.tscn" id="2_fmf84"]
 [ext_resource type="Script" uid="uid://cvbxs2ydf6ksb" path="res://FeatureAddedObjects/line_edit_plus.gd" id="3_cveyf"]
 [ext_resource type="PackedScene" uid="uid://c3celv4vu6p5t" path="res://FileBrowser/folder_icon_view.tscn" id="3_fo1ef"]
 [ext_resource type="PackedScene" uid="uid://bmro1s4aghein" path="res://FileBrowser/bookmark_item_list.tscn" id="4_nvgqa"]
 [ext_resource type="FontFile" uid="uid://0h6c0qjdknr1" path="res://Fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="4_r42i3"]
 [ext_resource type="PackedScene" uid="uid://ds45fvtgt8nk7" path="res://FileBrowser/Settings/settings_window.tscn" id="7_cus0t"]
-[ext_resource type="PackedScene" uid="uid://byylub0x8vqh0" path="res://FileBrowser/tree_file_view.tscn" id="7_n7rbv"]
+[ext_resource type="PackedScene" uid="uid://byylub0x8vqh0" path="res://FileBrowser/file_tree.tscn" id="7_n7rbv"]
 [ext_resource type="PackedScene" uid="uid://behydyevo5qgt" path="res://FileBrowser/BackendTools/file_popup_menu.tscn" id="7_nvgqa"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_0y5oy"]
@@ -134,11 +133,17 @@ mouse_filter = 1
 allow_reselect = true
 allow_rmb_select = false
 
-[node name="FolderTree" parent="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer" unique_id=1822229957 instance=ExtResource("2_fmf84")]
+[node name="FileTree" parent="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer" unique_id=1822229957 instance=ExtResource("7_n7rbv")]
 layout_mode = 2
-mouse_filter = 1
+columns = 1
+column_titles_visible = false
+allow_rmb_select = false
+select_mode = 0
+show_files = false
+only_show_drives = true
+always_fit_name = true
 
-[node name="TreeFileView" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=1209735265 instance=ExtResource("7_n7rbv")]
+[node name="FileTree" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=1209735265 instance=ExtResource("7_n7rbv")]
 layout_mode = 2
 
 [node name="FolderIconView" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=1750673585 instance=ExtResource("3_fo1ef")]
@@ -351,7 +356,8 @@ autowrap_trim_flags = 0
 visible = false
 
 [node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("7_nvgqa")]
-size = Vector2i(373, 147)
+visible = false
+prefer_native_menu = true
 item_0/icon = SubResource("ViewportTexture_nvgqa")
 item_1/icon = SubResource("ViewportTexture_n7rbv")
 item_2/icon = SubResource("ViewportTexture_6iqhl")
@@ -370,8 +376,8 @@ item_4/icon = SubResource("ViewportTexture_cfoe0")
 [connection signal="drag_ended" from="PanelContainer/VBoxContainer/HSplitContainer" to="." method="visual_save"]
 [connection signal="drag_ended" from="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer" to="." method="visual_save"]
 [connection signal="folder_selected" from="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer/BookmarkItemList" to="." method="set_current_path"]
-[connection signal="folder_selected" from="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/FolderTree" to="." method="set_current_path"]
-[connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/TreeFileView" to="." method="set_current_path"]
+[connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/FileTree" to="." method="set_current_path"]
+[connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/FileTree" to="." method="set_current_path"]
 [connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" to="." method="set_current_path"]
 [connection signal="gui_input" from="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" to="." method="_on_gui_input"]
 [connection signal="confirmed" from="NewFolderConfirmationDialog" to="." method="_on_new_folder_confirmation_dialog_confirmed"]

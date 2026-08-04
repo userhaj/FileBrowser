@@ -11,17 +11,20 @@ var is_image_set: bool = false
 var image_path: String
 var _thread_queue: ThreadQueue
 var _set_image_non_queue_thread: Thread
+var _need_icon_scale: bool=false
 var icons : Dictionary = {"dll": "📚", "txt": "🗒️", "exe": "🚀", "conf": "⚙️",\
  "ini": "⚙️", "py": "🐍", "pyw": "🐍", "url": "🕸️", "htm": "🕸️", "html": "🕸️",\
 "lnk": "🔗", "ods": "📊", "xls": "📊", "xlsx": "📊", "json": "📔", "jar": "☕",\
 "properties": "⚙️", "mkv": "🎞️", "webm": "🎞️", "flv": "🎞️", "3g2": "🎞️", \
 "3gp": "🎞️", "amv": "🎞️", "asf": "🎞️", "avi": "🎞️", "gifv": "🎞️", "m4v": "🎞️",\
  "mov": "🎞️", "qt": "🎞️", "mpg": "🎞️", "mpeg": "🎞️", "mts": "🎞️", "m2ts": "🎞️",\
- "ts": "🎞️", "ogv": "🎞️", "rmvb": "🎞️", "wmv": "🎞️", "mp4": "🎞️"}
+ "ts": "🎞️", "ogv": "🎞️", "rmvb": "🎞️", "wmv": "🎞️", "mp4": "🎞️", "mp3": "🎵",\
+"wav": "🎵", "jpg": "🖼️", "png": "🖼️", "gif": "🖼️", "zip": "🗜️", "rar": "🗜️", \
+"x86_64": "🚀", "pdf": "🖨️", "ogg": "🎵", "c": "🌊", "cpp": "🌊", "sh": "🐚", \
+"desktop": "🖥️", "h": "🗣️", "so": "🎁", "md": "🗒️", "drawio": "📝", "bin": "💿",\
+"iso": "💿", "stl": "🧵", "gcode": "🧵", "arm64": "🦾", "svg": "🖼️",\
+ "hpp": "🗣️", "cfg": "⚙️", "apk": "🤖", "docx": "🗒️", "ppt": "📽️"}
 var clicked: bool = false
-
-func _ready():
-	_icon_scale()
 
 
 # Optional work queue
@@ -29,10 +32,24 @@ func set_thread_queue(thread_queue: ThreadQueue):
 	self._thread_queue = thread_queue
 
 func _icon_scale():
+	if $VisibleOnScreenNotifier2D.is_on_screen():
+		call_deferred("_icon_scale_work")
+	else:
+		_need_icon_scale = true
+	
+	#if self._thread_queue:
+		#self._thread_queue.enqueue(call_thread_safe.bind("_icon_scale_work"), _work_done)
+	#else:
+		#_icon_scale_work()
+
+func _work_done(_result):
+	pass
+
+func _icon_scale_work():
 	# Resize folder icon to be size of parent
 	if $ImageLabel:
 		# Available file/dir object height
-		var height = $".".get_rect().size.y
+		var height = get_rect().size.y
 		# Height space used for 2 lines of text
 		var text_height = $NameLabel.get_line_height() * 2 
 		# Set font size to height minus 2 lines of text height
@@ -68,6 +85,10 @@ func _end_non_queue_thread(image_texture: ImageTexture):
 func _apply_texture_image_icon():
 	if is_image_set and (null == $TextureRect.texture):
 		set_image(image_path)
+	if _need_icon_scale:
+		_need_icon_scale = false
+		_icon_scale_work()
+		
 		
 
 func _remove_texture_image_icon():

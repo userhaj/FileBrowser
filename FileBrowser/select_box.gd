@@ -19,13 +19,14 @@ func stop_selecting():
 		selected_area.emit($SelectColorRect.get_global_rect())
 		# Stop showing highlighting rect
 		self.is_selecting = false
+		$SelectColorRect.size = Vector2(0,0)
 		$SelectColorRect.hide()
 
 func cancel_select():
 	self.is_selecting = false
 	$SelectColorRect.hide()
 
-func _process(_delta):
+func _input(_event: InputEvent) -> void:
 	if self.is_selecting:
 		var mouse_pos = get_local_mouse_position() - self.start_pos
 		if mouse_pos.x < 0 and mouse_pos.y < 0:

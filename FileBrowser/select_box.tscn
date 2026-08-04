@@ -1,7 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://drjwj2xhyocps"]
+[gd_scene format=3 uid="uid://drjwj2xhyocps"]
 
-[ext_resource type="Script" path="res://FileBrowser/select_box.gd" id="1_lyq84"]
-[ext_resource type="Shader" path="res://FileBrowser/rounded_corner.gdshader" id="1_pkuwc"]
+[ext_resource type="Script" uid="uid://b84dj28yuldsf" path="res://FileBrowser/select_box.gd" id="1_lyq84"]
+[ext_resource type="Shader" uid="uid://0mex374eebas" path="res://FileBrowser/rounded_corner.gdshader" id="1_pkuwc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mfpcb"]
 shader = ExtResource("1_pkuwc")
@@ -13,7 +13,7 @@ shader_parameter/rounded_corner_bottom_right = true
 shader_parameter/width = 1.0
 shader_parameter/height = 1.0
 
-[node name="SelectBox" type="Control"]
+[node name="SelectBox" type="Control" unique_id=1050129504]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,9 +23,9 @@ grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("1_lyq84")
 
-[node name="SelectColorRect" type="ColorRect" parent="."]
+[node name="SelectColorRect" type="ColorRect" parent="." unique_id=2026919595]
 visible = false
 material = SubResource("ShaderMaterial_mfpcb")
 layout_mode = 0
 mouse_filter = 2
-color = Color(0.403922, 0.172549, 0.27451, 0.513726)
+color = Color(1, 1, 1, 0.25882354)

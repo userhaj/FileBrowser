@@ -1,4 +1,5 @@
 extends Tree
+class_name FileTree
 ## Allows selection of folder from tree
 ## Each TreeItem is a folder
 ## Each TreeItem metadata is full path
@@ -7,6 +8,12 @@ extends Tree
 ## folder_selected emits with full path to folder
 
 # TODO Add targeted folder path updating (update on new folder creation)
+
+@export var show_folders: bool = true
+@export var show_files: bool = true
+# Will only allow viewing of OS folders from  OS.get_drive_name
+@export var only_show_drives: bool = false
+@export var always_fit_name: bool = false
 
 signal folder_changed(folder_path: String)
 @onready var old_min_width = {0:128, 1: 128}
@@ -34,8 +41,19 @@ var icons : Dictionary = {"dll": "📚", "txt": "🗒️", "exe": "🚀", "conf"
 
 # Returns folder path of tree item or "" if mouse is elsewhere
 func folder_at_mouse() -> String:
-	var item = $".".get_item_at_position(get_local_mouse_position())
-	return String() if item == null else item.get_metadata(0)
+	var item = get_item_at_position(get_local_mouse_position())
+	var path = ""
+	# Handle dropping on empty space
+	if item == null:
+		if get_global_file_area_rect().has_point(get_global_mouse_position()):
+			path = _full_directory_path
+	# Normal drop on file or folder
+	else:
+		path = item.get_metadata(0)
+	# Guarantee folder path (Not a file)
+	if path and FileAccess.file_exists(path):
+		path = path.get_base_dir()
+	return path
 
 func _input(event):
 	if event is InputEventKey and Input.is_key_pressed(KEY_F1):
@@ -64,11 +82,17 @@ func _gui_input(event: InputEvent) -> void:
 
 func _ready():
 	columns = column_titles.size()
+	call_thread_safe("_set_column_titles")
+	
+	enable_drag_unfolding = true
 	
 	# Handle dropped files
 	get_window().files_dropped.connect(files_dropped)
+	
+	
 
-	for i in range(column_titles.size()):
+func _set_column_titles():
+	for i in range(min(column_titles.size(), columns)):
 		set_column_title(i, column_titles[i])
 		set_column_expand(i, false)
 		set_column_custom_minimum_width(i, old_min_width.get(i, 128))
@@ -91,29 +115,34 @@ func files_dropped(files: PackedStringArray):
 
 # Change current directoy, removes all icons and adds icons for full_path
 func set_directory(full_path: String):
-	self._full_directory_path = full_path.simplify_path()
-	refresh()
+	if not only_show_drives:
+		self._full_directory_path = full_path.simplify_path()
+		refresh()
 	emit_signal("folder_changed", full_path)
 
 # Clears Children, Adds folder/files based on current directory
 func refresh():
-	# Remove current directory content
-	clear()
-	$".".clear()
-	# Add each drive
-	tree_root = $".".create_item()
-	tree_root.set_text(0, "root")
-	$".".hide_root = true
-	
-	for directory in DirAccess.get_directories_at(self._full_directory_path):
-		_create_folder(tree_root, _full_directory_path.path_join(directory))
-	
-	for file in DirAccess.get_files_at(self._full_directory_path):
-		_create_file(tree_root, _full_directory_path.path_join(file))
-	
-	for dir_tree_item: TreeItem in tree_root.get_children():
-		_add_sub_folder(dir_tree_item)
-	
+	if only_show_drives:
+		show_default_os_drives()
+	else:
+		# Remove current directory content
+		clear()
+		# Add each drive
+		tree_root = $".".create_item()
+		tree_root.set_text(0, "root")
+		$".".hide_root = true
+		
+		if show_folders:
+			for directory in DirAccess.get_directories_at(self._full_directory_path):
+				call_deferred("_create_folder", tree_root, _full_directory_path.path_join(directory))
+		
+		if show_files:
+			for file in DirAccess.get_files_at(self._full_directory_path):
+				call_deferred("_create_file", tree_root, _full_directory_path.path_join(file))
+		
+		if show_folders:
+			call_deferred("_populate_sub_folders_of_tree_root")
+		
 	# Add animation minimal to folders
 	folder.pivot_offset = Vector2(8, 8)
 	var rot = create_tween()
@@ -128,6 +157,10 @@ func get_expanded_folders() -> Array[String]:
 	_expanded_folders($".".get_root(), arr)
 	return arr
 
+func _populate_sub_folders_of_tree_root():
+	for dir_tree_item: TreeItem in tree_root.get_children():
+				call_deferred("_add_sub_folder", dir_tree_item)
+
 func _expanded_folders(tree_item: TreeItem, array: Array):
 	var next: TreeItem = tree_item.get_next_visible() if tree_item else null
 	if next:
@@ -139,9 +172,9 @@ func _on_item_collapsed(item:TreeItem):
 	# When expanded, add folders to subfolders of expanded tree
 	if not item.collapsed:
 		if item.get_child_count() > 0:
-			for folder in item.get_children():
-				if folder.get_child_count() == 0:
-					_add_sub_folder(folder)
+			for folder_path in item.get_children():
+				if folder_path.get_child_count() == 0:
+					_add_sub_folder(folder_path)
 
 
 func _add_sub_folder(tree_item: TreeItem):
@@ -154,28 +187,34 @@ func _add_sub_folder(tree_item: TreeItem):
 		while file_name != "":
 			var full_path = path.path_join(file_name)
 			# If folder, create TreeItem folder
-			if DirAccess.dir_exists_absolute(full_path):
+			if show_folders and DirAccess.dir_exists_absolute(full_path):
 				# Adding child is not animation/thread safe, must call deferred
 				$".".call_deferred("_create_folder", tree_item, full_path)
-			elif FileAccess.file_exists(full_path):
+			elif show_files and FileAccess.file_exists(full_path):
 				$".".call_deferred("_create_file", tree_item, full_path)
 			# Check next folder
 			file_name = dir.get_next()
 
 
-func _create_folder(base_tree_item, full_path: String):
+func _create_folder(base_tree_item, full_path: String, label_full_path: bool=false):
 	# Create folder TreeItem with saved path
 	var new_tree_item: TreeItem = $".".create_item(base_tree_item)
 	new_tree_item.collapsed = true
-	new_tree_item.set_text(0, full_path.get_file()) # On folders get_file() gets last folder name
+	var label_text = full_path if label_full_path else full_path.get_file()
+	if label_text == "": # Unix / has no folder name
+		label_text = "/"
+	new_tree_item.set_text(0, label_text) # On folders get_file() gets last folder name
 	new_tree_item.set_metadata(0, full_path)
 	var dirAcc = DirAccess.open(full_path)
-	if dirAcc:
+	if dirAcc and columns >1:
 		dirAcc.include_hidden = true
-		var dirCount = dirAcc.get_directories_at(full_path).size()
-		var fileCount = dirAcc.get_files_at(full_path).size()
-		new_tree_item.set_text(1, str(dirCount + fileCount)+" objects")
+		var dir_count = dirAcc.get_directories().size()
+		var file_count = dirAcc.get_files().size()
+		new_tree_item.set_text(1, str(dir_count + file_count)+" objects")
 	new_tree_item.set_icon(0, $SubViewport.get_texture())
+	
+	if always_fit_name:
+		new_tree_item.set_text_overrun_behavior(0, TextServer.OVERRUN_NO_TRIMMING)
 
 func _create_file(base_tree_item, full_path: String):
 	# Create folder TreeItem with saved path
@@ -200,9 +239,11 @@ func _create_file(base_tree_item, full_path: String):
 		add_child(subview)
 	# Set icon using same texture/memory for all same emojis
 	new_tree_item.set_icon(0, subview.get_texture())
+	if always_fit_name:
+		new_tree_item.set_text_overrun_behavior(0, TextServer.OVERRUN_NO_TRIMMING)
 	
 
-func _on_column_title_clicked(column: int, mouse_button_index: int) -> void:
+func _on_column_title_clicked(_column: int, mouse_button_index: int) -> void:
 	if mouse_button_index == MOUSE_BUTTON_RIGHT:
 		accept_event()
 		var mouse = DisplayServer.mouse_get_position()
@@ -249,13 +290,29 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 	if not get_item_at_position(at_position):
 		return null
 	
+	
 	# Get selected folders/files
 	var selected: Array[TreeItem] = get_selected_tree_items()
 	var folders: = []
 	if selected.size() > 0:
+		var label_box = VBoxContainer.new()
 		for select: TreeItem in selected:
 			var full_path = path_from_TreeItem(select)
 			folders.append(full_path)
+			
+			# Create drag visibility
+			var label = Label.new()
+			label.text = full_path.get_file()
+			#label_box.add_child(label)
+			var icon = TextureRect.new()
+			# TODO Error handling on no icon?
+			icon.texture = select.get_icon(0)
+			var hbox = HBoxContainer.new()
+			hbox.add_child(icon)
+			hbox.add_child(label)
+			label_box.add_child(hbox)
+			
+		set_drag_preview(label_box)
 	
 	if folders:
 		# Use OS instead of Godot for drag and drop (if available)
@@ -272,6 +329,8 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 		for path: String in data:
 			if not path.is_absolute_path():
 				return false
+		# Allow dropping on objects
+		set_drop_mode_flags(DROP_MODE_ON_ITEM)
 		return true
 	return false
 
@@ -324,4 +383,18 @@ func _get_v_scroll_bar_width() -> int:
 	remove_child(temp_scroll)
 	return style_box.content_margin_left + style_box.content_margin_right
 
-	
+# The sets tree to OS level drives available. See DirAccess.get_drive_name()
+func show_default_os_drives():
+	# Remove current directory content
+	clear()
+	# Add each drive
+	tree_root = $".".create_item()
+	tree_root.set_text(0, "root")
+	hide_root = true
+	var drive_count = DirAccess.get_drive_count()
+	for drive_index in range(drive_count):
+		var drive_name = DirAccess.get_drive_name(drive_index)
+		_create_folder(tree_root, drive_name)
+	if show_folders:
+		for dir_tree_item: TreeItem in tree_root.get_children():
+			_add_sub_folder(dir_tree_item)

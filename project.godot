@@ -41,6 +41,10 @@ window/per_pixel_transparency/allowed=true
 
 theme/default_font_multichannel_signed_distance_field=true
 
+[physics]
+
+3d/physics_engine="Dummy"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

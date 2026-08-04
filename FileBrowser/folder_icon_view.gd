@@ -30,7 +30,6 @@ func _ready():
 	var err = config.load(SAVE_FILEPATH)
 	if err == OK:
 		var folder_size = config.get_value("folder_icon_view", "_folder_size")
-		$"../../MenuHBoxContainer/FolderSizeHSlider".value = folder_size
 		set_folder_size(folder_size)
 
 	ctrl_f_exit_button.pressed.connect(ctrl_f_panel_container.hide)
@@ -68,10 +67,9 @@ func _input(event):
 		self._is_dragging = false
 		self._click_start_position = Vector2()
 		self._click_start_object = null
-		$DragWindow.end_drag()
 		if event.is_released() and $SelectBox.is_selecting:
 			$SelectBox.stop_selecting()
-
+	
 	if event is InputEventKey and Input.is_key_pressed(KEY_F5):
 		refresh()
 	

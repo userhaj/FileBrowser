@@ -2,6 +2,8 @@ extends PopupMenu
 
 enum {NEW_FOLDER, NEW_FILE, OPEN, OPEN_WITH, BOOKMARK, TRASH}
 
+var is_ready: bool = true
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	add_submenu_node_item("Open With",$FileOpenWithPopupMenu, OPEN_WITH)

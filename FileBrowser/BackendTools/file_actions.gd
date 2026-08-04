@@ -64,7 +64,7 @@ static func _copy(files: PackedStringArray, target_folder: String, percent_callb
 		
 		if is_file:
 			var dir_access := DirAccess.open(target_folder)
-			var err = dir_access.copy(file, target_location)
+			var err = dir_access.copy(file, target_location) if dir_access else FAILED
 			if err == OK:
 				if is_move:
 					# TODO Items SHOULD be removed, but use trash until all bugs fixed
