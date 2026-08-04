@@ -9,13 +9,13 @@ extends Tree
 # TODO Add targeted folder path updating (update on new folder creation)
 
 signal folder_changed(folder_path: String)
-@onready var old_min_width = {}
+@onready var old_min_width = {0:128, 1: 128}
 var _full_directory_path: String
 @onready var tree_root: TreeItem = create_item()
 var column_titles = ["Name", "Size"]
 @onready var folder: Label = $SubViewport/PanelContainer/Label
 
-
+var dragging_resize_column: int = -1
 
 # TODO get icons from outside self
 var icons : Dictionary = {"dll": "📚", "txt": "🗒️", "exe": "🚀", "conf": "⚙️",\
@@ -24,7 +24,12 @@ var icons : Dictionary = {"dll": "📚", "txt": "🗒️", "exe": "🚀", "conf"
 "properties": "⚙️", "mkv": "🎞️", "webm": "🎞️", "flv": "🎞️", "3g2": "🎞️", \
 "3gp": "🎞️", "amv": "🎞️", "asf": "🎞️", "avi": "🎞️", "gifv": "🎞️", "m4v": "🎞️",\
  "mov": "🎞️", "qt": "🎞️", "mpg": "🎞️", "mpeg": "🎞️", "mts": "🎞️", "m2ts": "🎞️",\
- "ts": "🎞️", "ogv": "🎞️", "rmvb": "🎞️", "wmv": "🎞️", "mp4": "🎞️", "mp3": "🎵"}
+ "ts": "🎞️", "ogv": "🎞️", "rmvb": "🎞️", "wmv": "🎞️", "mp4": "🎞️", "mp3": "🎵",\
+"wav": "🎵", "jpg": "🖼️", "png": "🖼️", "gif": "🖼️", "zip": "🗜️", "rar": "🗜️", \
+"x86_64": "🚀", "pdf": "🖨️", "ogg": "🎵", "c": "🌊", "cpp": "🌊", "sh": "🐚", \
+"desktop": "🖥️", "h": "🗣️", "so": "🎁", "md": "🗒️", "drawio": "📝", "bin": "💿",\
+"iso": "💿", "stl": "🧵", "gcode": "🧵", "arm64": "🦾", "svg": "🖼️",\
+ "hpp": "🗣️", "cfg": "⚙️", "apk": "🤖", "docx": "🗒️", "ppt": "📽️"}
 
 
 # Returns folder path of tree item or "" if mouse is elsewhere
@@ -37,7 +42,25 @@ func _input(event):
 		var arr = get_expanded_folders()
 		print(arr)
 		refresh()
+	
+	# Resize column width
+	if dragging_resize_column > -1:
+		var width =  get_local_mouse_position().x
+		var starting_x = 0
+		for i in range(dragging_resize_column):
+			starting_x += get_column_width(i)
+		set_column_custom_minimum_width(dragging_resize_column, width - starting_x + get_scroll().x)
 		
+		# Stop resizing on mouse release
+		if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			dragging_resize_column = -1
+
+func _gui_input(event: InputEvent) -> void:
+	# On column click, start column resize
+	if event is InputEventMouse and event.is_pressed():
+		if get_local_mouse_position().y <= _get_title_row_height():
+			dragging_resize_column = get_column_at_position(Vector2(event.position.x, _get_title_row_height()+1))
+
 
 func _ready():
 	columns = column_titles.size()
@@ -47,6 +70,9 @@ func _ready():
 
 	for i in range(column_titles.size()):
 		set_column_title(i, column_titles[i])
+		set_column_expand(i, false)
+		set_column_custom_minimum_width(i, old_min_width.get(i, 128))
+	set_column_expand(0, true)
 
 func files_dropped(files: PackedStringArray):
 	# TODO simplify file drop action.
@@ -269,9 +295,7 @@ func get_selected_paths() -> Array[String]:
 # Location of file/folders in gui
 func get_global_file_area_rect() -> Rect2:
 	# Remove height of title row
-	var root_y = get_item_area_rect(get_root()).position.y
-	var scroll_y = get_scroll().y
-	var title_row_height = root_y + scroll_y
+	var title_row_height = _get_title_row_height()
 	
 	# Remove width of scroll bar
 	var bar_width = _get_v_scroll_bar_width()
@@ -283,6 +307,12 @@ func get_global_file_area_rect() -> Rect2:
 	file_rect.size.x -= bar_width
 	
 	return file_rect
+
+func _get_title_row_height() -> int:
+	var root_y = get_item_area_rect(get_root()).position.y
+	var scroll_y = get_scroll().y
+	var title_row_height = root_y + scroll_y
+	return title_row_height
 	
 
 func _get_v_scroll_bar_width() -> int:
