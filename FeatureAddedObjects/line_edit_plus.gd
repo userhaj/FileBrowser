@@ -6,10 +6,11 @@ var text_before_delete: String
 var is_need_drop: bool= false
 var is_shoot_laser_left = true
 
-func _enter_tree() -> void:
-	connect("text_changed", text_position_changed_callable)
-	connect("text_changed", animate_action)
-	connect("gui_input", _on_gui_input)
+
+func _init() -> void:
+	text_changed.connect(text_position_changed_callable)
+	text_changed.connect(animate_action)
+	gui_input.connect(_on_gui_input)
 
 #func gui_input_text_entry_position(event: InputEvent):
 	#if event is InputEventKey and event.is_pressed() and event.key_label != KEY_ENTER and event.key_label != KEY_SHIFT:

@@ -94,7 +94,18 @@ func _input(event):
 		ctrl_f_panel_container.hide()
 		# TODO Use focus to determine search or deselect
 		deselect_all_children()
-			
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.is_pressed():
+		if event.button_index == MOUSE_BUTTON_RIGHT:
+			var selected_paths = PackedStringArray(get_selected_paths())
+			if selected_paths.size() < 1:
+				selected_paths = PackedStringArray([_full_directory_path])
+			$FilePopupMenu.pre_popup(selected_paths)
+			$FilePopupMenu.position = get_screen_transform() * get_local_mouse_position()
+			$FilePopupMenu.call_deferred("popup")
+			accept_event()
+
 
 # Current working directory
 func get_directory() -> String:

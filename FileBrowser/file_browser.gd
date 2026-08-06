@@ -3,7 +3,6 @@ extends Control
 @onready var folder_view: FolderIconView = $PanelContainer/VBoxContainer/HSplitContainer/FolderIconView
 @onready var current_path: String = DirAccess.get_drive_name(0)
 @onready var current_path_line_edit: LineEditPlus = $PanelContainer/VBoxContainer/MenuHBoxContainer/CurrentPathLineEdit
-@onready var file_popup_menu: PopupMenu = $FilePopupMenu
 @onready var file_button: Button = $PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton
 @onready var view_menu_button = $PanelContainer/VBoxContainer/MenuHBoxContainer/ViewButton
 @onready var folder_tree: Tree = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/FileTree
@@ -22,7 +21,6 @@ var folder_future_list = []
 
 func _ready():
 	set_current_path(current_path.simplify_path())
-	self.folder_view.file_clicked.connect(_run_file)
 	visual_load()
 	folder_tree.show_default_os_drives()
 	folder_tree.columns = 1
@@ -57,15 +55,7 @@ func set_current_path(full_path: String):
 			folder_past_list.append(self.current_path)
 	else:
 		folder_past_list.append(self.current_path)
-	
-func _run_file(file_path: String):
-	$RunFileConfirmationDialog.dialog_text = "Confirm run file:\n" + file_path
-	$RunFileConfirmationDialog.popup_centered()
-	$RunFileConfirmationDialog.position = DisplayServer.mouse_get_position()
-	if $RunFileConfirmationDialog.confirmed.is_connected(OS.shell_open):
-		$RunFileConfirmationDialog.confirmed.disconnect(OS.shell_open)
-	$RunFileConfirmationDialog.confirmed.connect(OS.shell_open.bind(file_path))
-	
+
 		
 func _on_up_dir_button_pressed():
 	var new_path = self.current_path.get_base_dir()
@@ -97,20 +87,6 @@ func new_folder(folder_name: String):
 	# Update to show new folder
 	set_current_path(self.current_path)
 
-func _on_file_popup_menu_id_pressed(id):
-	match id:
-		file_popup_menu.NEW_FOLDER:  # New Folder
-			$NewFolderConfirmationDialog.popup_centered()
-			$NewFolderConfirmationDialog.position = DisplayServer.mouse_get_position()
-			$NewFolderConfirmationDialog/NewFolderLineEdit.grab_focus()
-		file_popup_menu.NEW_FILE:  # New File
-			$NewFileConfirmationDialog.popup_centered()
-			$NewFileConfirmationDialog.position = DisplayServer.mouse_get_position()
-			$NewFileConfirmationDialog/NewFileLineEdit.grab_focus()
-		file_popup_menu.TRASH:  # Trash Item(s)
-			ask_trash_selected_items()
-		file_popup_menu.BOOKMARK:
-			ask_bookmark_selected_items()
 
 # Actions for bookmarking
 func ask_bookmark_selected_items():
@@ -123,37 +99,7 @@ func ask_bookmark_selected_items():
 			if DirAccess.dir_exists_absolute(path):
 				bookmarks.add_folder(path)
 
-# Creates text on confirmation dialog about trashing files
-func ask_trash_selected_items():
-	var paths = get_selected_paths()
-	if len(paths) == 0:
-		# TODO Make this a popup warning
-		print("No items selected")
-	elif len(paths) < 5:
-		var path_string = "\n".join(paths)
-		$TrashFileConfirmationDialog.dialog_text = "Trash File:\n" + path_string
-		$TrashFileConfirmationDialog.popup_centered()
-		$TrashFileConfirmationDialog.position = DisplayServer.mouse_get_position()
-	else:
-		$TrashFileConfirmationDialog.dialog_text = "Trash " + str(len(paths)) + " files?"
-		$TrashFileConfirmationDialog.popup_centered()
-		$TrashFileConfirmationDialog.position = DisplayServer.mouse_get_position()
 
-# Create new folder for given text
-func _on_new_folder_confirmation_dialog_confirmed():
-	# Action to create new folder
-	new_folder($NewFolderConfirmationDialog/NewFolderLineEdit.text)
-	# Clear text from popup for reuse
-	$NewFolderConfirmationDialog/NewFolderLineEdit.text = ""
-	# Show Changes
-	self.folder_view.refresh()
-
-# Sends each selected item to trash
-func trash_selected():
-	var paths = get_selected_paths()
-	for path in paths:
-		OS.move_to_trash(path)
-	self.folder_view.refresh()
 
 func _on_h_slider_value_changed(value):
 	self.folder_view.set_folder_size(value)
@@ -209,36 +155,6 @@ func _input(event: InputEvent) -> void:
 			history_back()
 		if event.button_index == 9 and event.is_pressed():
 			history_forward()
-
-	# Show menu on right click
-	if event is InputEventMouseButton:
-		# Is right clicked
-		if event.pressed and event.button_index == 2:
-			var mouse_position = get_global_mouse_position()
-			# Additive select when holding shift or already selected
-			if (Input.is_key_pressed(KEY_SHIFT) 
-					or Input.is_key_pressed(KEY_CTRL)
-					or self.folder_view.is_selected_point(mouse_position)):
-				self.folder_view.select_child_by_point(mouse_position)
-			# Exclusive select on single folder right click (not empty space)
-			elif 0 != len(self.folder_view.get_path_at_point(mouse_position)):
-				self.folder_view.deselect_all_children()
-				self.folder_view.select_child_by_point(mouse_position)
-				
-			var true_mouse_position =  mouse_position + Vector2(get_window().position)
-			
-			if file_tree.get_global_file_area_rect().has_point(get_global_mouse_position()) or \
-					folder_view.get_global_file_area_rect().has_point(get_global_mouse_position()):
-					file_popup_menu_popup(true_mouse_position)
-			
-
-# Create new file with given file name
-func _on_new_file_confirmation_dialog_confirmed():
-	
-	var new_file_name = $NewFileConfirmationDialog/NewFileLineEdit.text
-	if not FileAccess.file_exists(self.current_path.path_join(new_file_name)):
-		FileAccess.open(self.current_path.path_join(new_file_name), FileAccess.WRITE)
-		self.folder_view.refresh()
 
 
 func _on_view_button_pressed():

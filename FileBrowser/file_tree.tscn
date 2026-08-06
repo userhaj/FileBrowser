@@ -2,6 +2,16 @@
 
 [ext_resource type="Script" uid="uid://bsmobc4ur5ywq" path="res://FileBrowser/file_tree.gd" id="1_6nfik"]
 [ext_resource type="PackedScene" uid="uid://cnrjg1q6m5y36" path="res://FileBrowser/sub_viewport_single_label.tscn" id="2_wxgul"]
+[ext_resource type="PackedScene" uid="uid://behydyevo5qgt" path="res://FileBrowser/BackendTools/file_popup_menu.tscn" id="3_1n75l"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_1n75l"]
+viewport_path = NodePath("SubViewportFolder")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_5pgj7"]
+viewport_path = NodePath("SubViewportFile")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_hg8a3"]
+viewport_path = NodePath("SubViewportTrash")
 
 [node name="FileTree" type="Tree" unique_id=1822229957]
 propagate_maximum_size = true
@@ -40,8 +50,16 @@ item_0/id = 1
 wait_time = 0.5
 one_shot = true
 
+[node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("3_1n75l")]
+item_0/icon = SubResource("ViewportTexture_1n75l")
+item_1/icon = SubResource("ViewportTexture_5pgj7")
+item_3/icon = SubResource("ViewportTexture_hg8a3")
+
 [connection signal="column_title_clicked" from="." to="." method="_on_column_title_clicked"]
+[connection signal="empty_clicked" from="." to="." method="_on_empty_clicked"]
 [connection signal="item_activated" from="." to="." method="_on_item_activated"]
 [connection signal="item_collapsed" from="." to="." method="_on_item_collapsed"]
+[connection signal="item_mouse_selected" from="." to="." method="_on_item_mouse_selected"]
 [connection signal="id_pressed" from="PopupMenu" to="." method="_on_popup_menu_id_pressed"]
 [connection signal="index_pressed" from="PopupMenu" to="." method="_on_popup_menu_index_pressed"]
+[connection signal="files_changed" from="FilePopupMenu" to="." method="refresh"]

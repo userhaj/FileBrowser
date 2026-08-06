@@ -398,3 +398,21 @@ func show_default_os_drives():
 	if show_folders:
 		for dir_tree_item: TreeItem in tree_root.get_children():
 			_add_sub_folder(dir_tree_item)
+
+
+func _on_item_mouse_selected(mouse_position: Vector2, mouse_button_index: int) -> void:
+	if mouse_button_index == MOUSE_BUTTON_RIGHT:
+		var selected_paths = PackedStringArray(get_selected_paths())
+		$FilePopupMenu.pre_popup(selected_paths)
+		$FilePopupMenu.position = get_screen_transform() * mouse_position
+		$FilePopupMenu.popup()
+
+
+func _on_empty_clicked(click_position: Vector2, mouse_button_index: int) -> void:
+	if mouse_button_index == MOUSE_BUTTON_RIGHT:
+		var selected_paths = PackedStringArray(get_selected_paths())
+		if selected_paths.size() < 1:
+			selected_paths = PackedStringArray([_full_directory_path])
+		$FilePopupMenu.pre_popup(selected_paths)
+		$FilePopupMenu.position = get_screen_transform() * click_position
+		$FilePopupMenu.popup()

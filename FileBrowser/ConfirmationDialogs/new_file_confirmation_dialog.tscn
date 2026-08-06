@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://bg3yssvrl1tke"]
+
+[ext_resource type="Script" uid="uid://omtvy1wvj4xh" path="res://FileBrowser/ConfirmationDialogs/new_file_confirmation_dialog.gd" id="1_e3iye"]
+[ext_resource type="Script" uid="uid://cvbxs2ydf6ksb" path="res://FeatureAddedObjects/line_edit_plus.gd" id="1_vimyv"]
+
+[node name="NewFileConfirmationDialog" type="ConfirmationDialog" unique_id=1979710931]
+oversampling_override = 1.0
+title = "New File Name"
+ok_button_text = "Create File"
+script = ExtResource("1_e3iye")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1740499873]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=251820578]
+layout_mode = 2
+
+[node name="NewFileLineEdit" type="LineEdit" parent="VBoxContainer" unique_id=782253616]
+layout_mode = 2
+placeholder_text = "Enter File Name"
+script = ExtResource("1_vimyv")
+metadata/_custom_type_script = "uid://cvbxs2ydf6ksb"
+
+[connection signal="about_to_popup" from="." to="." method="_on_about_to_popup"]
+[connection signal="confirmed" from="." to="." method="_on_confirmed"]
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]

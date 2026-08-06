@@ -8,7 +8,6 @@
 [ext_resource type="FontFile" uid="uid://0h6c0qjdknr1" path="res://Fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="4_r42i3"]
 [ext_resource type="PackedScene" uid="uid://ds45fvtgt8nk7" path="res://FileBrowser/Settings/settings_window.tscn" id="7_cus0t"]
 [ext_resource type="PackedScene" uid="uid://byylub0x8vqh0" path="res://FileBrowser/file_tree.tscn" id="7_n7rbv"]
-[ext_resource type="PackedScene" uid="uid://behydyevo5qgt" path="res://FileBrowser/BackendTools/file_popup_menu.tscn" id="7_nvgqa"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_0y5oy"]
 viewport_path = NodePath("ViewPopupMenu/SubViewportTree")
@@ -29,18 +28,6 @@ viewport_path = NodePath("ViewPopupMenu/SubViewportBook")
 line_spacing = 0.0
 font = ExtResource("4_r42i3")
 font_size = 15
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_nvgqa"]
-viewport_path = NodePath("SubViewportFolder")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_n7rbv"]
-viewport_path = NodePath("SubViewportFile")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_6iqhl"]
-viewport_path = NodePath("SubViewportBook")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_cfoe0"]
-viewport_path = NodePath("SubViewportTrash")
 
 [node name="FileBrowser" type="Control" unique_id=1090105108]
 layout_mode = 3
@@ -137,7 +124,6 @@ allow_rmb_select = false
 layout_mode = 2
 columns = 1
 column_titles_visible = false
-allow_rmb_select = false
 select_mode = 0
 show_files = false
 only_show_drives = true
@@ -149,43 +135,6 @@ layout_mode = 2
 [node name="FolderIconView" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=1750673585 instance=ExtResource("3_fo1ef")]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="NewFolderConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1487164205]
-oversampling_override = 1.0
-title = "New Folder Name"
-size = Vector2i(205, 100)
-ok_button_text = "Create Folder"
-
-[node name="NewFolderLineEdit" type="LineEdit" parent="NewFolderConfirmationDialog" unique_id=796698646]
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 197.0
-offset_bottom = 51.0
-placeholder_text = "Enter Folder Name"
-script = ExtResource("3_cveyf")
-metadata/_custom_type_script = "uid://cvbxs2ydf6ksb"
-
-[node name="NewFileConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1191893157]
-oversampling_override = 1.0
-title = "New File Name"
-ok_button_text = "Create File"
-
-[node name="NewFileLineEdit" type="LineEdit" parent="NewFileConfirmationDialog" unique_id=733661858]
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 192.0
-offset_bottom = 51.0
-placeholder_text = "Enter File Name"
-script = ExtResource("3_cveyf")
-metadata/_custom_type_script = "uid://cvbxs2ydf6ksb"
-
-[node name="RunFileConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=164990766]
-oversampling_override = 1.0
-ok_button_text = "RUN"
-
-[node name="TrashFileConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=980480675]
-oversampling_override = 1.0
-ok_button_text = "TRASH"
 
 [node name="ViewPopupMenu" type="PopupMenu" parent="." unique_id=2084791024]
 oversampling_override = 1.0
@@ -355,14 +304,6 @@ autowrap_trim_flags = 0
 [node name="SettingsWindow" parent="." unique_id=1594888349 instance=ExtResource("7_cus0t")]
 visible = false
 
-[node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("7_nvgqa")]
-visible = false
-prefer_native_menu = true
-item_0/icon = SubResource("ViewportTexture_nvgqa")
-item_1/icon = SubResource("ViewportTexture_n7rbv")
-item_2/icon = SubResource("ViewportTexture_6iqhl")
-item_4/icon = SubResource("ViewportTexture_cfoe0")
-
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton" to="." method="_file_menu"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/ViewButton" to="." method="_on_view_button_pressed"]
@@ -380,10 +321,4 @@ item_4/icon = SubResource("ViewportTexture_cfoe0")
 [connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/FileTree" to="." method="set_current_path"]
 [connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" to="." method="set_current_path"]
 [connection signal="gui_input" from="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" to="." method="_on_gui_input"]
-[connection signal="confirmed" from="NewFolderConfirmationDialog" to="." method="_on_new_folder_confirmation_dialog_confirmed"]
-[connection signal="text_position_changed" from="NewFolderConfirmationDialog/NewFolderLineEdit" to="." method="_on_line_edit_text_position_changed"]
-[connection signal="confirmed" from="NewFileConfirmationDialog" to="." method="_on_new_file_confirmation_dialog_confirmed"]
-[connection signal="text_position_changed" from="NewFileConfirmationDialog/NewFileLineEdit" to="." method="_on_line_edit_text_position_changed"]
-[connection signal="confirmed" from="TrashFileConfirmationDialog" to="." method="trash_selected"]
 [connection signal="id_pressed" from="ViewPopupMenu" to="." method="_on_view_popup_menu_id_pressed"]
-[connection signal="id_pressed" from="FilePopupMenu" to="." method="_on_file_popup_menu_id_pressed"]

@@ -4,7 +4,17 @@
 [ext_resource type="Script" uid="uid://cf281dx06gmp1" path="res://FileBrowser/folder_icon_view.gd" id="1_qgpga"]
 [ext_resource type="PackedScene" uid="uid://drjwj2xhyocps" path="res://FileBrowser/select_box.tscn" id="2_q4s0j"]
 [ext_resource type="Script" uid="uid://bwigx801m6owr" path="res://FileBrowser/drop_files_confirmation_dialog.gd" id="4_ktkjh"]
+[ext_resource type="PackedScene" uid="uid://behydyevo5qgt" path="res://FileBrowser/BackendTools/file_popup_menu.tscn" id="6_ge0n4"]
 [ext_resource type="Script" uid="uid://cvbxs2ydf6ksb" path="res://FeatureAddedObjects/line_edit_plus.gd" id="6_ispsu"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_ispsu"]
+viewport_path = NodePath("SubViewportFolder")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_ge0n4"]
+viewport_path = NodePath("SubViewportFile")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_2xlx7"]
+viewport_path = NodePath("SubViewportTrash")
 
 [node name="FolderIconView" type="Control" unique_id=475031514]
 layout_mode = 3
@@ -65,6 +75,11 @@ metadata/_custom_type_script = "uid://cvbxs2ydf6ksb"
 layout_mode = 2
 size_flags_horizontal = 8
 text = "x"
+
+[node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("6_ge0n4")]
+item_0/icon = SubResource("ViewportTexture_ispsu")
+item_1/icon = SubResource("ViewportTexture_ge0n4")
+item_3/icon = SubResource("ViewportTexture_2xlx7")
 
 [connection signal="selected_area" from="SelectBox" to="." method="select_children_by_area"]
 [connection signal="confirmed" from="DropFilesConfirmationDialog" to="DropFilesConfirmationDialog" method="_on_confirmed"]
