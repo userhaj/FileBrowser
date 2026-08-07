@@ -8,6 +8,8 @@ extends PopupMenu
 #	$FilePopupMenu.popup()
 
 enum {NEW_FOLDER, NEW_FILE, OPEN, OPEN_WITH, BOOKMARK, TRASH}
+var icons: Dictionary = {NEW_FOLDER: "📁", NEW_FILE: "📄", OPEN: "🚀", \
+	OPEN_WITH: "👯", BOOKMARK: "📘", TRASH: "🗑️"}
 
 # Call whenever new file/colder created or deleted
 signal files_changed
@@ -21,10 +23,11 @@ var files: PackedStringArray
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	add_submenu_node_item("Open With",$FileOpenWithPopupMenu, OPEN_WITH)
-	set_item_icon(get_item_index(OPEN_WITH), $SubViewportPeopleBunny.get_texture())
-	set_item_index(get_item_index(OPEN_WITH),OPEN_WITH-1)
 	_setup()
+	
+	add_submenu_node_item("Open With",$FileOpenWithPopupMenu, OPEN_WITH)
+	set_item_icon(get_item_index(OPEN_WITH), _texture_from_text("👯‍♀️"))
+	set_item_index(get_item_index(OPEN_WITH),OPEN_WITH-1)
 	
 func _setup():
 	# A popup calling a popup causes glitches. 
@@ -36,6 +39,22 @@ func _setup():
 	new_folder_confirmation.confirmed.connect(files_changed.emit)
 	new_file_confirmation_dialog.confirmed.connect(files_changed.emit)
 	trash_file_confirmation_dialog.confirmed.connect(files_changed.emit)
+	
+	# Set icons on menu
+	for index in range(item_count):
+		var icon = icons.get(get_item_id(index), "")
+		if icon:
+			set_item_icon(index, _texture_from_text(icon))
+
+func _texture_from_text(text:String) -> ViewportTexture:
+	var subview = get_node_or_null(text)
+	if not subview :
+		subview  = preload("res://FileBrowser/sub_viewport_single_label.tscn").instantiate()
+		subview.set_text(text)
+		subview.name = text
+		add_child(subview)
+	return subview.get_texture()
+	
 
 func _teardown():
 	new_folder_confirmation.queue_free()
@@ -46,20 +65,17 @@ func _teardown():
 # Must call to set paths for methods
 func pre_popup(new_paths: PackedStringArray):
 	files = new_paths
-	# Disable Open With if more than one item selected
+	# Disable actions when selection multiple files
 	if(new_paths.size() == 1):
-		set_item_disabled(get_item_index(OPEN_WITH), false)
-		set_item_disabled(get_item_index(NEW_FOLDER), false)
-		set_item_disabled(get_item_index(NEW_FILE), false)
-		set_item_disabled(get_item_index(TRASH), false)
-		if DirAccess.dir_exists_absolute(new_paths[0]):
-			set_item_disabled(get_item_index(BOOKMARK), false)
+		for i in item_count:
+			set_item_disabled(get_item_index(i), false)
 		$FileOpenWithPopupMenu.setup(new_paths[0])
 	else:
 		set_item_disabled(get_item_index(OPEN_WITH), true)
 		set_item_disabled(get_item_index(NEW_FOLDER), true)
 		set_item_disabled(get_item_index(NEW_FILE), true)
-		set_item_disabled(get_item_index(BOOKMARK), true)
+	
+	# Trashing is allowed as long as more than one thing is selected
 	if new_paths.size() > 0:
 		set_item_disabled(get_item_index(TRASH), false)
 

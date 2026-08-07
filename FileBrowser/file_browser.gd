@@ -74,11 +74,6 @@ func _file_menu():
 
 func file_popup_menu_popup(new_position: Vector2):
 	var paths = PackedStringArray(get_selected_paths())
-	self.file_popup_menu.pre_popup(paths)
-	self.file_popup_menu.position = new_position
-	# Popups issue https://github.com/godotengine/godot/issues/87875
-
-	self.file_popup_menu.show()
 	accept_event()
 	
 	
