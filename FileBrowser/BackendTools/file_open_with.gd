@@ -3,11 +3,44 @@ extends PopupMenu
 enum AppProperties {PATH, NAME, MIME_TYPES}
 var mimes: Dictionary = {}
 var LINUX_SHARE_FOLDERS = []
+var APP_CACHE_FILEPATH = "user://appcache"
 
 func _ready() -> void:
-	if "nux" in OS.get_name():
-		var thread = Thread.new()
-		thread.start(linux_find_mimes)
+	var last_edit = FileAccess.get_modified_time(APP_CACHE_FILEPATH)
+	var current_time = Time.get_unix_time_from_system()
+	var is_app_cache_old= (current_time - last_edit) > (24*60*60)
+
+	if is_app_cache_old:
+		if "nux" in OS.get_name():
+			var thread = Thread.new()
+			thread.start(linux_find_mimes)
+	else:
+		_load_app_cache()
+
+func _save_app_cache():
+		var app_cache = FileAccess.open(APP_CACHE_FILEPATH, FileAccess.WRITE)
+		app_cache.store_line(JSON.stringify(mimes))
+		app_cache.close()
+		
+		
+
+func _load_app_cache() -> bool:
+		var app_cache = FileAccess.open(APP_CACHE_FILEPATH, FileAccess.READ)
+		var json = JSON.new()
+		var json_string = app_cache.get_line()
+		var parsed = json.parse(json_string)
+		if not parsed == OK:
+			app_cache.close()
+			return false
+			
+		if typeof(json.data) == TYPE_DICTIONARY:
+			mimes = json.data
+			app_cache.close()
+			return true
+			
+		app_cache.close()
+		return false
+	
 
 func setup(absolute_file_path: String):
 	clear(true)
@@ -31,9 +64,9 @@ func setup(absolute_file_path: String):
 		hide()
 
 func add_open_with_menu_item(index, app, file_to_open):
-	var nice_name = app.get(AppProperties.NAME)
+	var nice_name = app.get(str(AppProperties.NAME))
 	add_item(nice_name)
-	var run_app_callable = linux_run_desktop_file.bind(app.get(AppProperties.PATH), file_to_open)
+	var run_app_callable = linux_run_desktop_file.bind(app.get(str(AppProperties.PATH)), file_to_open)
 	set_item_metadata(index, run_app_callable)
 
 func linux_run_desktop_file(desktop_file, open_file):
@@ -72,12 +105,13 @@ func linux_find_mimes():
 				var new_mimes = linux_mime_types_from_desktop_file(full_app_path)
 				for mime: String in new_mimes:
 					if mime.length() > 0:
-						var app_dict = {AppProperties.PATH: full_app_path,
-										AppProperties.NAME: app_name}
+						var app_dict = {str(AppProperties.PATH): full_app_path,
+										str(AppProperties.NAME): app_name}
 						if self.mimes.has(mime):
 							self.mimes[mime].append(app_dict)
 						else:
 							self.mimes.set(mime, [app_dict])
+	_save_app_cache.call_deferred()
 
 func linux_apps_in_directory_recursive(directory: String):
 	var folders = []

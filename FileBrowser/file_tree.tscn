@@ -3,14 +3,16 @@
 [ext_resource type="Script" uid="uid://bsmobc4ur5ywq" path="res://FileBrowser/file_tree.gd" id="1_6nfik"]
 [ext_resource type="PackedScene" uid="uid://cnrjg1q6m5y36" path="res://FileBrowser/sub_viewport_single_label.tscn" id="2_wxgul"]
 [ext_resource type="PackedScene" uid="uid://behydyevo5qgt" path="res://FileBrowser/BackendTools/file_popup_menu.tscn" id="3_1n75l"]
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_1n75l"]
-viewport_path = NodePath("SubViewportFolder")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_5pgj7"]
-viewport_path = NodePath("SubViewportFile")
+[ext_resource type="PackedScene" uid="uid://dftwbc3ldxac1" path="res://FileBrowser/ConfirmationDialogs/run_file_confirmation_dialog.tscn" id="4_5pgj7"]
+[ext_resource type="Script" uid="uid://diba812tgfd22" path="res://FileBrowser/file_browsing_controller.gd" id="5_hg8a3"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_hg8a3"]
+viewport_path = NodePath("SubViewportFolder")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_x6hrk"]
+viewport_path = NodePath("SubViewportFile")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_vj7kp"]
 viewport_path = NodePath("SubViewportTrash")
 
 [node name="FileTree" type="Tree" unique_id=1822229957]
@@ -51,9 +53,16 @@ wait_time = 0.5
 one_shot = true
 
 [node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("3_1n75l")]
-item_0/icon = SubResource("ViewportTexture_1n75l")
-item_1/icon = SubResource("ViewportTexture_5pgj7")
-item_3/icon = SubResource("ViewportTexture_hg8a3")
+visible = false
+item_0/icon = SubResource("ViewportTexture_hg8a3")
+item_1/icon = SubResource("ViewportTexture_x6hrk")
+item_3/icon = SubResource("ViewportTexture_vj7kp")
+
+[node name="RunFileConfirmationDialog" parent="." unique_id=381305560 instance=ExtResource("4_5pgj7")]
+
+[node name="FileBrowsingController" type="Node" parent="." unique_id=105872847]
+script = ExtResource("5_hg8a3")
+metadata/_custom_type_script = "uid://diba812tgfd22"
 
 [connection signal="column_title_clicked" from="." to="." method="_on_column_title_clicked"]
 [connection signal="empty_clicked" from="." to="." method="_on_empty_clicked"]
@@ -63,3 +72,4 @@ item_3/icon = SubResource("ViewportTexture_hg8a3")
 [connection signal="id_pressed" from="PopupMenu" to="." method="_on_popup_menu_id_pressed"]
 [connection signal="index_pressed" from="PopupMenu" to="." method="_on_popup_menu_index_pressed"]
 [connection signal="files_changed" from="FilePopupMenu" to="." method="refresh"]
+[connection signal="change_directory" from="FileBrowsingController" to="." method="_full_directory_path_setter"]

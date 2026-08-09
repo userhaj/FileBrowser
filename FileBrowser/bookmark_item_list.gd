@@ -22,10 +22,17 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 	return get_item_at_position(at_position)
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
-	return typeof(data) == TYPE_INT
+	return typeof(data) == TYPE_INT or typeof(data) == TYPE_PACKED_STRING_ARRAY
 
 func _drop_data(at_position: Vector2, data: Variant) -> void:
-	move_item(data, get_item_at_position(at_position))
+	match typeof(data): 
+		TYPE_INT:
+			move_item(data, get_item_at_position(at_position))
+		TYPE_PACKED_STRING_ARRAY:
+			for path: String in data:
+				if DirAccess.dir_exists_absolute(path):
+					add_folder(path)
+
 	# Re-write save file with new order
 	_save_all_bookmarks()
 
@@ -34,7 +41,6 @@ func _save_all_bookmarks():
 	var err = config.load(SAVE_FILE)
 	if err == OK:
 		for idx in range(item_count):
-			config.erase_section_key("bookmark", get_item_tooltip(idx))
 			config.set_value("bookmark", get_item_tooltip(idx), idx)
 	config.save(SAVE_FILE)
 

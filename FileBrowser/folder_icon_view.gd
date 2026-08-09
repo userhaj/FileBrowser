@@ -35,19 +35,20 @@ func _ready():
 	ctrl_f_exit_button.pressed.connect(ctrl_f_panel_container.hide)
 
 func files_dropped(files: PackedStringArray):
-	var mouse_pos: Vector2 = get_local_mouse_position()
-	var is_mouse_over_self = mouse_pos.x >= 0 and mouse_pos.y >= 0 and mouse_pos.x <= $".".size.x and mouse_pos.y <= $".".size.y
-	if len(files) > 0 and is_mouse_over_self:
-		var target: FolderLargeIconButton = get_object_at_point(mouse_pos)
-		var target_folder: String = target.path if target != null else _full_directory_path
-		var file_transfer = preload("res://FileBrowser/file_transfer_window.tscn").instantiate()
-		file_transfer.hide()
-		file_transfer.connect("tree_exiting", refresh)
-		add_child(file_transfer)
-		if Input.is_key_pressed(KEY_SHIFT):
-			file_transfer.move(files, target_folder)
-		else:
-			file_transfer.copy(files, target_folder)
+	if visible:
+		var mouse_pos: Vector2 = get_local_mouse_position()
+		var is_mouse_over_self = mouse_pos.x >= 0 and mouse_pos.y >= 0 and mouse_pos.x <= $".".size.x and mouse_pos.y <= $".".size.y
+		if len(files) > 0 and is_mouse_over_self:
+			var target: FolderLargeIconButton = get_object_at_point(mouse_pos)
+			var target_folder: String = target.path if target != null else _full_directory_path
+			var file_transfer = preload("res://FileBrowser/file_transfer_window.tscn").instantiate()
+			file_transfer.hide()
+			file_transfer.connect("tree_exiting", refresh)
+			add_child(file_transfer)
+			if Input.is_key_pressed(KEY_SHIFT):
+				file_transfer.move(files, target_folder)
+			else:
+				file_transfer.copy(files, target_folder)
 	
 func _input(event):
 	# Handle drag icon event
@@ -310,7 +311,7 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	# Hand-off dropping to OS
 	if typeof(data) == TYPE_PACKED_STRING_ARRAY:
-		get_tree().root.emit_signal("files_dropped", data)
+		get_window().emit_signal("files_dropped", data)
 
 
 # Location of file/folders in gui

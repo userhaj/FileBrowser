@@ -7,7 +7,8 @@ func set_files_to_open(files_to_open: PackedStringArray):
 
 
 func _on_about_to_popup() -> void:
-	dialog_text = "Confirm run file:\n" + "\n".join(_files)
+	var plural = "s" if _files.size()>1 else ""
+	dialog_text = "Confirm run file%s:\n" % plural + "\n".join(_files)
 
 
 func _on_confirmed() -> void:

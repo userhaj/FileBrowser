@@ -18,9 +18,9 @@ class_name FileTree
 signal folder_changed(folder_path: String)
 @onready var old_min_width = {0:128, 1: 128}
 var _full_directory_path: String
-@onready var tree_root: TreeItem = create_item()
+var tree_root: TreeItem
 var column_titles = ["Name", "Size"]
-@onready var folder: Label = $SubViewport/PanelContainer/Label
+var _fold_structure = {}
 
 var dragging_resize_column: int = -1
 
@@ -85,10 +85,10 @@ func _ready():
 	call_thread_safe("_set_column_titles")
 	
 	enable_drag_unfolding = true
-	
+
+func _enter_tree() -> void:
 	# Handle dropped files
 	get_window().files_dropped.connect(files_dropped)
-	
 	
 
 func _set_column_titles():
@@ -99,38 +99,65 @@ func _set_column_titles():
 	set_column_expand(0, true)
 
 func files_dropped(files: PackedStringArray):
-	# TODO simplify file drop action.
-	var target_folder = folder_at_mouse()
-	# If there are files and a folder under the mouse
-	if len(files) > 0 and len(target_folder) > 0:
-		var file_transfer = preload("res://FileBrowser/file_transfer_window.tscn").instantiate()
-		file_transfer.hide()
-		file_transfer.connect("tree_exiting", refresh)
-		add_child(file_transfer)
-		if Input.is_key_pressed(KEY_SHIFT):
-			file_transfer.move(files, target_folder)
-		else:
-			file_transfer.copy(files, target_folder)
+	if visible:
+		# TODO simplify file drop action.
+		var target_folder = folder_at_mouse()
+		# If there are files and a folder under the mouse
+		if len(files) > 0 and len(target_folder) > 0:
+			var file_transfer = preload("res://FileBrowser/file_transfer_window.tscn").instantiate()
+			file_transfer.hide()
+			file_transfer.connect("tree_exiting", refresh)
+			add_child(file_transfer)
+			if Input.is_key_pressed(KEY_SHIFT):
+				file_transfer.move(files, target_folder)
+			else:
+				file_transfer.copy(files, target_folder)
 			
 
 # Change current directoy, removes all icons and adds icons for full_path
 func set_directory(full_path: String):
-	if not only_show_drives:
+	$FileBrowsingController.set_directory(full_path)
+
+
+# Current working directory
+func get_directory() -> String:
+	return _full_directory_path
+	
+
+# Used by FileBrowingController signal to update directory
+func _full_directory_path_setter(full_path:String):
+	if not only_show_drives: # never actually change folders!
 		self._full_directory_path = full_path.simplify_path()
-		refresh()
+	refresh()
 	emit_signal("folder_changed", full_path)
 
+func _fill_fold(tree_item: TreeItem):
+	while tree_item:
+		var path = path_from_TreeItem(tree_item)
+		_fold_structure.set(path, tree_item.collapsed)
+		_fill_fold(tree_item.get_first_child())
+		tree_item = tree_item.get_next()
+	
 # Clears Children, Adds folder/files based on current directory
 func refresh():
 	if only_show_drives:
 		show_default_os_drives()
 	else:
+
+		if tree_root:
+			# Get current fold structure (is folder expanded?)
+			_fold_structure.clear()
+			var tree_item = get_root().get_first_child()
+			_fill_fold(tree_item)
+			
 		# Remove current directory content
 		clear()
-		# Add each drive
-		tree_root = $".".create_item()
-		tree_root.set_text(0, "root")
-		$".".hide_root = true
+		
+		if not tree_root:
+			tree_root = create_item()
+			tree_root.set_text(0, "root")
+		hide_root = true
+		
 		
 		if show_folders:
 			for directory in DirAccess.get_directories_at(self._full_directory_path):
@@ -140,16 +167,25 @@ func refresh():
 			for file in DirAccess.get_files_at(self._full_directory_path):
 				call_deferred("_create_file", tree_root, _full_directory_path.path_join(file))
 		
-		if show_folders:
-			call_deferred("_populate_sub_folders_of_tree_root")
+		#if show_folders:
+			#call_deferred("_populate_sub_folders_of_tree_root")
 		
-	# Add animation minimal to folders
-	folder.pivot_offset = Vector2(8, 8)
-	var rot = create_tween()
-	rot.set_trans(Tween.TRANS_ELASTIC)
-	rot.set_ease(Tween.EASE_OUT)
-	folder.rotation_degrees = -15
-	rot.tween_property(folder, "rotation_degrees", 0, 0.75)
+		# Notify user that refresh occured by wiggling folders
+		var folder = get_node_or_null("📁")
+		if folder:
+			wiggle_animate(folder.label)
+
+
+func wiggle_animate(control: Control):
+	if control:
+		# Add animation minimal to folders
+		control.pivot_offset = Vector2(8, 8)
+		var rot = create_tween()
+		rot.set_trans(Tween.TRANS_ELASTIC)
+		rot.set_ease(Tween.EASE_OUT)
+		control.rotation_degrees = -15
+		rot.tween_property(control, "rotation_degrees", 0, 0.75) 
+	
 
 # Returns list of expanded folders in tree
 func get_expanded_folders() -> Array[String]:
@@ -184,21 +220,21 @@ func _add_sub_folder(tree_item: TreeItem):
 	if dir:
 		dir.list_dir_begin()
 		var file_name = dir.get_next()
-		while file_name != "":
+		while file_name:
 			var full_path = path.path_join(file_name)
 			# If folder, create TreeItem folder
 			if show_folders and DirAccess.dir_exists_absolute(full_path):
 				# Adding child is not animation/thread safe, must call deferred
-				$".".call_deferred("_create_folder", tree_item, full_path)
+				call_deferred("_create_folder", tree_item, full_path)
 			elif show_files and FileAccess.file_exists(full_path):
-				$".".call_deferred("_create_file", tree_item, full_path)
+				call_deferred("_create_file", tree_item, full_path)
 			# Check next folder
 			file_name = dir.get_next()
 
 
 func _create_folder(base_tree_item, full_path: String, label_full_path: bool=false):
 	# Create folder TreeItem with saved path
-	var new_tree_item: TreeItem = $".".create_item(base_tree_item)
+	var new_tree_item: TreeItem = create_item(base_tree_item)
 	new_tree_item.collapsed = true
 	var label_text = full_path if label_full_path else full_path.get_file()
 	if label_text == "": # Unix / has no folder name
@@ -211,14 +247,19 @@ func _create_folder(base_tree_item, full_path: String, label_full_path: bool=fal
 		var dir_count = dirAcc.get_directories().size()
 		var file_count = dirAcc.get_files().size()
 		new_tree_item.set_text(1, str(dir_count + file_count)+" objects")
-	new_tree_item.set_icon(0, $SubViewport.get_texture())
+	new_tree_item.set_icon(0, create_get_subview_label("📁").get_texture())
 	
+	# Fill subfolders if base folders(on root) or previously recorded as having folders
+	if new_tree_item.get_parent() == get_root() or _fold_structure.has(full_path):
+		_add_sub_folder(new_tree_item)
+	new_tree_item.collapsed = _fold_structure.get(full_path, true)
+
 	if always_fit_name:
 		new_tree_item.set_text_overrun_behavior(0, TextServer.OVERRUN_NO_TRIMMING)
 
 func _create_file(base_tree_item, full_path: String):
 	# Create folder TreeItem with saved path
-	var new_tree_item: TreeItem = $".".create_item(base_tree_item)
+	var new_tree_item: TreeItem = create_item(base_tree_item)
 	new_tree_item.collapsed = true
 	new_tree_item.set_text(0, full_path.get_file()) # On folders get_file() gets last folder name
 	new_tree_item.set_metadata(0, full_path)
@@ -228,20 +269,24 @@ func _create_file(base_tree_item, full_path: String):
 	var ext: String = full_path.get_extension()
 	var icon_emoji: String = icons.get(ext, "📄")
 	# Get the previously memory loaded texture if available
-	var subview = get_node_or_null(icon_emoji)
-	if not subview: # Icon not in memory
-		# Load emoji to texture object
-		subview = preload("res://FileBrowser/sub_viewport_single_label.tscn").instantiate()
-		subview.set_text(icon_emoji)
-		# Set name as emoji for easy get/null on line above
-		subview.name = icon_emoji
-		# Label>Subview>Texture>Tree Item texture only work if added and "visible"
-		add_child(subview)
+	var subview = create_get_subview_label(icon_emoji)
 	# Set icon using same texture/memory for all same emojis
 	new_tree_item.set_icon(0, subview.get_texture())
 	if always_fit_name:
 		new_tree_item.set_text_overrun_behavior(0, TextServer.OVERRUN_NO_TRIMMING)
-	
+
+# Returns subview with given emoji, makes new subview if not yet made
+func create_get_subview_label(emoji: String):
+	var subview = get_node_or_null(emoji)
+	if not subview: # Icon not in memory
+		# Load emoji to texture object
+		subview = preload("res://FileBrowser/sub_viewport_single_label.tscn").instantiate()
+		subview.set_text(emoji)
+		# Set name as emoji for easy get/null on line above
+		subview.name = emoji
+		# Label>Subview>Texture>Tree Item texture only work if added and "visible"
+		add_child(subview)
+	return subview
 
 func _on_column_title_clicked(_column: int, mouse_button_index: int) -> void:
 	if mouse_button_index == MOUSE_BUTTON_RIGHT:
@@ -275,6 +320,7 @@ func get_selected_tree_items() -> Array[TreeItem]:
 		next_selected = get_next_selected(next_selected)
 	return selected
 
+# File/Folder run action
 func _on_item_activated() -> void:
 	# Get multi selected items
 	var selected = get_selected_tree_items()
@@ -282,8 +328,14 @@ func _on_item_activated() -> void:
 	# Action if single folder was activated
 	if selected.size() == 1:
 		var full_path = selected[0].get_metadata(0)
-		if DirAccess.dir_exists_absolute(full_path):
+		if full_path and DirAccess.dir_exists_absolute(full_path):
 			set_directory(full_path)
+			return
+	
+	if selected.size() > 0:
+		$RunFileConfirmationDialog.set_files_to_open(PackedStringArray(get_selected_paths()))
+		$RunFileConfirmationDialog.position = get_screen_transform() * get_local_mouse_position()
+		$RunFileConfirmationDialog.popup()
 
 func _get_drag_data(at_position: Vector2) -> Variant:
 	# If drag started at nothing, do nothing
@@ -337,18 +389,22 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	# Hand-off dropping to OS
 	if typeof(data) == TYPE_PACKED_STRING_ARRAY:
-		get_tree().root.emit_signal("files_dropped", data)
+		get_window().emit_signal("files_dropped", data)
 	
 
 func path_from_TreeItem(given_item: TreeItem) -> String:
-	return given_item.get_metadata(0)
+	var path = given_item.get_metadata(0)
+	if path:
+		return path
+	return ""
 
 # Returns Array of paths in current directory
 func get_selected_paths() -> Array[String]:
 	var all_paths: Array[String] = []
 	var selected = get_selected_tree_items()
 	for child in selected:
-		all_paths.append(path_from_TreeItem(child))
+		if child:
+			all_paths.append(path_from_TreeItem(child))
 	return all_paths
 
 # Location of file/folders in gui

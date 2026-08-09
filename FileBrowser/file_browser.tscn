@@ -3,9 +3,9 @@
 [ext_resource type="Script" uid="uid://d20ud65y5yrro" path="res://FileBrowser/file_browser.gd" id="1_83ygx"]
 [ext_resource type="Theme" uid="uid://b17wob7amnhga" path="res://FileBrowser/Themes/base_theme.tres" id="1_njuki"]
 [ext_resource type="Script" uid="uid://cvbxs2ydf6ksb" path="res://FeatureAddedObjects/line_edit_plus.gd" id="3_cveyf"]
-[ext_resource type="PackedScene" uid="uid://c3celv4vu6p5t" path="res://FileBrowser/folder_icon_view.tscn" id="3_fo1ef"]
 [ext_resource type="PackedScene" uid="uid://bmro1s4aghein" path="res://FileBrowser/bookmark_item_list.tscn" id="4_nvgqa"]
 [ext_resource type="FontFile" uid="uid://0h6c0qjdknr1" path="res://Fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="4_r42i3"]
+[ext_resource type="PackedScene" uid="uid://dups46gqlxh47" path="res://FileBrowser/tabbed_browser.tscn" id="6_0y5oy"]
 [ext_resource type="PackedScene" uid="uid://ds45fvtgt8nk7" path="res://FileBrowser/Settings/settings_window.tscn" id="7_cus0t"]
 [ext_resource type="PackedScene" uid="uid://byylub0x8vqh0" path="res://FileBrowser/file_tree.tscn" id="7_n7rbv"]
 
@@ -14,9 +14,6 @@ viewport_path = NodePath("ViewPopupMenu/SubViewportTree")
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_4ogjx"]
 viewport_path = NodePath("ViewPopupMenu/SubViewportTree2")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_6tldu"]
-viewport_path = NodePath("ViewPopupMenu/SubViewportFramed")
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_2acyp"]
 viewport_path = NodePath("ViewPopupMenu/SubViewportPencil")
@@ -55,10 +52,14 @@ size_flags_horizontal = 3
 [node name="MenuHBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer" unique_id=378411459]
 layout_mode = 2
 
-[node name="FileButton" type="Button" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=517254236]
+[node name="FileButton" type="MenuButton" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=1283376336]
 layout_mode = 2
 text = "File"
-flat = true
+item_count = 2
+popup/item_0/text = "New Window"
+popup/item_0/id = 0
+popup/item_1/text = "Quit"
+popup/item_1/id = 1
 
 [node name="ViewButton" type="Button" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=895447087]
 layout_mode = 2
@@ -98,8 +99,8 @@ metadata/_custom_type_script = "uid://cvbxs2ydf6ksb"
 [node name="HSplitContainer" type="HSplitContainer" parent="PanelContainer/VBoxContainer" unique_id=188295582]
 layout_mode = 2
 size_flags_vertical = 3
-split_offsets = PackedInt32Array(215, 0)
-split_offset = 215
+split_offsets = PackedInt32Array(101)
+split_offset = 101
 
 [node name="PanelContainer" type="PanelContainer" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=333553009]
 layout_mode = 2
@@ -129,17 +130,13 @@ show_files = false
 only_show_drives = true
 always_fit_name = true
 
-[node name="FileTree" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=1209735265 instance=ExtResource("7_n7rbv")]
+[node name="TabbedBrowser" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=603231445 instance=ExtResource("6_0y5oy")]
 layout_mode = 2
-
-[node name="FolderIconView" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=1750673585 instance=ExtResource("3_fo1ef")]
-layout_mode = 2
-size_flags_horizontal = 3
 
 [node name="ViewPopupMenu" type="PopupMenu" parent="." unique_id=2084791024]
 oversampling_override = 1.0
 size = Vector2i(152, 100)
-item_count = 5
+item_count = 4
 item_0/text = "Folder Tree"
 item_0/icon = SubResource("ViewportTexture_0y5oy")
 item_0/checkable = 1
@@ -150,21 +147,16 @@ item_1/icon = SubResource("ViewportTexture_4ogjx")
 item_1/checkable = 1
 item_1/checked = true
 item_1/id = 3
-item_2/text = "Big Icons"
-item_2/icon = SubResource("ViewportTexture_6tldu")
+item_2/text = "Entry"
+item_2/icon = SubResource("ViewportTexture_2acyp")
 item_2/checkable = 1
 item_2/checked = true
-item_2/id = 4
-item_3/text = "Entry"
-item_3/icon = SubResource("ViewportTexture_2acyp")
+item_2/id = 1
+item_3/text = "Bookmarks"
+item_3/icon = SubResource("ViewportTexture_v5c3w")
 item_3/checkable = 1
 item_3/checked = true
-item_3/id = 1
-item_4/text = "Bookmarks"
-item_4/icon = SubResource("ViewportTexture_v5c3w")
-item_4/checkable = 1
-item_4/checked = true
-item_4/id = 2
+item_3/id = 2
 
 [node name="SubViewportTree" type="SubViewport" parent="ViewPopupMenu" unique_id=1811211390]
 disable_3d = true
@@ -308,7 +300,6 @@ visible = false
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton" to="." method="_file_menu"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/ViewButton" to="." method="_on_view_button_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
-[connection signal="value_changed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/FolderSizeHSlider" to="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" method="set_folder_size"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/RefreshButton" to="." method="_on_refresh_button_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/UpDirButton" to="." method="_on_up_dir_button_pressed"]
 [connection signal="gui_input" from="PanelContainer/VBoxContainer/MenuHBoxContainer/CurrentPathLineEdit" to="." method="_on_gui_input"]
@@ -318,7 +309,5 @@ visible = false
 [connection signal="drag_ended" from="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer" to="." method="visual_save"]
 [connection signal="folder_selected" from="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer/BookmarkItemList" to="." method="set_current_path"]
 [connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/FileTree" to="." method="set_current_path"]
-[connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/FileTree" to="." method="set_current_path"]
-[connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" to="." method="set_current_path"]
-[connection signal="gui_input" from="PanelContainer/VBoxContainer/HSplitContainer/FolderIconView" to="." method="_on_gui_input"]
+[connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/TabbedBrowser" to="." method="set_current_path"]
 [connection signal="id_pressed" from="ViewPopupMenu" to="." method="_on_view_popup_menu_id_pressed"]
