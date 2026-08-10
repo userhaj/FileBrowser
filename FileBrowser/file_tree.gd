@@ -21,6 +21,8 @@ var _full_directory_path: String
 var tree_root: TreeItem
 var column_titles = ["Name", "Size"]
 var _fold_structure = {}
+var _sort_column = 0
+var _is_sort_ascending = true
 
 var dragging_resize_column: int = -1
 
@@ -131,11 +133,13 @@ func _full_directory_path_setter(full_path:String):
 	refresh()
 	emit_signal("folder_changed", full_path)
 
+# Save collapsed tree structure
 func _fill_fold(tree_item: TreeItem):
 	while tree_item:
 		var path = path_from_TreeItem(tree_item)
 		_fold_structure.set(path, tree_item.collapsed)
-		_fill_fold(tree_item.get_first_child())
+		if not tree_item.collapsed:
+			_fill_fold(tree_item.get_first_child())
 		tree_item = tree_item.get_next()
 	
 # Clears Children, Adds folder/files based on current directory
@@ -174,6 +178,22 @@ func refresh():
 		var folder = get_node_or_null("📁")
 		if folder:
 			wiggle_animate(folder.label)
+		
+		_sort_tree.call_deferred(get_root(), _sort_column)
+
+func _sort_tree(tree_item: TreeItem, sort_column: int, is_ascending: bool=true):
+	# default to first column if incorrect column given
+	sort_column = sort_column if sort_column < columns else 0
+	var items: Array[TreeItem] = tree_item.get_children()
+	if is_ascending:
+		items.sort_custom(func(a,b): return a.get_text(sort_column).naturalnocasecmp_to(b.get_text(sort_column)) < 0 )
+	else:
+		items.sort_custom(func(a,b): return a.get_text(sort_column).naturalnocasecmp_to(b.get_text(sort_column)) > 0 )
+	for index in range(items.size()-1):
+		items[index+1].move_after(items[index])
+	
+	for child in items:
+		_sort_tree(child, sort_column, is_ascending)
 
 
 func wiggle_animate(control: Control):
@@ -230,6 +250,7 @@ func _add_sub_folder(tree_item: TreeItem):
 				call_deferred("_create_file", tree_item, full_path)
 			# Check next folder
 			file_name = dir.get_next()
+		_sort_tree.call_deferred(tree_item, _sort_column)
 
 
 func _create_folder(base_tree_item, full_path: String, label_full_path: bool=false):
@@ -263,7 +284,10 @@ func _create_file(base_tree_item, full_path: String):
 	new_tree_item.collapsed = true
 	new_tree_item.set_text(0, full_path.get_file()) # On folders get_file() gets last folder name
 	new_tree_item.set_metadata(0, full_path)
-	new_tree_item.set_text(1, str(FileAccess.get_size(full_path)) + " bytes")
+	var file_size := FileAccess.get_size(full_path)
+	# Ignore -1 error and report as 0 bytes
+	file_size = file_size if file_size >= 0 else 0
+	new_tree_item.set_text(1, str(file_size) + " bytes")
 	
 	# Find icon to use based on extension
 	var ext: String = full_path.get_extension()
@@ -294,6 +318,14 @@ func _on_column_title_clicked(_column: int, mouse_button_index: int) -> void:
 		var mouse = DisplayServer.mouse_get_position()
 		$PopupMenu.position = mouse
 		$PopupMenu.popup()
+	# Left click
+	if mouse_button_index == MOUSE_BUTTON_LEFT:
+		# Double click action
+		if $TimerDoubleClick.is_stopped(): # Single click detected
+			$TimerDoubleClick.start() # Timer to detect double click
+		else:
+			_is_sort_ascending = not _is_sort_ascending
+			_sort_tree(get_root(), _column, _is_sort_ascending)
 
 
 func _on_popup_menu_id_pressed(id: int) -> void:

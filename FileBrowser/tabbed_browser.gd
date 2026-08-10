@@ -20,7 +20,7 @@ func _init() -> void:
 
 func _handle_close_tab(tab: int):
 	if get_tab_count() > 1:
-		get_tab_bar().remove_tab(tab)
+		get_tab_control(tab).queue_free()
 
 func _menu_handle(index: int):
 	match index:
@@ -33,28 +33,32 @@ func _menu_handle(index: int):
 func swap_view():
 	var old_control = get_current_tab_control()
 	var old_index = get_tab_idx_from_control(old_control)
+	old_index = old_index if old_index < get_tab_count() else get_tab_count() -1
 	var new_control
 	if old_control is FileTree:
 		new_control = preload("res://FileBrowser/folder_icon_view.tscn").instantiate()
 	else:
 		new_control = preload("res://FileBrowser/file_tree.tscn").instantiate()
 	new_tab(old_control.get_directory(), new_control)
-	remove_child(old_control)
+	old_control.queue_free()
 	move_child(new_control, old_index)
 	current_tab = old_index
 	
 
 func new_tab(path: String, control):
 	add_child(control)
-	set_tab_title(get_tab_idx_from_control(control), path.get_file())
+	var index = get_tab_idx_from_control(control)
+	index = index if index < get_tab_count() else get_tab_count() - 1
+	set_tab_title(index, path.get_file())
 	control.folder_changed.connect(_set_folder_as_tab_title, CONNECT_APPEND_SOURCE_OBJECT)
 	control.set_directory(path)
 	control.folder_changed.connect(folder_changed.emit)
-	current_tab = get_tab_idx_from_control(control)
-	
+	current_tab = index
+
 
 func _set_folder_as_tab_title(path: String, control: Control):
 	var index = get_tab_idx_from_control(control)
+	index = index if index < get_tab_count() else get_tab_count() - 1
 	var folder = path.get_file() if path.get_file() else "/"
 	set_tab_title(index, folder)
 	set_tab_tooltip(index, path)

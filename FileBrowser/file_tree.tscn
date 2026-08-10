@@ -70,6 +70,5 @@ metadata/_custom_type_script = "uid://diba812tgfd22"
 [connection signal="item_collapsed" from="." to="." method="_on_item_collapsed"]
 [connection signal="item_mouse_selected" from="." to="." method="_on_item_mouse_selected"]
 [connection signal="id_pressed" from="PopupMenu" to="." method="_on_popup_menu_id_pressed"]
-[connection signal="index_pressed" from="PopupMenu" to="." method="_on_popup_menu_index_pressed"]
 [connection signal="files_changed" from="FilePopupMenu" to="." method="refresh"]
 [connection signal="change_directory" from="FileBrowsingController" to="." method="_full_directory_path_setter"]
