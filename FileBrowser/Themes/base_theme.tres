@@ -1,5 +1,7 @@
 [gd_resource type="Theme" format=3 uid="uid://b17wob7amnhga"]
 
+[ext_resource type="FontFile" uid="uid://0h6c0qjdknr1" path="res://Fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="1_bwe63"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4dy67"]
 bg_color = Color(0.12156863, 0.12156863, 0.12156863, 1)
 corner_radius_top_left = 8
@@ -29,6 +31,9 @@ corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [resource]
+EmojiFont/colors/font_color = Color(0, 0, 0, 1)
+EmojiFont/font_sizes/font_size = 16
+EmojiFont/fonts/font = ExtResource("1_bwe63")
 ItemList/styles/panel = SubResource("StyleBoxFlat_4dy67")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_y10mo")
 ScrollContainer/styles/panel = SubResource("StyleBoxFlat_jbdnb")

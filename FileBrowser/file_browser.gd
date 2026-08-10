@@ -29,6 +29,8 @@ func _ready():
 	
 	file_menu.get_popup().id_pressed.connect(_handle_file_menu)
 	
+	get_window().set_theme(get_theme())
+	
 enum file_menu_options{NEW_WINDOW, QUIT}
 func _handle_file_menu(id: int):
 	match id:

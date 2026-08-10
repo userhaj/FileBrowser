@@ -1,10 +1,8 @@
 [gd_scene format=3 uid="uid://cnrjg1q6m5y36"]
 
 [ext_resource type="Script" uid="uid://bysx0dbho0dje" path="res://FileBrowser/sub_viewport_single_label.gd" id="1_4f7fo"]
-[ext_resource type="FontFile" uid="uid://0h6c0qjdknr1" path="res://Fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="1_tku55"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_83o1q"]
-font = ExtResource("1_tku55")
 
 [node name="SubViewport" type="SubViewport" unique_id=1823223691]
 disable_3d = true
