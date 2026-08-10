@@ -4,27 +4,13 @@
 [ext_resource type="Theme" uid="uid://b17wob7amnhga" path="res://FileBrowser/Themes/base_theme.tres" id="1_njuki"]
 [ext_resource type="Script" uid="uid://cvbxs2ydf6ksb" path="res://FeatureAddedObjects/line_edit_plus.gd" id="3_cveyf"]
 [ext_resource type="PackedScene" uid="uid://bmro1s4aghein" path="res://FileBrowser/bookmark_item_list.tscn" id="4_nvgqa"]
-[ext_resource type="FontFile" uid="uid://0h6c0qjdknr1" path="res://Fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="4_r42i3"]
 [ext_resource type="PackedScene" uid="uid://dups46gqlxh47" path="res://FileBrowser/tabbed_browser.tscn" id="6_0y5oy"]
+[ext_resource type="PackedScene" uid="uid://cnrjg1q6m5y36" path="res://FileBrowser/sub_viewport_single_label.tscn" id="7_2acyp"]
 [ext_resource type="PackedScene" uid="uid://ds45fvtgt8nk7" path="res://FileBrowser/Settings/settings_window.tscn" id="7_cus0t"]
 [ext_resource type="PackedScene" uid="uid://byylub0x8vqh0" path="res://FileBrowser/file_tree.tscn" id="7_n7rbv"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_0y5oy"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_nvgqa"]
 viewport_path = NodePath("ViewPopupMenu/SubViewportTree")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_4ogjx"]
-viewport_path = NodePath("ViewPopupMenu/SubViewportTree2")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_2acyp"]
-viewport_path = NodePath("ViewPopupMenu/SubViewportPencil")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_v5c3w"]
-viewport_path = NodePath("ViewPopupMenu/SubViewportBook")
-
-[sub_resource type="LabelSettings" id="LabelSettings_njuki"]
-line_spacing = 0.0
-font = ExtResource("4_r42i3")
-font_size = 15
 
 [node name="FileBrowser" type="Control" unique_id=1090105108]
 layout_mode = 3
@@ -53,31 +39,16 @@ size_flags_horizontal = 3
 layout_mode = 2
 
 [node name="FileButton" type="MenuButton" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=1283376336]
+custom_minimum_size = Vector2(32, 0)
 layout_mode = 2
-text = "File"
-item_count = 2
+text = "≡"
+item_count = 3
 popup/item_0/text = "New Window"
 popup/item_0/id = 0
 popup/item_1/text = "Quit"
 popup/item_1/id = 1
-
-[node name="ViewButton" type="Button" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=895447087]
-layout_mode = 2
-text = "View/Hide"
-flat = true
-
-[node name="SettingsButton" type="Button" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=1697488648]
-layout_mode = 2
-text = "Settings"
-flat = true
-
-[node name="FolderSizeHSlider" type="HSlider" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=2106691180]
-custom_minimum_size = Vector2(128, 30)
-layout_mode = 2
-min_value = 64.0
-max_value = 2048.0
-value = 64.0
-exp_edit = true
+popup/item_2/text = "Settings"
+popup/item_2/id = 2
 
 [node name="RefreshButton" type="Button" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=1166627171]
 layout_mode = 2
@@ -136,170 +107,43 @@ layout_mode = 2
 [node name="ViewPopupMenu" type="PopupMenu" parent="." unique_id=2084791024]
 oversampling_override = 1.0
 size = Vector2i(152, 100)
+hide_on_checkable_item_selection = false
 item_count = 4
 item_0/text = "Folder Tree"
-item_0/icon = SubResource("ViewportTexture_0y5oy")
+item_0/icon = SubResource("ViewportTexture_nvgqa")
 item_0/checkable = 1
 item_0/checked = true
 item_0/id = 0
 item_1/text = "File Tree"
-item_1/icon = SubResource("ViewportTexture_4ogjx")
 item_1/checkable = 1
 item_1/checked = true
 item_1/id = 3
 item_2/text = "Entry"
-item_2/icon = SubResource("ViewportTexture_2acyp")
 item_2/checkable = 1
 item_2/checked = true
 item_2/id = 1
 item_3/text = "Bookmarks"
-item_3/icon = SubResource("ViewportTexture_v5c3w")
 item_3/checkable = 1
 item_3/checked = true
 item_3/id = 2
 
-[node name="SubViewportTree" type="SubViewport" parent="ViewPopupMenu" unique_id=1811211390]
-disable_3d = true
-transparent_bg = true
-size = Vector2i(16, 16)
-
-[node name="PanelContainer" type="PanelContainer" parent="ViewPopupMenu/SubViewportTree" unique_id=742352444]
-self_modulate = Color(1, 1, 1, 0)
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -1.5
-offset_top = -1.5
-offset_right = 1.5
-offset_bottom = 1.5
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="Label" type="Label" parent="ViewPopupMenu/SubViewportTree/PanelContainer" unique_id=504797685]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 6
+[node name="SubViewportTree" parent="ViewPopupMenu" unique_id=1823223691 instance=ExtResource("7_2acyp")]
 text = "🌲"
-label_settings = SubResource("LabelSettings_njuki")
-autowrap_trim_flags = 0
 
-[node name="SubViewportFramed" type="SubViewport" parent="ViewPopupMenu" unique_id=1188838561]
-disable_3d = true
-transparent_bg = true
-size = Vector2i(16, 16)
-
-[node name="PanelContainer" type="PanelContainer" parent="ViewPopupMenu/SubViewportFramed" unique_id=1743007416]
-self_modulate = Color(1, 1, 1, 0)
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -1.5
-offset_top = -1.5
-offset_right = 1.5
-offset_bottom = 1.5
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="Label" type="Label" parent="ViewPopupMenu/SubViewportFramed/PanelContainer" unique_id=916087177]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 6
-text = "🖼️"
-label_settings = SubResource("LabelSettings_njuki")
-autowrap_trim_flags = 0
-
-[node name="SubViewportPencil" type="SubViewport" parent="ViewPopupMenu" unique_id=1557275742]
-disable_3d = true
-transparent_bg = true
-size = Vector2i(16, 16)
-
-[node name="PanelContainer" type="PanelContainer" parent="ViewPopupMenu/SubViewportPencil" unique_id=711934470]
-self_modulate = Color(1, 1, 1, 0)
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -1.5
-offset_top = -1.5
-offset_right = 1.5
-offset_bottom = 1.5
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="Label" type="Label" parent="ViewPopupMenu/SubViewportPencil/PanelContainer" unique_id=749407708]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 6
+[node name="SubViewportPencil" parent="ViewPopupMenu" unique_id=1964886101 instance=ExtResource("7_2acyp")]
 text = "✏️"
-label_settings = SubResource("LabelSettings_njuki")
-autowrap_trim_flags = 0
 
-[node name="SubViewportBook" type="SubViewport" parent="ViewPopupMenu" unique_id=1659316766]
-disable_3d = true
-transparent_bg = true
-size = Vector2i(16, 16)
-
-[node name="PanelContainer" type="PanelContainer" parent="ViewPopupMenu/SubViewportBook" unique_id=1466114220]
-self_modulate = Color(1, 1, 1, 0)
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -1.5
-offset_top = -1.5
-offset_right = 1.5
-offset_bottom = 1.5
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="Label" type="Label" parent="ViewPopupMenu/SubViewportBook/PanelContainer" unique_id=520952996]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 6
+[node name="SubViewportBook" parent="ViewPopupMenu" unique_id=379462269 instance=ExtResource("7_2acyp")]
 text = "📘"
-label_settings = SubResource("LabelSettings_njuki")
-autowrap_trim_flags = 0
 
-[node name="SubViewportTree2" type="SubViewport" parent="ViewPopupMenu" unique_id=647954816]
-disable_3d = true
-transparent_bg = true
-size = Vector2i(16, 16)
-
-[node name="PanelContainer" type="PanelContainer" parent="ViewPopupMenu/SubViewportTree2" unique_id=1862801731]
-self_modulate = Color(1, 1, 1, 0)
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -1.5
-offset_top = -1.5
-offset_right = 1.5
-offset_bottom = 1.5
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="Label" type="Label" parent="ViewPopupMenu/SubViewportTree2/PanelContainer" unique_id=2024175116]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 6
+[node name="SubViewportTree2" parent="ViewPopupMenu" unique_id=423475280 instance=ExtResource("7_2acyp")]
 text = "🌳"
-label_settings = SubResource("LabelSettings_njuki")
-autowrap_trim_flags = 0
 
 [node name="SettingsWindow" parent="." unique_id=1594888349 instance=ExtResource("7_cus0t")]
 visible = false
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton" to="." method="_file_menu"]
-[connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/ViewButton" to="." method="_on_view_button_pressed"]
-[connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/RefreshButton" to="." method="_on_refresh_button_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/UpDirButton" to="." method="_on_up_dir_button_pressed"]
 [connection signal="gui_input" from="PanelContainer/VBoxContainer/MenuHBoxContainer/CurrentPathLineEdit" to="." method="_on_gui_input"]

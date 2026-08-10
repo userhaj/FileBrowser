@@ -1,6 +1,10 @@
 extends SubViewport
 # Used as a way to convert text into a texture
 @onready var label: Label = $PanelContainer/Label
+@export var text = "":
+	set(value):
+		set_text(value)
+	
 
 func _ready() -> void:
 	# Themes do not cross SubViewport, must force theme following

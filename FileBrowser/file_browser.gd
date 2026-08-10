@@ -4,7 +4,7 @@ extends Control
 @onready var current_path: String = DirAccess.get_drive_name(0)
 @onready var current_path_line_edit: LineEditPlus = $PanelContainer/VBoxContainer/MenuHBoxContainer/CurrentPathLineEdit
 @onready var file_button: Button = $PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton
-@onready var view_menu_button = $PanelContainer/VBoxContainer/MenuHBoxContainer/ViewButton
+@onready var view_popup_menu: PopupMenu = $ViewPopupMenu
 @onready var folder_tree: Tree = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/FileTree
 @onready var bookmarks: BookmarkItemList = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer/BookmarkItemList
 @onready var bookmark_container = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer
@@ -13,7 +13,6 @@ extends Control
 
 
 var settings_file_name = "user://SETTINGS.cfg"
-
 var is_shoot_laser_left: bool = true
 
 # Folders to go to when going "Back"
@@ -21,20 +20,33 @@ var folder_past_list = []
 # Folders to go to when going "Forward"
 var folder_future_list = []
 
+enum VIEW_ID{FOLDER_TREE,ENTRY,BOOKMARKS,FILE_TREE}
 func _ready():
 	set_current_path(current_path.simplify_path())
+	# Load save values
 	visual_load()
 	folder_tree.show_default_os_drives()
 	folder_tree.columns = 1
 	
-	file_menu.get_popup().id_pressed.connect(_handle_file_menu)
+	# Menu setup ############
+	file_menu.get_popup().id_pressed.connect(_handle_file_menu) # Button Actions
+	# Show/Hide UI submenu addition
+	view_popup_menu.get_parent().remove_child(view_popup_menu)
+	# Set icons for show/hide popup
+	for id in VIEW_ID.size():
+		view_popup_menu.set_item_icon(view_popup_menu.get_item_index(id), view_popup_menu.get_child(id).get_texture())
+	# Add showhide submenu
+	file_menu.get_popup().add_submenu_node_item("Show/Hide", view_popup_menu)
+	# Set QUIT button to end
+	file_menu.get_popup().set_item_index(file_menu.get_popup().get_item_index(MENU_ID.QUIT),-1)
+	# #########################
 	
 	get_window().set_theme(get_theme())
 	
-enum file_menu_options{NEW_WINDOW, QUIT}
+enum MENU_ID{NEW_WINDOW, QUIT, SETTINGS}
 func _handle_file_menu(id: int):
 	match id:
-		file_menu_options.NEW_WINDOW:
+		MENU_ID.NEW_WINDOW:
 			var new_window = Window.new()
 			new_window.size = Vector2(640, 480)
 			new_window.title = get_window().title + " 🪵"
@@ -44,8 +56,10 @@ func _handle_file_menu(id: int):
 			var new_file_browser = preload("res://FileBrowser/file_browser.tscn").instantiate()
 			new_window.add_child(new_file_browser)
 			new_window.show()
-		file_menu_options.QUIT:
+		MENU_ID.QUIT:
 			get_tree().quit()
+		MENU_ID.SETTINGS:
+			_on_settings_button_pressed()
 
 # Loads from save file window posititions
 func visual_load():
@@ -92,21 +106,21 @@ func _on_view_button_pressed():
 func _on_view_popup_menu_id_pressed(id):
 	match id:
 		0:
-			var idx = $ViewPopupMenu.get_item_index(id)
+			var idx = view_popup_menu.get_item_index(id)
 			self.folder_tree.visible = not self.folder_tree.visible
-			$ViewPopupMenu.set_item_checked(idx, self.folder_tree.visible)
+			view_popup_menu.set_item_checked(idx, self.folder_tree.visible)
 		1:
-			var idx = $ViewPopupMenu.get_item_index(id)
+			var idx = view_popup_menu.get_item_index(id)
 			self.current_path_line_edit.visible = not self.current_path_line_edit.visible
-			$ViewPopupMenu.set_item_checked(idx, self.current_path_line_edit.visible)
+			view_popup_menu.set_item_checked(idx, self.current_path_line_edit.visible)
 		2:
-			var idx = $ViewPopupMenu.get_item_index(id)
+			var idx = view_popup_menu.get_item_index(id)
 			self.bookmark_container.visible = not self.bookmark_container.visible
-			$ViewPopupMenu.set_item_checked(idx, self.bookmark_container.visible)
+			view_popup_menu.set_item_checked(idx, self.bookmark_container.visible)
 		3:
-			var idx = $ViewPopupMenu.get_item_index(id)
+			var idx = view_popup_menu.get_item_index(id)
 			self.tabbed_browser.visible = not self.tabbed_browser.visible
-			$ViewPopupMenu.set_item_checked(idx, self.tabbed_browser.visible)
+			view_popup_menu.set_item_checked(idx, self.tabbed_browser.visible)
 
 
 
