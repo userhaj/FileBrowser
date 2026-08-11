@@ -119,3 +119,7 @@ func ask_trash_selected_items():
 		trash_file_confirmation_dialog.dialog_text = "Trash " + str(len(files)) + " files?"
 		trash_file_confirmation_dialog.popup_centered()
 		trash_file_confirmation_dialog.position = DisplayServer.mouse_get_position()
+
+
+func _on_close_requested(source: Window) -> void:
+	Animate.drop_window(source)

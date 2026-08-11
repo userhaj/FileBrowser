@@ -147,7 +147,6 @@ func refresh():
 	if only_show_drives:
 		show_default_os_drives()
 	else:
-
 		if tree_root:
 			# Get current fold structure (is folder expanded?)
 			_fold_structure.clear()
@@ -171,8 +170,6 @@ func refresh():
 			for file in DirAccess.get_files_at(self._full_directory_path):
 				call_deferred("_create_file", tree_root, _full_directory_path.path_join(file))
 		
-		#if show_folders:
-			#call_deferred("_populate_sub_folders_of_tree_root")
 		
 		# Notify user that refresh occured by wiggling folders
 		var folder = get_node_or_null("📁")

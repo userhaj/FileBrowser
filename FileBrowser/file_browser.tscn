@@ -154,4 +154,6 @@ visible = false
 [connection signal="folder_selected" from="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer/BookmarkItemList" to="." method="set_current_path"]
 [connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/FileTree" to="." method="set_current_path"]
 [connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/TabbedBrowser" to="." method="set_current_path"]
+[connection signal="close_requested" from="ViewPopupMenu" to="." method="_on_close_requested" flags=18]
 [connection signal="id_pressed" from="ViewPopupMenu" to="." method="_on_view_popup_menu_id_pressed"]
+[connection signal="close_requested" from="SettingsWindow" to="." method="_on_close_requested" flags=18]

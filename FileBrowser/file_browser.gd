@@ -39,9 +39,12 @@ func _ready():
 	file_menu.get_popup().add_submenu_node_item("Show/Hide", view_popup_menu)
 	# Set QUIT button to end
 	file_menu.get_popup().set_item_index(file_menu.get_popup().get_item_index(MENU_ID.QUIT),-1)
+	file_menu.get_popup().close_requested.connect(_on_close_requested, CONNECT_APPEND_SOURCE_OBJECT)
 	# #########################
 	
 	get_window().set_theme(get_theme())
+	
+	get_window().close_requested.connect(_on_close_requested, CONNECT_APPEND_SOURCE_OBJECT)
 	
 enum MENU_ID{NEW_WINDOW, QUIT, SETTINGS}
 func _handle_file_menu(id: int):
@@ -143,3 +146,7 @@ func _on_current_path_line_edit_text_submitted(new_text: String) -> void:
 
 func _on_refresh_button_pressed() -> void:
 	tabbed_browser.refresh()
+
+
+func _on_close_requested(window: Window):
+	Animate.drop_window(window)

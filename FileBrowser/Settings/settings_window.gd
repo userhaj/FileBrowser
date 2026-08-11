@@ -16,7 +16,7 @@ func _on_button_colors_pressed() -> void:
 
 
 func _on_close_requested() -> void:
-	hide()
+	hide.call_deferred()
 
 
 func _on_button_access_pressed() -> void:

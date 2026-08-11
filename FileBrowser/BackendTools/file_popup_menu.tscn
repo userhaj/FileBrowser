@@ -34,7 +34,9 @@ oversampling_override = 1.0
 
 [node name="NewFileConfirmationDialog" parent="." unique_id=1979710931 instance=ExtResource("6_15wvk")]
 
+[connection signal="close_requested" from="." to="." method="_on_close_requested" flags=18]
 [connection signal="id_pressed" from="." to="." method="_on_id_pressed"]
 [connection signal="popup_hide" from="." to="." method="animate_drop"]
 [connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
+[connection signal="close_requested" from="FileOpenWithPopupMenu" to="." method="_on_close_requested" flags=18]
 [connection signal="confirmed" from="NewFolderConfirmationDialog" to="." method="_on_new_folder_confirmation_dialog_confirmed" flags=18]
