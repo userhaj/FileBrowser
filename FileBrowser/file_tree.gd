@@ -480,9 +480,6 @@ func show_default_os_drives():
 	for drive_index in range(drive_count):
 		var drive_name = DirAccess.get_drive_name(drive_index)
 		_create_folder(tree_root, drive_name)
-	if show_folders:
-		for dir_tree_item: TreeItem in tree_root.get_children():
-			_add_sub_folder(dir_tree_item)
 
 
 func _on_item_mouse_selected(mouse_position: Vector2, mouse_button_index: int) -> void:
