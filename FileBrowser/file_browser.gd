@@ -10,6 +10,8 @@ extends Control
 @onready var bookmark_container = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer
 @onready var file_menu: MenuButton = $PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton
 @onready var tabbed_browser: TabContainer = $PanelContainer/VBoxContainer/HSplitContainer/TabbedBrowser
+@onready var theme_popup_menu: PopupMenu = $ThemePopupMenu
+
 
 
 var settings_file_name = "user://SETTINGS.cfg"
@@ -21,6 +23,8 @@ var folder_past_list = []
 var folder_future_list = []
 
 enum VIEW_ID{FOLDER_TREE,ENTRY,BOOKMARKS,FILE_TREE}
+enum MENU_ID{NEW_WINDOW, QUIT, SETTINGS}
+
 func _ready():
 	set_current_path(current_path.simplify_path())
 	# Load save values
@@ -37,16 +41,27 @@ func _ready():
 		view_popup_menu.set_item_icon(view_popup_menu.get_item_index(id), view_popup_menu.get_child(id).get_texture())
 	# Add showhide submenu
 	file_menu.get_popup().add_submenu_node_item("Show/Hide", view_popup_menu)
+	# Add theme submenu
+	
+	theme_popup_menu.get_parent().remove_child(theme_popup_menu)
+	file_menu.get_popup().add_submenu_node_item("Theme", theme_popup_menu)
+	
 	# Set QUIT button to end
 	file_menu.get_popup().set_item_index(file_menu.get_popup().get_item_index(MENU_ID.QUIT),-1)
 	file_menu.get_popup().close_requested.connect(_on_close_requested, CONNECT_APPEND_SOURCE_OBJECT)
 	# #########################
 	
-	get_window().set_theme(get_theme())
+	# Set main window Default Theme
+	if get_window() == get_tree().root:
+		const BASE_THEME = preload("uid://b17wob7amnhga")
+		get_window().set_theme(BASE_THEME)
+	# Set child window theme to match main window
+	else:
+		get_window().set_theme(get_tree().root.get_window().get_theme())
 	
 	get_window().close_requested.connect(_on_close_requested, CONNECT_APPEND_SOURCE_OBJECT)
 	
-enum MENU_ID{NEW_WINDOW, QUIT, SETTINGS}
+
 func _handle_file_menu(id: int):
 	match id:
 		MENU_ID.NEW_WINDOW:
@@ -150,3 +165,13 @@ func _on_refresh_button_pressed() -> void:
 
 func _on_close_requested(window: Window):
 	Animate.drop_window(window)
+
+
+func _on_theme_popup_menu_id_pressed(id: int) -> void:
+	match (id):
+		0:
+			const BASE_THEME = preload("uid://b17wob7amnhga")
+			get_window().set_theme(BASE_THEME)
+		1:
+			const OLD_GREEN_THEME = preload("uid://cf1sabqbl4g06")
+			get_window().set_theme(OLD_GREEN_THEME)

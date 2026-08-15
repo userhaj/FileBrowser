@@ -95,6 +95,22 @@ func _input(event):
 		ctrl_f_panel_container.hide()
 		# TODO Use focus to determine search or deselect
 		deselect_all_children()
+	
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F2:
+		if visible:
+			var objects = get_selected_objects()
+			if objects.size() == 1:
+				if objects[0].has_method("start_rename"):
+					objects[0].start_rename()
+	
+	# Launch selected files when hitting ENTER
+	if event is InputEventKey and event.is_pressed() and not event.is_echo():
+		if event.keycode == KEY_ENTER:
+			var selected_paths = PackedStringArray(get_selected_paths())
+			$RunFileConfirmationDialog.set_files_to_open(selected_paths)
+			$RunFileConfirmationDialog.position = get_screen_transform() * get_local_mouse_position()
+			$RunFileConfirmationDialog.popup()
+
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
@@ -106,7 +122,7 @@ func _gui_input(event: InputEvent) -> void:
 			$FilePopupMenu.position = get_screen_transform() * get_local_mouse_position()
 			$FilePopupMenu.call_deferred("popup")
 			accept_event()
-
+	
 
 # Current working directory
 func get_directory() -> String:
@@ -334,3 +350,9 @@ func _get_v_scroll_bar_width() -> int:
 	var style_box = temp_scroll.get_theme_stylebox("scroll")
 	remove_child(temp_scroll)
 	return style_box.content_margin_left + style_box.content_margin_right
+
+
+func _on_file_clicked(file_path: String) -> void:
+	$RunFileConfirmationDialog.set_files_to_open(PackedStringArray([file_path]))
+	$RunFileConfirmationDialog.position = get_screen_transform() * get_local_mouse_position()
+	$RunFileConfirmationDialog.popup()

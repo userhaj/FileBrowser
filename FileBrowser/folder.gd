@@ -27,6 +27,19 @@ var icons : Dictionary = {"dll": "📚", "txt": "🗒️", "exe": "🚀", "conf"
 var clicked: bool = false
 
 
+func _ready() -> void:
+	# Custom object theme must be applied
+	_copy_root_theme()
+	get_tree().root.theme_changed.connect(_copy_root_theme)
+	
+func _copy_root_theme():
+	var theme_resource: Theme = get_tree().root.get_theme()
+	if theme_resource:
+		set_theme(theme_resource)
+		$VBoxContainer/ImageLabel.label_settings.font = theme_resource.get_font("font", "EmojiFont")
+		$VBoxContainer/ImageLabel.label_settings.font_size = theme_resource.get_font_size("font_size", "EmojiFont")
+		$VBoxContainer/ImageLabel.label_settings.font_color = theme_resource.get_color("font_color", "EmojiFont")
+
 # Optional work queue
 func set_thread_queue(thread_queue: ThreadQueue):
 	self._thread_queue = thread_queue
@@ -47,15 +60,16 @@ func _work_done(_result):
 
 func _icon_scale_work():
 	# Resize folder icon to be size of parent
-	if $ImageLabel:
+	if $VBoxContainer/ImageLabel:
 		# Available file/dir object height
 		var height = get_rect().size.y
 		# Height space used for 2 lines of text
-		var text_height = $NameLabel.get_line_height() * 2 
+		var text_height = $VBoxContainer/NameLabel.get_line_height() * 2
+		$VBoxContainer/NameLabel.custom_minimum_size = Vector2(0, $VBoxContainer/NameLabel.get_line_height())
 		# Set font size to height minus 2 lines of text height
-		$ImageLabel.label_settings.font_size = height - text_height
+		$VBoxContainer/ImageLabel.label_settings.font_size = height - text_height
 		# About 20% of an icon space is empty, remove to center icon
-		$ImageLabel.label_settings.font_size *= 0.8
+		$VBoxContainer/ImageLabel.label_settings.font_size *= 0.8
 		
 		#Check necessity
 		#$VisibleOnScreenNotifier2D.scale = scale_amount
@@ -83,7 +97,7 @@ func _end_non_queue_thread(image_texture: ImageTexture):
 	
 
 func _apply_texture_image_icon():
-	if is_image_set and (null == $TextureRect.texture):
+	if is_image_set and (null == $VBoxContainer/TextureRect.texture):
 		set_image(image_path)
 	if _need_icon_scale:
 		_need_icon_scale = false
@@ -101,8 +115,8 @@ func _texture_delete():
 		return
 	# Only delete if not on screen
 	if not $VisibleOnScreenNotifier2D.is_on_screen():
-		$ImageLabel.show()
-		$TextureRect.texture = null
+		$VBoxContainer/ImageLabel.show()
+		$VBoxContainer/TextureRect.texture = null
 
 # Check if 80%+ of memory is used
 func _is_low_memory():
@@ -148,10 +162,10 @@ func set_image_texture(new_texture: ImageTexture):
 		return
 		#_remove_texture_image_icon()
 	else:
-		if $TextureRect:
-			$TextureRect.texture = new_texture
-			_slow_show($TextureRect)
-			$ImageLabel.hide()
+		if $VBoxContainer/TextureRect:
+			$VBoxContainer/TextureRect.texture = new_texture
+			_slow_show($VBoxContainer/TextureRect)
+			$VBoxContainer/ImageLabel.hide()
 
 func select():
 	self.is_selected = true
@@ -162,6 +176,7 @@ func deselect():
 	$SelectColorRect.hide()
 
 func _on_resized():
+	$VisibleOnScreenNotifier2D.rect = get_rect()
 	_icon_scale()
 
 func set_path(abs_path: String, text_icon: String = ""):
@@ -169,16 +184,17 @@ func set_path(abs_path: String, text_icon: String = ""):
 	self.path = abs_path.simplify_path()
 	var last_index = self.path.get_slice_count("/") - 1
 	# Update folder name
-	$NameLabel.text = self.path.get_slice("/", last_index)
-	$NameLabel.tooltip_text = $NameLabel.text
+	$VBoxContainer/NameLabel.text = self.path.get_slice("/", last_index)
+	$VBoxContainer/NameLabel.tooltip_text = $VBoxContainer/NameLabel.text
+	tooltip_text = $VBoxContainer/NameLabel.text
 	
 
 	var ext = self.path.get_extension()
 	if text_icon != "":
-		$ImageLabel.text = text_icon
+		$VBoxContainer/ImageLabel.text = text_icon
 	elif FileAccess.file_exists(abs_path):
 		# Set icon or default
-		$ImageLabel.text = icons.get(ext, "📄")
+		$VBoxContainer/ImageLabel.text = icons.get(ext, "📄")
 		
 func get_abs_path():
 	return self.path

@@ -6,24 +6,29 @@ var LINUX_SHARE_FOLDERS = []
 var APP_CACHE_FILEPATH = "user://appcache"
 
 func _ready() -> void:
+	# Only find default apps once, then used saved defaults
 	var last_edit = FileAccess.get_modified_time(APP_CACHE_FILEPATH)
 	var current_time = Time.get_unix_time_from_system()
+	# true if more than 24 hours have passed
 	var is_app_cache_old= (current_time - last_edit) > (24*60*60)
-
+	
+	# Update old mimes
 	if is_app_cache_old:
 		if "nux" in OS.get_name():
 			var thread = Thread.new()
 			thread.start(linux_find_mimes)
-	else:
+	else: # Use saved default files
 		_load_app_cache()
 
+
+# Save mimes dictionary to file
 func _save_app_cache():
 		var app_cache = FileAccess.open(APP_CACHE_FILEPATH, FileAccess.WRITE)
 		app_cache.store_line(JSON.stringify(mimes))
 		app_cache.close()
 		
 		
-
+# Load mimes dictionary from file
 func _load_app_cache() -> bool:
 		var app_cache = FileAccess.open(APP_CACHE_FILEPATH, FileAccess.READ)
 		var json = JSON.new()
@@ -42,40 +47,46 @@ func _load_app_cache() -> bool:
 		return false
 	
 
+# Add all possible running programs for file and file path to popup
 func setup(absolute_file_path: String):
 	clear(true)
-	var index = 0
 	# File to be opened
 	add_item(absolute_file_path)
 	set_item_as_separator(0, true)
+	var mime_type
 	# Linux menu open with
 	if "nux" in OS.get_name():
-		var mime_type = linux_file_mime_type_get(absolute_file_path)
-		for app in mimes.get(mime_type, ""):
-			index += 1
-			add_open_with_menu_item(index, app, absolute_file_path)
-		# Treat everything as possible to open with plain text editor
-		if mime_type != "text/plain":
-			for app in mimes.get("text/plain", ""):
-				index += 1
-				add_open_with_menu_item(index, app, absolute_file_path)
+		mime_type = linux_file_mime_type_get(absolute_file_path)
+		
+	for app in mimes.get(mime_type, ""):
+		add_open_with_menu_item(app, absolute_file_path)
+	# Treat everything as possible to open with plain text editor
+	if mime_type != "text/plain":
+		for app in mimes.get("text/plain", ""):
+			add_open_with_menu_item(app, absolute_file_path)
 	else:
 		clear(true)
 		hide()
 
-func add_open_with_menu_item(index, app, file_to_open):
+# Add a nice named callable that runs file_to_open to self popup menu
+func add_open_with_menu_item(app: Dictionary, file_to_open: String):
 	var nice_name = app.get(str(AppProperties.NAME))
 	add_item(nice_name)
-	var run_app_callable = linux_run_desktop_file.bind(app.get(str(AppProperties.PATH)), file_to_open)
+	var index = item_count-1
+	var run_app_callable: Callable 
+	if "nux" in OS.get_name(): # Set linux version
+		run_app_callable = linux_run_desktop_file.bind(app.get(str(AppProperties.PATH)), file_to_open)
 	set_item_metadata(index, run_app_callable)
 
-func linux_run_desktop_file(desktop_file, open_file):
-	print(desktop_file)
-	print(open_file)
-	var pid = OS.create_process("gio", PackedStringArray(["launch", desktop_file, open_file]), true)
-	print(pid)
 
-func linux_file_mime_type_get(file_path: String):
+# Run open_file using a given .desktop file
+func linux_run_desktop_file(desktop_file: String, open_file: String):
+	var _pid = OS.create_process("gio", PackedStringArray(["launch", desktop_file, open_file]), true)
+
+
+
+# Gets system mimetype for given file
+func linux_file_mime_type_get(file_path: String) -> String:
 	var output = []
 	OS.execute("xdg-mime", ["query", "filetype", file_path], output)
 	if output.size() > 0:
@@ -83,20 +94,26 @@ func linux_file_mime_type_get(file_path: String):
 	else:
 		return ""
 
-func linux_app_name_from_desktop_file(desktop_file_name: String):
+
+# Gets simple name found in *.desktop file
+func linux_app_name_from_desktop_file(desktop_file_name: String) -> String:
 	var output = []
 	OS.execute("sed", ["-n", "s/^Name=//p", desktop_file_name], output)
 	if output.size() > 0:
 		output = output[0].split("\n")[0]
 	return output
 
-func linux_mime_types_from_desktop_file(desktop_file_path: String):
+
+# Reads *.desktop file and provides mimetypes written in file
+func linux_mime_types_from_desktop_file(desktop_file_path: String) -> PackedStringArray:
 	var output = []
 	OS.execute("sed", ["-n", "s/^MimeType=//p", desktop_file_path], output)
 	if output.size() > 0:
 		output = output[0].replace("\n", "").replace("\t", "").replace("\r", "").split(";")
 	return output
 
+
+# Fills mimes dictionary
 func linux_find_mimes():
 	var app_folders = get_linux_app_folder()
 	for folder in app_folders:

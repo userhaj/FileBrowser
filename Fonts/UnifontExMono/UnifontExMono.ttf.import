@@ -1,0 +1,41 @@
+[remap]
+
+importer="font_data_dynamic"
+type="FontFile"
+uid="uid://p5n8kc28soke"
+path="res://.godot/imported/UnifontExMono.ttf-74f8fcc58325a353721e380c1606ffa5.fontdata"
+
+[deps]
+
+source_file="res://Fonts/UnifontExMono/UnifontExMono.ttf"
+dest_files=["res://.godot/imported/UnifontExMono.ttf-74f8fcc58325a353721e380c1606ffa5.fontdata"]
+
+[params]
+
+Rendering=null
+antialiasing=0
+generate_mipmaps=false
+disable_embedded_bitmaps=true
+multichannel_signed_distance_field=false
+msdf_pixel_range=8
+msdf_size=48
+allow_system_fallback=true
+force_autohinter=false
+modulate_color_glyphs=false
+hinting=0
+subpixel_positioning=0
+keep_rounding_remainders=false
+oversampling=0.0
+Fallbacks=null
+fallbacks=[]
+Compress=null
+compress=true
+preload=[{
+"chars": [],
+"glyphs": [],
+"name": "New Configuration",
+"size": Vector2i(16, 0)
+}]
+language_support={}
+script_support={}
+opentype_features={}

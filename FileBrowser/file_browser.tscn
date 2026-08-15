@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://m28v1qcvhdv3"]
 
 [ext_resource type="Script" uid="uid://d20ud65y5yrro" path="res://FileBrowser/file_browser.gd" id="1_83ygx"]
-[ext_resource type="Theme" uid="uid://b17wob7amnhga" path="res://FileBrowser/Themes/base_theme.tres" id="1_njuki"]
 [ext_resource type="Script" uid="uid://cvbxs2ydf6ksb" path="res://FeatureAddedObjects/line_edit_plus.gd" id="3_cveyf"]
 [ext_resource type="PackedScene" uid="uid://bmro1s4aghein" path="res://FileBrowser/bookmark_item_list.tscn" id="4_nvgqa"]
 [ext_resource type="PackedScene" uid="uid://dups46gqlxh47" path="res://FileBrowser/tabbed_browser.tscn" id="6_0y5oy"]
@@ -19,7 +18,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_njuki")
 script = ExtResource("1_83ygx")
 
 [node name="PanelContainer" type="PanelContainer" parent="." unique_id=93632493]
@@ -42,6 +40,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(32, 0)
 layout_mode = 2
 text = "≡"
+flat = false
 item_count = 3
 popup/item_0/text = "New Window"
 popup/item_0/id = 0
@@ -51,11 +50,12 @@ popup/item_2/text = "Settings"
 popup/item_2/id = 2
 
 [node name="RefreshButton" type="Button" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=1166627171]
+custom_minimum_size = Vector2(32, 0)
 layout_mode = 2
 text = "↻"
-flat = true
 
 [node name="UpDirButton" type="Button" parent="PanelContainer/VBoxContainer/MenuHBoxContainer" unique_id=1689751842]
+custom_minimum_size = Vector2(32, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 text = "▲"
@@ -142,6 +142,13 @@ text = "🌳"
 [node name="SettingsWindow" parent="." unique_id=1594888349 instance=ExtResource("7_cus0t")]
 visible = false
 
+[node name="ThemePopupMenu" type="PopupMenu" parent="." unique_id=2127418834]
+item_count = 2
+item_0/text = "Default"
+item_0/id = 0
+item_1/text = "Green"
+item_1/id = 1
+
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton" to="." method="_file_menu"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/MenuHBoxContainer/RefreshButton" to="." method="_on_refresh_button_pressed"]
@@ -157,3 +164,5 @@ visible = false
 [connection signal="close_requested" from="ViewPopupMenu" to="." method="_on_close_requested" flags=18]
 [connection signal="id_pressed" from="ViewPopupMenu" to="." method="_on_view_popup_menu_id_pressed"]
 [connection signal="close_requested" from="SettingsWindow" to="." method="_on_close_requested" flags=18]
+[connection signal="close_requested" from="ThemePopupMenu" to="." method="_on_close_requested" flags=18]
+[connection signal="id_pressed" from="ThemePopupMenu" to="." method="_on_theme_popup_menu_id_pressed"]

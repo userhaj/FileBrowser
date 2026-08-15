@@ -6,14 +6,15 @@
 [ext_resource type="Script" uid="uid://bwigx801m6owr" path="res://FileBrowser/drop_files_confirmation_dialog.gd" id="4_ktkjh"]
 [ext_resource type="PackedScene" uid="uid://behydyevo5qgt" path="res://FileBrowser/BackendTools/file_popup_menu.tscn" id="6_ge0n4"]
 [ext_resource type="Script" uid="uid://cvbxs2ydf6ksb" path="res://FeatureAddedObjects/line_edit_plus.gd" id="6_ispsu"]
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_ispsu"]
-viewport_path = NodePath("SubViewportFolder")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_ge0n4"]
-viewport_path = NodePath("SubViewportFile")
+[ext_resource type="PackedScene" uid="uid://dftwbc3ldxac1" path="res://FileBrowser/ConfirmationDialogs/run_file_confirmation_dialog.tscn" id="7_ge0n4"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_2xlx7"]
+viewport_path = NodePath("SubViewportFolder")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_weov8"]
+viewport_path = NodePath("SubViewportFile")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_chhx5"]
 viewport_path = NodePath("SubViewportTrash")
 
 [node name="FolderIconView" type="Control" unique_id=475031514]
@@ -77,10 +78,13 @@ size_flags_horizontal = 8
 text = "x"
 
 [node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("6_ge0n4")]
-item_0/icon = SubResource("ViewportTexture_ispsu")
-item_1/icon = SubResource("ViewportTexture_ge0n4")
-item_3/icon = SubResource("ViewportTexture_2xlx7")
+item_0/icon = SubResource("ViewportTexture_2xlx7")
+item_1/icon = SubResource("ViewportTexture_weov8")
+item_3/icon = SubResource("ViewportTexture_chhx5")
 
+[node name="RunFileConfirmationDialog" parent="." unique_id=381305560 instance=ExtResource("7_ge0n4")]
+
+[connection signal="file_clicked" from="." to="." method="_on_file_clicked"]
 [connection signal="selected_area" from="SelectBox" to="." method="select_children_by_area"]
 [connection signal="confirmed" from="DropFilesConfirmationDialog" to="DropFilesConfirmationDialog" method="_on_confirmed"]
 [connection signal="custom_action" from="DropFilesConfirmationDialog" to="DropFilesConfirmationDialog" method="_on_custom_action"]
