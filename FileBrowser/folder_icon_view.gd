@@ -102,7 +102,8 @@ func _input(event):
 			if objects.size() == 1:
 				if objects[0].has_method("start_rename"):
 					objects[0].start_rename()
-	
+
+func _unhandled_input(event: InputEvent) -> void:
 	# Launch selected files when hitting ENTER
 	if event is InputEventKey and event.is_pressed() and not event.is_echo():
 		if event.keycode == KEY_ENTER:
