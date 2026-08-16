@@ -53,8 +53,11 @@ func _ready():
 	
 	# Set main window Default Theme
 	if get_window() == get_tree().root:
-		const BASE_THEME = preload("uid://b17wob7amnhga")
-		get_window().set_theme(BASE_THEME)
+		var internal_theme_path: String = "res://FileBrowser/Themes/base_theme.tres"
+		var external_theme_path = "user://".path_join(internal_theme_path.get_file())
+		var theme_path = external_theme_path if FileAccess.file_exists(external_theme_path) else internal_theme_path
+		var new_theme = load(theme_path)
+		get_window().set_theme(new_theme)
 	# Set child window theme to match main window
 	else:
 		get_window().set_theme(get_tree().root.get_window().get_theme())
@@ -168,10 +171,16 @@ func _on_close_requested(window: Window):
 
 
 func _on_theme_popup_menu_id_pressed(id: int) -> void:
+	var internal_theme_path: String
+	# Select original theme
 	match (id):
 		0:
-			const BASE_THEME = preload("uid://b17wob7amnhga")
-			get_window().set_theme(BASE_THEME)
+			internal_theme_path = "res://FileBrowser/Themes/base_theme.tres"
 		1:
-			const OLD_GREEN_THEME = preload("uid://cf1sabqbl4g06")
-			get_window().set_theme(OLD_GREEN_THEME)
+			internal_theme_path = "res://FileBrowser/Themes/old_green_theme.tres"
+			
+	# Use saved copy if it exists
+	var external_theme_path = "user://".path_join(internal_theme_path.get_file())
+	var theme_path = external_theme_path if FileAccess.file_exists(external_theme_path) else internal_theme_path
+	var new_theme = load(theme_path)
+	get_window().set_theme(new_theme)

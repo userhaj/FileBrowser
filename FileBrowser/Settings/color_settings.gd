@@ -6,13 +6,13 @@ const THEME_DEFAULT = {
 	"Icon View Background": {
 		"name": "panel", 
 		"theme_type": "ScrollContainer", 
-		"theme_path": "res://FileBrowser/Themes/folder_icon_view_theme.tres",
+		"theme_path": "res://FileBrowser/Themes/base_theme.tres",
 		"default": Color(0.198, 0.198, 0.198, 1.0)
 		},
 	"Folder Tree Background": {
 		"name": "panel", 
 		"theme_type": "Tree", 
-		"theme_path": "res://FileBrowser/Themes/folder_tree_theme.tres",
+		"theme_path": "res://FileBrowser/Themes/base_theme.tres",
 		"default": Color(0.212, 0.212, 0.212, 1.0)
 		},
 	"Adjustable Divider Background": {
@@ -38,10 +38,18 @@ func set_color(setting_name: String, color: Color):
 	# New Test Content
 	var flat_box: StyleBoxFlat = StyleBoxFlat.new()
 	flat_box.bg_color = color
-	var theme_path = THEME_DEFAULT[setting_name]["theme_path"]
-	var new_theme: Theme = load(theme_path)
+	var internal_theme_path: String = THEME_DEFAULT[setting_name]["theme_path"]
+	var external_theme_path = "user://".path_join(internal_theme_path.get_file())
+	var new_theme: Theme
+	if FileAccess.file_exists(external_theme_path):
+		new_theme = load(external_theme_path)
+	else: # Load default theme on external load failure
+		new_theme = load(internal_theme_path)
 	new_theme.set_stylebox(THEME_DEFAULT[setting_name]["name"], THEME_DEFAULT[setting_name]["theme_type"], flat_box )
-	ResourceSaver.save(new_theme, THEME_DEFAULT[setting_name]["theme_path"])
+	ResourceSaver.save(new_theme, external_theme_path)
+	# If newly saved theme is not loaded, set as current theme
+	if get_tree().root.get_theme() != new_theme:
+		get_tree().root.set_theme(load(external_theme_path))
 	
 
 func load_colors():
