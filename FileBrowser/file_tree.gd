@@ -63,6 +63,21 @@ func _input(event):
 		print(arr)
 		refresh()
 	
+	# Handle rename hotkey F2
+	if event is InputEventKey and Input.is_key_pressed(KEY_F2):
+		var selected_trees: Array[TreeItem] = get_selected_tree_items()
+		if selected_trees.size() > 0:
+			for tree_item in selected_trees:
+				tree_item.set_editable(0, true)
+			edit_selected(false)
+			for tree_item in selected_trees:
+				tree_item.set_editable(0, false)
+	
+	# Handle refresh hotkey F5
+	if event is InputEventKey and Input.is_key_pressed(KEY_F5) and not event.is_echo():
+		refresh()
+		
+	
 	# Resize column width
 	if dragging_resize_column > -1:
 		var width =  get_local_mouse_position().x
@@ -144,15 +159,15 @@ func _fill_fold(tree_item: TreeItem):
 	
 # Clears Children, Adds folder/files based on current directory
 func refresh():
+	if tree_root:
+		# Get current fold structure (is folder expanded?)
+		_fold_structure.clear()
+		var tree_item = get_root().get_first_child()
+		_fill_fold(tree_item)
+	
 	if only_show_drives:
 		show_default_os_drives()
 	else:
-		if tree_root:
-			# Get current fold structure (is folder expanded?)
-			_fold_structure.clear()
-			var tree_item = get_root().get_first_child()
-			_fill_fold(tree_item)
-			
 		# Remove current directory content
 		clear()
 		
@@ -177,6 +192,7 @@ func refresh():
 			wiggle_animate(folder.label)
 		
 		_sort_tree.call_deferred(get_root(), _sort_column)
+
 
 func _sort_tree(tree_item: TreeItem, sort_column: int, is_ascending: bool=true):
 	# default to first column if incorrect column given
@@ -427,6 +443,9 @@ func path_from_TreeItem(given_item: TreeItem) -> String:
 		return path
 	return ""
 
+func set_path_on_TreeItem(tree_item: TreeItem, new_path: String):
+	tree_item.set_metadata(0, new_path)
+
 # Returns Array of paths in current directory
 func get_selected_paths() -> Array[String]:
 	var all_paths: Array[String] = []
@@ -498,3 +517,23 @@ func _on_empty_clicked(click_position: Vector2, mouse_button_index: int) -> void
 		$FilePopupMenu.pre_popup(selected_paths)
 		$FilePopupMenu.position = get_screen_transform() * click_position
 		$FilePopupMenu.popup()
+
+
+
+func _on_item_edited() -> void:
+	# Find edited TreeItem(s) and update them
+	var selected_trees: Array[TreeItem] = get_selected_tree_items()
+	if selected_trees.size() > 0:
+		for tree_item in selected_trees:
+			var path = path_from_TreeItem(tree_item)
+			var true_object_name = path.get_file()
+			var shown_name = tree_item.get_text(0)
+			if true_object_name != shown_name:
+				var new_path = path.get_base_dir().path_join(shown_name)
+				var rename_attempt = DirAccess.rename_absolute(path, new_path)
+				# Fix tree_item path with new renamed path
+				if rename_attempt == OK:
+					set_path_on_TreeItem(tree_item, new_path)
+				# On failure revert to original name
+				else:
+					tree_item.set_text(0, true_object_name)
