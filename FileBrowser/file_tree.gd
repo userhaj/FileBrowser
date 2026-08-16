@@ -195,9 +195,8 @@ func refresh():
 			var dir_access = DirAccess.open(self._full_directory_path)
 			if dir_access:
 				dir_access.include_hidden = show_hidden_files
-				for directory in dir_access.get_files():
-					for file in DirAccess.get_files_at(self._full_directory_path):
-						call_deferred("_create_file", tree_root, _full_directory_path.path_join(file))
+				for file in dir_access.get_files():
+					call_deferred("_create_file", tree_root, _full_directory_path.path_join(file))
 		
 		
 		# Notify user that refresh occured by wiggling folders
