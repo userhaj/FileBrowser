@@ -8,16 +8,18 @@ func _ready() -> void:
 
 
 func _on_button_colors_pressed() -> void:
-	for child in $HBoxContainer/Control.get_children():
-		$HBoxContainer/Control.remove_child(child)
+	_clear()
 		
 	var color_settings = preload("res://FileBrowser/Settings/color_settings.tscn").instantiate()
 	$HBoxContainer/Control.add_child(color_settings)
 
 
+func _clear():
+	for child in $HBoxContainer/Control.get_children():
+		$HBoxContainer/Control.remove_child(child)
+
 func _on_close_requested() -> void:
 	hide.call_deferred()
-
 
 func _on_button_access_pressed() -> void:
 	for child in $HBoxContainer/Control.get_children():
@@ -26,3 +28,9 @@ func _on_button_access_pressed() -> void:
 		
 	var accessibility_settings = preload("res://FileBrowser/Settings/accessibility_settings.tscn").instantiate()
 	$HBoxContainer/Control.add_child(accessibility_settings)
+
+
+func _on_number_button_pressed() -> void:
+	_clear()
+	var number_settings = preload("res://FileBrowser/Settings/number_settings.tscn").instantiate()
+	$HBoxContainer/Control.add_child(number_settings)

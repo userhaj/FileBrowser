@@ -1,8 +1,8 @@
-[gd_scene format=3 uid="uid://din11ftas4xqy"]
+[gd_scene format=3 uid="uid://cygnaorqy4awn"]
 
-[ext_resource type="Script" uid="uid://bvx70n2coxufv" path="res://FileBrowser/Settings/color_settings.gd" id="1_wf70a"]
+[ext_resource type="Script" uid="uid://ctya33pec5ogv" path="res://FileBrowser/Settings/number_settings.gd" id="1_vrav0"]
 
-[node name="ColorSettings" type="Control" unique_id=1064623610]
+[node name="NumberSettings" type="Control" unique_id=1064623610]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 3
 anchors_preset = 15
@@ -12,7 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource("1_wf70a")
+script = ExtResource("1_vrav0")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=167273929]
 layout_mode = 1

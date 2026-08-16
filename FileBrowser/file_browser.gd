@@ -55,8 +55,10 @@ func _ready():
 	if get_window() == get_tree().root:
 		var internal_theme_path: String = "res://FileBrowser/Themes/base_theme.tres"
 		var external_theme_path = "user://".path_join(internal_theme_path.get_file())
-		var theme_path = external_theme_path if FileAccess.file_exists(external_theme_path) else internal_theme_path
-		var new_theme = load(theme_path)
+		if not FileAccess.file_exists(external_theme_path):
+			ResourceSaver.save(load(internal_theme_path), external_theme_path)
+		var new_theme = load(external_theme_path)
+		new_theme.set_meta("file_path", external_theme_path)
 		get_window().set_theme(new_theme)
 	# Set child window theme to match main window
 	else:
@@ -181,6 +183,8 @@ func _on_theme_popup_menu_id_pressed(id: int) -> void:
 			
 	# Use saved copy if it exists
 	var external_theme_path = "user://".path_join(internal_theme_path.get_file())
-	var theme_path = external_theme_path if FileAccess.file_exists(external_theme_path) else internal_theme_path
-	var new_theme = load(theme_path)
+	if not FileAccess.file_exists(external_theme_path):
+		ResourceSaver.save(load(internal_theme_path), external_theme_path)
+	var new_theme = load(external_theme_path)
+	new_theme.set_meta("file_path", external_theme_path)
 	get_window().set_theme(new_theme)

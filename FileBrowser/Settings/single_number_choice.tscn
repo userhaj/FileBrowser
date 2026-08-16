@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://duoibevxlw0jj"]
+[gd_scene format=3 uid="uid://b6lpo6emle3l0"]
 
-[ext_resource type="Script" uid="uid://cnqx10qrkvlge" path="res://FileBrowser/Color/single_color_choice_gui.gd" id="1_8insv"]
+[ext_resource type="Script" uid="uid://24isjxc7shjy" path="res://FileBrowser/Settings/single_number_choice.gd" id="1_yu4rt"]
 
 [node name="HBoxContainer" type="HBoxContainer" unique_id=598966507]
 custom_minimum_size = Vector2(12, 31)
@@ -9,7 +9,7 @@ anchor_right = 1.0
 offset_bottom = 31.0
 grow_horizontal = 2
 size_flags_horizontal = 3
-script = ExtResource("1_8insv")
+script = ExtResource("1_yu4rt")
 
 [node name="ButtonReset" type="Button" parent="." unique_id=1100391030]
 layout_mode = 2
@@ -24,10 +24,8 @@ text_overrun_behavior = 3
 [node name="Control" type="Control" parent="." unique_id=905250463]
 layout_mode = 2
 
-[node name="ColorPickerButton" type="ColorPickerButton" parent="." unique_id=1543294501]
-custom_minimum_size = Vector2(64, 0)
+[node name="SpinBox" type="SpinBox" parent="." unique_id=1586769748]
 layout_mode = 2
-size_flags_horizontal = 8
 
 [connection signal="pressed" from="ButtonReset" to="." method="_on_button_reset_pressed"]
-[connection signal="color_changed" from="ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]
+[connection signal="value_changed" from="SpinBox" to="." method="_on_spin_box_value_changed"]

@@ -1,77 +1,69 @@
 extends Control
 
-const SAVE_FILEPATH = "user://GDFileBrowserColors.cfg"
-
-const THEME_DEFAULT = {
-	"Icon View Background": {
-		"name": "panel", 
-		"theme_type": "ScrollContainer", 
-		"theme_path": "res://FileBrowser/Themes/base_theme.tres",
-		"default": Color(0.198, 0.198, 0.198, 1.0)
-		},
-	"Folder Tree Background": {
-		"name": "panel", 
-		"theme_type": "Tree", 
-		"theme_path": "res://FileBrowser/Themes/base_theme.tres",
-		"default": Color(0.212, 0.212, 0.212, 1.0)
-		},
-	"Adjustable Divider Background": {
-		"name": "split_bar_background", 
-		"theme_type": "HSplitContainer", 
-		"theme_path": "res://FileBrowser/Themes/base_theme.tres",
-		"default": Color(0.212, 0.212, 0.212, 1.0)
-		},
-	"Base App Background": {
-		"name": "panel", 
-		"theme_type": "PanelContainer", 
-		"theme_path": "res://FileBrowser/Themes/base_theme.tres",
-		"default": Color(0.339, 0.339, 0.339, 1.0)
-		}
-		}
-
+@onready var v_box_container: VBoxContainer = $ScrollContainer/VBoxContainer
+@onready var edit_theme: Theme = get_tree().root.get_theme()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	load_colors()
 
-func set_color(setting_name: String, color: Color):
-	# New Test Content
-	var flat_box: StyleBoxFlat = StyleBoxFlat.new()
-	flat_box.bg_color = color
-	var internal_theme_path: String = THEME_DEFAULT[setting_name]["theme_path"]
-	var external_theme_path = "user://".path_join(internal_theme_path.get_file())
-	var new_theme: Theme
-	if FileAccess.file_exists(external_theme_path):
-		new_theme = load(external_theme_path)
-	else: # Load default theme on external load failure
-		new_theme = load(internal_theme_path)
-	new_theme.set_stylebox(THEME_DEFAULT[setting_name]["name"], THEME_DEFAULT[setting_name]["theme_type"], flat_box )
-	ResourceSaver.save(new_theme, external_theme_path)
-	# If newly saved theme is not loaded, set as current theme
-	if get_tree().root.get_theme() != new_theme:
-		get_tree().root.set_theme(load(external_theme_path))
-	
+func _on_visibility_changed() -> void:
+	if visible and v_box_container:
+		for child in v_box_container.get_children():
+			v_box_container.remove_child(child)
+		load_colors()
 
 func load_colors():
-	var config: ConfigFile = ConfigFile.new()
-	var err = config.load(SAVE_FILEPATH)
-	if err == OK:
-		for ui_name in THEME_DEFAULT.keys():
-			var ui_color = config.get_value("Colors", ui_name, "")
-			# If color is not found, use default
-			if ui_color == "":
-				ui_color = THEME_DEFAULT[ui_name]["default"]
-				config.set_value("Color", ui_name, THEME_DEFAULT[ui_name]["default"])
+	edit_theme = get_tree().root.get_theme()
+	if edit_theme:
+		for type_name in edit_theme.get_type_list():
+			for style_box_name in edit_theme.get_stylebox_list(type_name):
+				var style_box = edit_theme.get_stylebox(style_box_name, type_name)
+				if style_box is StyleBoxFlat:
+						var style_edit_gui: SingleColorChoiceGui = preload("res://FileBrowser/Color/single_color_choice_gui.tscn").instantiate()
+						var ui_color = style_box.bg_color
+						style_edit_gui.setup(style_box_name, ui_color, type_name)
+						v_box_container.add_child(style_edit_gui)
+						style_edit_gui.color_changed.connect(_color_changed_style_box)
 			
-			var single_color_gui = preload("res://FileBrowser/Color/single_color_choice_gui.tscn").instantiate()
-			single_color_gui.setup(ui_name, ui_color)
-			single_color_gui.connect("color_changed", a_color_changed)
-			$ScrollContainer/VBoxContainer.add_child(single_color_gui)
-	else:
-		# If opening config failed, save a new config
-		for ui_name in THEME_DEFAULT.keys():
-			config.set_value("Color", ui_name, THEME_DEFAULT[ui_name]["default"])
-		config.save(SAVE_FILEPATH)
+			for font_name in edit_theme.get_font_list(type_name):
+					var style_edit_gui: SingleColorChoiceGui = preload("res://FileBrowser/Color/single_color_choice_gui.tscn").instantiate()
+					var ui_color = edit_theme.get_color("font_color", type_name)
+					style_edit_gui.setup(font_name, ui_color, type_name)
+					v_box_container.add_child(style_edit_gui)
+					style_edit_gui.color_changed.connect(_color_changed_color_only)
+			
+			for color_name in edit_theme.get_color_list(type_name):
+				if color_name == "font_color":
+					var style_edit_gui: SingleColorChoiceGui = preload("res://FileBrowser/Color/single_color_choice_gui.tscn").instantiate()
+					var ui_color = edit_theme.get_color("font_color", type_name)
+					style_edit_gui.setup(color_name, ui_color, type_name)
+					v_box_container.add_child(style_edit_gui)
+					style_edit_gui.color_changed.connect(_color_changed_color_only)
+						
+						
+func _color_changed_color_only(color, ui_name, theme_name):
+	edit_theme.set_color(ui_name, theme_name, color)
+	# Save theme file
+	if edit_theme.has_meta("file_path"):
+		var theme_path: String = edit_theme.get_meta("file_path")
+		
+		# res:// is readonly, must change to userpath
+		if "res://" in theme_path:
+			theme_path = "user://" + theme_path.get_file()
+			ResourceSaver.save(edit_theme, theme_path)
+						
 
-func a_color_changed(color: Color, ui_name: String):
-	set_color(ui_name, color)
+func _color_changed_style_box(color, ui_name, theme_name):
+	var box = edit_theme.get_stylebox(ui_name, theme_name)
+	if box.has_method("set_bg_color"):
+		box.bg_color = color
+		edit_theme.set_stylebox(ui_name, theme_name, box)
+		# Save theme file
+		if edit_theme.has_meta("file_path"):
+			var theme_path: String = edit_theme.get_meta("file_path")
+			
+			# res:// is readonly, must change to userpath
+			if "res://" in theme_path:
+				theme_path = "user://" + theme_path.get_file()
+			ResourceSaver.save(edit_theme, theme_path)
