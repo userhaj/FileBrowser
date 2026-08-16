@@ -16,6 +16,8 @@ var _full_directory_path: String
 @onready var ctrl_f_exit_button: Button = $CtrlFPanelContainer/HBoxContainer/CtrlFExitButton
 @onready var ctrl_f_panel_container: PanelContainer = $CtrlFPanelContainer
 
+@export var show_hidden_files: bool = true
+
 
 # Dragging tracking variables
 var _is_dragging: bool = false
@@ -72,6 +74,12 @@ func _input(event):
 			$SelectBox.stop_selecting()
 	
 	if event is InputEventKey and Input.is_key_pressed(KEY_F5):
+		refresh()
+	
+	# Swap show hidden files when ctrl+H pressed
+	if event is InputEventKey and Input.is_key_pressed(KEY_H) and \
+	not event.is_echo() and event.ctrl_pressed:
+		show_hidden_files = not show_hidden_files
 		refresh()
 	
 	# Idetify if mouse over folder icon view (self)
@@ -148,7 +156,10 @@ func refresh():
 	# Remove current directory content
 	clear()
 	# Add folders to view
-	for directory in DirAccess.get_directories_at(self._full_directory_path):
+	var dir_access = DirAccess.open(self._full_directory_path)
+	if dir_access:
+		dir_access.include_hidden = show_hidden_files
+		for directory in dir_access.get_directories():
 			var button = preload("res://FileBrowser/folder.tscn").instantiate()
 			button.set_thread_queue(self._thread_queue)
 			var path = self._full_directory_path + "/" + directory

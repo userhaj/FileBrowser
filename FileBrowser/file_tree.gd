@@ -14,6 +14,7 @@ class_name FileTree
 # Will only allow viewing of OS folders from  OS.get_drive_name
 @export var only_show_drives: bool = false
 @export var always_fit_name: bool = false
+@export var show_hidden_files: bool = true
 
 signal folder_changed(folder_path: String)
 @onready var old_min_width = {0:128, 1: 128}
@@ -75,6 +76,12 @@ func _input(event):
 	
 	# Handle refresh hotkey F5
 	if event is InputEventKey and Input.is_key_pressed(KEY_F5) and not event.is_echo():
+		refresh()
+	
+	# Swap show hidden files when ctrl+H pressed
+	if event is InputEventKey and Input.is_key_pressed(KEY_H) and \
+	not event.is_echo() and event.ctrl_pressed:
+		show_hidden_files = not show_hidden_files
 		refresh()
 		
 	
@@ -178,12 +185,19 @@ func refresh():
 		
 		
 		if show_folders:
-			for directory in DirAccess.get_directories_at(self._full_directory_path):
-				call_deferred("_create_folder", tree_root, _full_directory_path.path_join(directory))
+			var dir_access = DirAccess.open(self._full_directory_path)
+			if dir_access:
+				dir_access.include_hidden = show_hidden_files
+				for directory in dir_access.get_directories():
+					call_deferred("_create_folder", tree_root, _full_directory_path.path_join(directory))
 		
 		if show_files:
-			for file in DirAccess.get_files_at(self._full_directory_path):
-				call_deferred("_create_file", tree_root, _full_directory_path.path_join(file))
+			var dir_access = DirAccess.open(self._full_directory_path)
+			if dir_access:
+				dir_access.include_hidden = show_hidden_files
+				for directory in dir_access.get_files():
+					for file in DirAccess.get_files_at(self._full_directory_path):
+						call_deferred("_create_file", tree_root, _full_directory_path.path_join(file))
 		
 		
 		# Notify user that refresh occured by wiggling folders
@@ -251,6 +265,7 @@ func _add_sub_folder(tree_item: TreeItem):
 	var path = tree_item.get_metadata(0)
 	var dir = DirAccess.open(path)
 	if dir:
+		dir.include_hidden = show_hidden_files
 		dir.list_dir_begin()
 		var file_name = dir.get_next()
 		while file_name:
