@@ -173,7 +173,9 @@ func refresh():
 			add_folder_button(button)
 
 	# Add files to view
-	for file_name in DirAccess.get_files_at(self._full_directory_path):
+	if dir_access:
+		dir_access.include_hidden = show_hidden_files
+		for file_name in dir_access.get_files():
 			var button = preload("res://FileBrowser/folder.tscn").instantiate()
 			button.set_thread_queue(self._thread_queue)
 			var file_path = self._full_directory_path + "/" + file_name
