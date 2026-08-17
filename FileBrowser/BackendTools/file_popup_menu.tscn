@@ -9,7 +9,6 @@
 [node name="FilePopupMenu" type="PopupMenu" unique_id=1803370902]
 oversampling_override = 1.0
 size = Vector2i(142, 147)
-visible = true
 allow_search = false
 item_count = 4
 item_0/text = "New Folder"
@@ -23,6 +22,7 @@ item_3/id = 5
 script = ExtResource("1_h775i")
 
 [node name="FileOpenWithPopupMenu" parent="." unique_id=1581817408 instance=ExtResource("3_7b2hh")]
+visible = false
 
 [node name="ConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1504490297]
 gui_embed_subwindows = true
