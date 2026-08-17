@@ -57,6 +57,12 @@ func setup(absolute_file_path: String):
 	# Linux menu open with
 	if "nux" in OS.get_name():
 		mime_type = linux_file_mime_type_get(absolute_file_path)
+	elif "Windows" in OS.get_name():
+		var id = hash("Windows")
+		add_item("Show Open With Options", id)
+		var windows_path = PackedStringArray(['"'+absolute_file_path.replace("/", "\\")+'"'])
+		var open_with_call = OS.open_with_program.bind("openwith.exe", windows_path)
+		set_item_metadata(get_item_index(id), open_with_call)
 		
 	for app in mimes.get(mime_type, ""):
 		add_open_with_menu_item(app, absolute_file_path)
