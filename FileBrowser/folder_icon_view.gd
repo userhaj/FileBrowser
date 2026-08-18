@@ -139,11 +139,11 @@ func get_directory() -> String:
 
 # Adds folder to current view. DOES NOT EDIT FILE SYSTEM
 func add_folder_button(folder: FolderLargeIconButton):
-	self._folder_container.call_deferred("add_child", folder)
+	$SelectBox/ScrollContainer/HFlowContainer.call_deferred("add_child", folder)
 
 # Returns an array of all folders/files buttons
 func get_folder_buttons() -> Array[Node]:
-	return self._folder_container.get_children()
+	return self._folder_container.get_children() if _folder_container else []
 
 # Change current directoy, removes all icons and adds icons for full_path
 func set_directory(full_path: String):

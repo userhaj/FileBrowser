@@ -204,7 +204,7 @@ func refresh():
 		if folder:
 			wiggle_animate(folder.label)
 		
-		_sort_tree.call_deferred(get_root(), _sort_column)
+		_sort_tree.call_deferred(get_root(), _sort_column, _is_sort_ascending)
 
 
 func _sort_tree(tree_item: TreeItem, sort_column: int, is_ascending: bool=true):
@@ -239,9 +239,6 @@ func get_expanded_folders() -> Array[String]:
 	_expanded_folders($".".get_root(), arr)
 	return arr
 
-func _populate_sub_folders_of_tree_root():
-	for dir_tree_item: TreeItem in tree_root.get_children():
-				call_deferred("_add_sub_folder", dir_tree_item)
 
 func _expanded_folders(tree_item: TreeItem, array: Array):
 	var next: TreeItem = tree_item.get_next_visible() if tree_item else null
@@ -255,29 +252,30 @@ func _on_item_collapsed(item:TreeItem):
 	if not item.collapsed:
 		if item.get_child_count() > 0:
 			for folder_path in item.get_children():
-				if folder_path.get_child_count() == 0:
-					_add_sub_folder(folder_path)
+				item.remove_child(folder_path)
+			_add_sub_folder(item)
+		_sort_tree.call_deferred(item, _sort_column, _is_sort_ascending)
 
 
 func _add_sub_folder(tree_item: TreeItem):
 	# Create TreeItems for all subfolders of given TreeItem
 	var path = tree_item.get_metadata(0)
-	var dir = DirAccess.open(path)
-	if dir:
-		dir.include_hidden = show_hidden_files
-		dir.list_dir_begin()
-		var file_name = dir.get_next()
-		while file_name:
-			var full_path = path.path_join(file_name)
-			# If folder, create TreeItem folder
-			if show_folders and DirAccess.dir_exists_absolute(full_path):
-				# Adding child is not animation/thread safe, must call deferred
-				call_deferred("_create_folder", tree_item, full_path)
-			elif show_files and FileAccess.file_exists(full_path):
-				call_deferred("_create_file", tree_item, full_path)
-			# Check next folder
-			file_name = dir.get_next()
-		_sort_tree.call_deferred(tree_item, _sort_column)
+	if path:
+		var dir = DirAccess.open(path)
+		if dir:
+			dir.include_hidden = show_hidden_files
+			dir.list_dir_begin()
+			var file_name = dir.get_next()
+			while file_name:
+				var full_path = path.path_join(file_name)
+				# If folder, create TreeItem folder
+				if show_folders and DirAccess.dir_exists_absolute(full_path):
+					# Adding child is not animation/thread safe, must call deferred
+					call_deferred("_create_folder", tree_item, full_path)
+				elif show_files and FileAccess.file_exists(full_path):
+					call_deferred("_create_file", tree_item, full_path)
+				# Check next folder
+				file_name = dir.get_next()
 
 
 func _create_folder(base_tree_item, full_path: String, label_full_path: bool=false):
@@ -290,18 +288,23 @@ func _create_folder(base_tree_item, full_path: String, label_full_path: bool=fal
 	new_tree_item.set_text(0, label_text) # On folders get_file() gets last folder name
 	new_tree_item.set_metadata(0, full_path)
 	var dirAcc = DirAccess.open(full_path)
+	var folder_contents_count = 0
 	if dirAcc and columns >1:
 		dirAcc.include_hidden = true
 		var dir_count = dirAcc.get_directories().size()
 		var file_count = dirAcc.get_files().size()
-		new_tree_item.set_text(1, str(dir_count + file_count)+" objects")
+		folder_contents_count = dir_count + file_count
+		new_tree_item.set_text(1, str(folder_contents_count)+" objects")
 	new_tree_item.set_icon(0, create_get_subview_label("📁").get_texture())
 	
-	# Fill subfolders if base folders(on root) or previously recorded as having folders
-	if new_tree_item.get_parent() == get_root() or _fold_structure.has(full_path):
-		_add_sub_folder(new_tree_item)
+	# Create place holder item on folders with sub-content
+	if folder_contents_count > 0:
+		create_item(new_tree_item)
+	
+	# Uncollapse if saved as open folder
 	new_tree_item.collapsed = _fold_structure.get(full_path, true)
-
+	
+	# Optional no-trim of folder/file names
 	if always_fit_name:
 		new_tree_item.set_text_overrun_behavior(0, TextServer.OVERRUN_NO_TRIMMING)
 

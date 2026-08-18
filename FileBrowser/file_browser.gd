@@ -13,7 +13,6 @@ extends Control
 @onready var theme_popup_menu: PopupMenu = $ThemePopupMenu
 
 
-
 var settings_file_name = "user://SETTINGS.cfg"
 var is_shoot_laser_left: bool = true
 
@@ -50,7 +49,14 @@ func _ready():
 	file_menu.get_popup().set_item_index(file_menu.get_popup().get_item_index(MENU_ID.QUIT),-1)
 	file_menu.get_popup().close_requested.connect(_on_close_requested, CONNECT_APPEND_SOURCE_OBJECT)
 	# #########################
-	
+
+	get_window().close_requested.connect(_on_close_requested, CONNECT_APPEND_SOURCE_OBJECT)
+
+	# This is slowest action on startup
+	_set_theme()
+
+
+func _set_theme():
 	# Set main window Default Theme
 	if get_window() == get_tree().root:
 		var internal_theme_path: String = "res://FileBrowser/Themes/base_theme.tres"
@@ -63,8 +69,6 @@ func _ready():
 	# Set child window theme to match main window
 	else:
 		get_window().set_theme(get_tree().root.get_window().get_theme())
-	
-	get_window().close_requested.connect(_on_close_requested, CONNECT_APPEND_SOURCE_OBJECT)
 	
 
 func _handle_file_menu(id: int):

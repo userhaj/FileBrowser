@@ -53,7 +53,6 @@ wait_time = 0.5
 one_shot = true
 
 [node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("3_1n75l")]
-visible = false
 item_0/icon = SubResource("ViewportTexture_hg8a3")
 item_1/icon = SubResource("ViewportTexture_x6hrk")
 item_3/icon = SubResource("ViewportTexture_vj7kp")

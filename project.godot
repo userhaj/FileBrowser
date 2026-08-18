@@ -43,6 +43,8 @@ theme/default_font_multichannel_signed_distance_field=true
 
 [physics]
 
+2d/run_on_separate_thread=true
+2d/physics_engine="Dummy"
 3d/physics_engine="Dummy"
 
 [rendering]
