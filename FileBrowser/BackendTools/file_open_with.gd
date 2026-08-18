@@ -60,7 +60,7 @@ func setup(absolute_file_path: String):
 	elif "Windows" in OS.get_name():
 		var id = hash("Windows")
 		add_item("Show Open With Options", id)
-		var windows_path = PackedStringArray(['"'+absolute_file_path.replace("/", "\\")+'"'])
+		var windows_path = PackedStringArray([absolute_file_path.replace("/", "\\")])
 		var open_with_call = OS.open_with_program.bind("openwith.exe", windows_path)
 		set_item_metadata(get_item_index(id), open_with_call)
 		
