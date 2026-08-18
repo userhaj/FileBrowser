@@ -15,9 +15,11 @@ func _copy_root_theme():
 	var theme_resource: Theme = get_tree().root.get_theme()
 	if theme_resource:
 		$PanelContainer.set_theme(theme_resource)
-		$PanelContainer/Label.label_settings.font = theme_resource.get_font("font", "EmojiFont")
-		$PanelContainer/Label.label_settings.font_size = theme_resource.get_font_size("font_size", "EmojiFont")
-		$PanelContainer/Label.label_settings.font_color = theme_resource.get_color("font_color", "EmojiFont")
+		var label_set = LabelSettings.new()
+		label_set.font = theme_resource.get_font("font", "EmojiFont")
+		label_set.font_size = theme_resource.get_font_size("font_size", "EmojiFont")
+		label_set.font_color = theme_resource.get_color("font_color", "EmojiFont")
+		$PanelContainer/Label.label_settings = label_set
 
 
 
