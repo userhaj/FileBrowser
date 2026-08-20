@@ -295,7 +295,7 @@ func _create_folder(base_tree_item, full_path: String, label_full_path: bool=fal
 		folder_contents_count = dir_count + file_count
 		# Set size column size
 		var size_column_index = column_titles.find("Size")
-		if size_column_index >= 0: # Only set size if it exists
+		if size_column_index >= 0 and size_column_index < columns: # Only set size if it exists
 			new_tree_item.set_text(size_column_index, str(folder_contents_count)+" objects")
 	new_tree_item.set_icon(0, create_get_subview_label("📁").get_texture())
 	
