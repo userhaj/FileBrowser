@@ -1,5 +1,6 @@
 extends Node
 class_name FileBrowsingController
+# Handles browsing history code, change_directory signal is a user requested action
 
 # The path the browser is currently viewing
 var current_path: String
@@ -49,6 +50,7 @@ func history_forward():
 
 
 func _shortcut_input(event: InputEvent) -> void:
+	# Handle hotkey forward/back buttons
 	var parent = get_parent()
 	if parent is CanvasItem and parent.is_visible_in_tree():
 		# Capture and perform go back history
@@ -69,6 +71,7 @@ func _shortcut_input(event: InputEvent) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	# Handle Mouse forward/back buttons
 	var parent = get_parent()
 	if parent is CanvasItem and parent.is_visible_in_tree():
 		if event is InputEventMouseButton:

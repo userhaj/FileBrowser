@@ -24,7 +24,6 @@ var column_titles = ["Name", "Size"]
 var _fold_structure = {}
 var _sort_column = 0
 var _is_sort_ascending = true
-
 var dragging_resize_column: int = -1
 
 # TODO get icons from outside self
@@ -189,14 +188,14 @@ func refresh():
 			if dir_access:
 				dir_access.include_hidden = show_hidden_files
 				for directory in dir_access.get_directories():
-					call_deferred("_create_folder", tree_root, _full_directory_path.path_join(directory))
+					_create_folder.call_deferred(tree_root, _full_directory_path.path_join(directory))
 		
 		if show_files:
 			var dir_access = DirAccess.open(self._full_directory_path)
 			if dir_access:
 				dir_access.include_hidden = show_hidden_files
 				for file in dir_access.get_files():
-					call_deferred("_create_file", tree_root, _full_directory_path.path_join(file))
+					_create_file.call_deferred(tree_root, _full_directory_path.path_join(file))
 		
 		
 		# Notify user that refresh occured by wiggling folders
@@ -277,7 +276,7 @@ func _add_sub_folder(tree_item: TreeItem):
 				# Check next folder
 				file_name = dir.get_next()
 
-
+# Create a TreeItem folder on given TreeItem
 func _create_folder(base_tree_item, full_path: String, label_full_path: bool=false):
 	# Create folder TreeItem with saved path
 	var new_tree_item: TreeItem = create_item(base_tree_item)
@@ -289,12 +288,15 @@ func _create_folder(base_tree_item, full_path: String, label_full_path: bool=fal
 	new_tree_item.set_metadata(0, full_path)
 	var dirAcc = DirAccess.open(full_path)
 	var folder_contents_count = 0
-	if dirAcc and columns >1:
+	if dirAcc:
 		dirAcc.include_hidden = true
 		var dir_count = dirAcc.get_directories().size()
 		var file_count = dirAcc.get_files().size()
 		folder_contents_count = dir_count + file_count
-		new_tree_item.set_text(1, str(folder_contents_count)+" objects")
+		# Set size column size
+		var size_column_index = column_titles.find("Size")
+		if size_column_index >= 0: # Only set size if it exists
+			new_tree_item.set_text(size_column_index, str(folder_contents_count)+" objects")
 	new_tree_item.set_icon(0, create_get_subview_label("📁").get_texture())
 	
 	# Create place holder item on folders with sub-content
@@ -308,6 +310,7 @@ func _create_folder(base_tree_item, full_path: String, label_full_path: bool=fal
 	if always_fit_name:
 		new_tree_item.set_text_overrun_behavior(0, TextServer.OVERRUN_NO_TRIMMING)
 
+# Create a TreeItem file on given TreeItem
 func _create_file(base_tree_item, full_path: String):
 	# Create folder TreeItem with saved path
 	var new_tree_item: TreeItem = create_item(base_tree_item)
@@ -509,13 +512,13 @@ func show_default_os_drives():
 	# Remove current directory content
 	clear()
 	# Add each drive
-	tree_root = $".".create_item()
+	tree_root = create_item()
 	tree_root.set_text(0, "root")
 	hide_root = true
 	var drive_count = DirAccess.get_drive_count()
 	for drive_index in range(drive_count):
 		var drive_name = DirAccess.get_drive_name(drive_index)
-		_create_folder(tree_root, drive_name)
+		_create_folder.call_deferred(tree_root, drive_name)
 
 
 func _on_item_mouse_selected(mouse_position: Vector2, mouse_button_index: int) -> void:

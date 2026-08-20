@@ -170,6 +170,7 @@ func _on_current_path_line_edit_text_submitted(new_text: String) -> void:
 
 func _on_refresh_button_pressed() -> void:
 	tabbed_browser.refresh()
+	folder_tree.refresh()
 
 
 func _on_close_requested(window: Window):
