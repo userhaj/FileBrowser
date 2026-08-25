@@ -57,9 +57,12 @@ func _texture_from_text(text:String) -> ViewportTexture:
 	
 
 func _teardown():
-	new_folder_confirmation.queue_free()
-	trash_file_confirmation_dialog.queue_free()
-	new_file_confirmation_dialog.queue_free()
+	if new_folder_confirmation:
+		new_folder_confirmation.queue_free()
+	if trash_file_confirmation_dialog:
+		trash_file_confirmation_dialog.queue_free()
+	if new_file_confirmation_dialog:
+		new_file_confirmation_dialog.queue_free()
 
 
 # Must call to set paths for methods

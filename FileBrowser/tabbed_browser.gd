@@ -20,29 +20,55 @@ func _init() -> void:
 
 func _handle_close_tab(tab: int):
 	if get_tab_count() > 1:
-		get_tab_control(tab).queue_free()
+		var closing_tab = get_tab_control(tab)
+		closing_tab.queue_free()
 
 func _menu_handle(index: int):
 	match index:
 		menu.NEW_TAB:
-			var default_browser = preload("res://FileBrowser/file_tree.tscn").instantiate()
-			new_tab(DirAccess.get_drive_name(0), default_browser)
+			_create_new_tab()
 		menu.SET_VIEW:
 			swap_view()
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
+		if _mouse_at_empty_tab_bar():
+			_create_new_tab()
+				
+func _create_new_tab():
+	var default_browser = preload("res://FileBrowser/file_tree.tscn").instantiate()
+	new_tab(get_directory(), default_browser)
+
+
+func _mouse_at_empty_tab_bar() -> bool:
+	var tab_bar = get_tab_bar()
+	var tab_bar_rect = tab_bar.get_rect()
+	var mouse_pos = tab_bar.get_local_mouse_position()
+	if tab_bar_rect.has_point(mouse_pos):
+		var hit_tab = false
+		for tab_idx in tab_bar.tab_count:
+			var tab_rect = tab_bar.get_tab_rect(tab_idx)
+			if tab_rect.has_point(mouse_pos):
+				hit_tab = true
+				break
+		if not hit_tab:
+			return true
+	return false
 
 func swap_view():
 	var old_control = get_current_tab_control()
 	var old_index = get_tab_idx_from_control(old_control)
-	old_index = old_index if old_index < get_tab_count() else get_tab_count() -1
 	var new_control
 	if old_control is FileTree:
 		new_control = preload("res://FileBrowser/folder_icon_view.tscn").instantiate()
 	else:
 		new_control = preload("res://FileBrowser/file_tree.tscn").instantiate()
+	
 	new_tab(old_control.get_directory(), new_control)
-	old_control.queue_free()
-	move_child(new_control, old_index)
-	current_tab = old_index
+	old_control.free()
+	move_child.call_deferred(new_control, old_index+2)
+	set_deferred("current_tab", old_index)
 	
 
 func new_tab(path: String, control):
@@ -79,7 +105,7 @@ func get_directory() -> String:
 
 func _on_tab_changed(tab: int) -> void:
 	var control = get_tab_control(tab)
-	if control.has_method("get_directory"):
+	if control and control.has_method("get_directory"):
 		folder_changed.emit(control.get_directory())
 
 func refresh():

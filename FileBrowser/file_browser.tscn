@@ -101,8 +101,14 @@ show_files = false
 only_show_drives = true
 always_fit_name = true
 
-[node name="TabbedBrowser" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=603231445 instance=ExtResource("6_0y5oy")]
+[node name="Control" type="Control" parent="PanelContainer/VBoxContainer/HSplitContainer" unique_id=64933059]
+clip_contents = true
 layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TabbedBrowser" parent="PanelContainer/VBoxContainer/HSplitContainer/Control" unique_id=603231445 instance=ExtResource("6_0y5oy")]
+layout_mode = 1
+size_flags_horizontal = 3
 
 [node name="ViewPopupMenu" type="PopupMenu" parent="." unique_id=2084791024]
 oversampling_override = 1.0
@@ -160,7 +166,8 @@ item_1/id = 1
 [connection signal="drag_ended" from="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer" to="." method="visual_save"]
 [connection signal="folder_selected" from="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer/BookmarkItemList" to="." method="set_current_path"]
 [connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/FileTree" to="." method="set_current_path"]
-[connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/TabbedBrowser" to="." method="set_current_path"]
+[connection signal="item_selected" from="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/FileTree" to="PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/FileTree" method="_on_item_selected"]
+[connection signal="folder_changed" from="PanelContainer/VBoxContainer/HSplitContainer/Control/TabbedBrowser" to="." method="set_current_path"]
 [connection signal="close_requested" from="ViewPopupMenu" to="." method="_on_close_requested" flags=18]
 [connection signal="id_pressed" from="ViewPopupMenu" to="." method="_on_view_popup_menu_id_pressed"]
 [connection signal="close_requested" from="SettingsWindow" to="." method="_on_close_requested" flags=18]

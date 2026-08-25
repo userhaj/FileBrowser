@@ -9,8 +9,10 @@ extends Control
 @onready var bookmarks: BookmarkItemList = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer/BookmarkItemList
 @onready var bookmark_container = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer
 @onready var file_menu: MenuButton = $PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton
-@onready var tabbed_browser: TabContainer = $PanelContainer/VBoxContainer/HSplitContainer/TabbedBrowser
+@onready var tabbed_browser: TabContainer = $PanelContainer/VBoxContainer/HSplitContainer/Control/TabbedBrowser
 @onready var theme_popup_menu: PopupMenu = $ThemePopupMenu
+@onready var refresh_button: Button = $PanelContainer/VBoxContainer/MenuHBoxContainer/RefreshButton
+@onready var up_dir_button: Button = $PanelContainer/VBoxContainer/MenuHBoxContainer/UpDirButton
 
 
 var settings_file_name = "user://SETTINGS.cfg"
@@ -54,7 +56,24 @@ func _ready():
 
 	# This is slowest action on startup
 	_set_theme()
+	
+	# Wiggle click animations
+	refresh_button.button_down.connect(Animate.wiggle.bind(-45, 0.45), CONNECT_APPEND_SOURCE_OBJECT)
+	up_dir_button.button_down.connect(Animate.wiggle.bind(-45, 0.45), CONNECT_APPEND_SOURCE_OBJECT)
+	file_button.pressed.connect(Animate.wiggle.bind(-45, 0.45), CONNECT_APPEND_SOURCE_OBJECT)
+	tabbed_browser.folder_changed.connect(Animate.wiggle.call_deferred.bind(tabbed_browser, -0.5, 0.25).unbind(1))
+	folder_tree.item_activated.connect(Animate.wiggle.call_deferred.bind(-1.5, 0.25), CONNECT_APPEND_SOURCE_OBJECT)
+	bookmarks.item_clicked.connect(Animate.wiggle.call_deferred.bind(-1.5, 0.25).unbind(3), CONNECT_APPEND_SOURCE_OBJECT)
+	current_path_line_edit.focus_entered.connect(Animate.wiggle.call_deferred.bind(-1.5, 0.25), CONNECT_APPEND_SOURCE_OBJECT)
+	
+	tabbed_browser.get_tab_bar().tab_close_pressed.disconnect(tabbed_browser._handle_close_tab)
+	tabbed_browser.get_tab_bar().tab_close_pressed.connect(_drop_tab)
+	
 
+func _drop_tab(tab_idx):
+	if tabbed_browser.get_tab_count() > 1:
+		var control := tabbed_browser.get_tab_control(tab_idx)
+		Animate.drop_control_free(control)
 
 func _set_theme():
 	# Set main window Default Theme
