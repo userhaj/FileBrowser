@@ -66,9 +66,6 @@ func _on_confirmation_dialog_canceled() -> void:
 func _on_confirmation_dialog_confirmed() -> void:
 	# Perform action on user confirmation
 	if _transfer_type == TransferType.Move:
-		# Can not move files to folder they are in, or are a subfolder of self
-		var from_folder = _files[0].get_base_dir()
-		if from_folder != _target_folder and not(_target_folder in _files):
-			FileActions.move(_files, _target_folder, update_percent, $FileActionErrorPopups.user_handle_error, $FileActionErrorPopups.get_choice)
+		FileActions.move(_files, _target_folder, update_percent, $FileActionErrorPopups.user_handle_error, $FileActionErrorPopups.get_choice)
 	else:
 		FileActions.copy(_files, _target_folder, update_percent, $FileActionErrorPopups.user_handle_error, $FileActionErrorPopups.get_choice)

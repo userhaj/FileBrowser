@@ -18,14 +18,7 @@ static func _copy(files: PackedStringArray, target_folder: String, percent_callb
 	for file: String in files:
 		# Is it a file or a directory?
 		var is_file = FileAccess.file_exists(file)
-		
-		# Is the target folder and the base folder the same?
-		var is_file_in_target = file.get_base_dir().simplify_path() == target_folder.simplify_path()
-		if is_file_in_target:
-			# If from is same as to in "move", do nothing
-			if is_move:
-				break
-		
+
 		var target_location = target_folder.path_join(file.get_file())
 		
 		# If file exists, overwrite it or rename current?
@@ -60,27 +53,25 @@ static func _copy(files: PackedStringArray, target_folder: String, percent_callb
 			replace_array(file, target_location, target_dirs)
 			for index in range(len(all_dirs)):
 				copy_files(all_dirs[index], target_dirs[index])
-			
-		
-		if is_file:
+
+		if is_file: # File copy action
 			var dir_access := DirAccess.open(target_folder)
 			var err = dir_access.copy(file, target_location) if dir_access else FAILED
+			# Delete all original copied files if there are no errors
 			if err == OK:
 				if is_move:
 					# TODO Items SHOULD be removed, but use trash until all bugs fixed
 					#dir_access.remove(file)
 					OS.move_to_trash(file)
-		else:
+		else: # Folder copy action
 			var err_array: Array = copy_files(file, target_location)
 			var error_sum = err_array.reduce(func(accum, number): return accum + number)
+			# Delete all original copied files if there are no errors
 			if error_sum == 0:
 				if is_move:
 					# TODO Items SHOULD be removed, but use trash until all bugs fixed
 					#dir_access.remove(file)
 					OS.move_to_trash(file)
-			
-			
-		
 		# Notify completion percent
 		files_complete += 1.0
 		percent_callback.call_deferred(files_complete / file_count)
