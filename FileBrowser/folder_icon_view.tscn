@@ -7,14 +7,15 @@
 [ext_resource type="PackedScene" uid="uid://behydyevo5qgt" path="res://FileBrowser/BackendTools/file_popup_menu.tscn" id="6_ge0n4"]
 [ext_resource type="Script" uid="uid://cvbxs2ydf6ksb" path="res://FeatureAddedObjects/line_edit_plus.gd" id="6_ispsu"]
 [ext_resource type="PackedScene" uid="uid://dftwbc3ldxac1" path="res://FileBrowser/ConfirmationDialogs/run_file_confirmation_dialog.tscn" id="7_ge0n4"]
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_ge0n4"]
-viewport_path = NodePath("SubViewportFolder")
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_2xlx7"]
-viewport_path = NodePath("SubViewportFile")
+[ext_resource type="Script" uid="uid://benc4ab4rkgll" path="res://FileBrowser/BackendTools/folder_poller.gd" id="8_2xlx7"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_weov8"]
+viewport_path = NodePath("SubViewportFolder")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_chhx5"]
+viewport_path = NodePath("SubViewportFile")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_twvko"]
 viewport_path = NodePath("SubViewportTrash")
 
 [node name="FolderIconView" type="Control" unique_id=475031514]
@@ -78,14 +79,20 @@ size_flags_horizontal = 8
 text = "x"
 
 [node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("6_ge0n4")]
-item_0/icon = SubResource("ViewportTexture_ge0n4")
-item_1/icon = SubResource("ViewportTexture_2xlx7")
-item_3/icon = SubResource("ViewportTexture_weov8")
+item_0/icon = SubResource("ViewportTexture_weov8")
+item_1/icon = SubResource("ViewportTexture_chhx5")
+item_3/icon = SubResource("ViewportTexture_twvko")
 
 [node name="RunFileConfirmationDialog" parent="." unique_id=381305560 instance=ExtResource("7_ge0n4")]
 
+[node name="FolderPoller" type="Node" parent="." unique_id=675840232]
+script = ExtResource("8_2xlx7")
+metadata/_custom_type_script = "uid://benc4ab4rkgll"
+
 [connection signal="file_clicked" from="." to="." method="_on_file_clicked"]
+[connection signal="folder_changed" from="." to="FolderPoller" method="only_poll_folder"]
 [connection signal="selected_area" from="SelectBox" to="." method="select_children_by_area"]
 [connection signal="confirmed" from="DropFilesConfirmationDialog" to="DropFilesConfirmationDialog" method="_on_confirmed"]
 [connection signal="custom_action" from="DropFilesConfirmationDialog" to="DropFilesConfirmationDialog" method="_on_custom_action"]
 [connection signal="text_changed" from="CtrlFPanelContainer/HBoxContainer/CtrlFLineEditPlus" to="." method="_on_ctrl_f_line_edit_plus_text_changed"]
+[connection signal="folder_changed" from="FolderPoller" to="." method="refresh" unbinds=1]

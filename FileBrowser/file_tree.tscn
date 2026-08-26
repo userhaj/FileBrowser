@@ -5,14 +5,15 @@
 [ext_resource type="PackedScene" uid="uid://behydyevo5qgt" path="res://FileBrowser/BackendTools/file_popup_menu.tscn" id="3_1n75l"]
 [ext_resource type="PackedScene" uid="uid://dftwbc3ldxac1" path="res://FileBrowser/ConfirmationDialogs/run_file_confirmation_dialog.tscn" id="4_5pgj7"]
 [ext_resource type="Script" uid="uid://diba812tgfd22" path="res://FileBrowser/file_browsing_controller.gd" id="5_hg8a3"]
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_hg8a3"]
-viewport_path = NodePath("SubViewportFolder")
+[ext_resource type="Script" uid="uid://benc4ab4rkgll" path="res://FileBrowser/BackendTools/folder_poller.gd" id="6_x6hrk"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_x6hrk"]
-viewport_path = NodePath("SubViewportFile")
+viewport_path = NodePath("SubViewportFolder")
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_vj7kp"]
+viewport_path = NodePath("SubViewportFile")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_ghjpp"]
 viewport_path = NodePath("SubViewportTrash")
 
 [node name="FileTree" type="Tree" unique_id=1822229957]
@@ -53,15 +54,19 @@ wait_time = 0.5
 one_shot = true
 
 [node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("3_1n75l")]
-item_0/icon = SubResource("ViewportTexture_hg8a3")
-item_1/icon = SubResource("ViewportTexture_x6hrk")
-item_3/icon = SubResource("ViewportTexture_vj7kp")
+item_0/icon = SubResource("ViewportTexture_x6hrk")
+item_1/icon = SubResource("ViewportTexture_vj7kp")
+item_3/icon = SubResource("ViewportTexture_ghjpp")
 
 [node name="RunFileConfirmationDialog" parent="." unique_id=381305560 instance=ExtResource("4_5pgj7")]
 
 [node name="FileBrowsingController" type="Node" parent="." unique_id=105872847]
 script = ExtResource("5_hg8a3")
 metadata/_custom_type_script = "uid://diba812tgfd22"
+
+[node name="FolderPoller" type="Node" parent="." unique_id=1814837655]
+script = ExtResource("6_x6hrk")
+metadata/_custom_type_script = "uid://benc4ab4rkgll"
 
 [connection signal="column_title_clicked" from="." to="." method="_on_column_title_clicked"]
 [connection signal="empty_clicked" from="." to="." method="_on_empty_clicked"]
@@ -72,3 +77,4 @@ metadata/_custom_type_script = "uid://diba812tgfd22"
 [connection signal="id_pressed" from="PopupMenu" to="." method="_on_popup_menu_id_pressed"]
 [connection signal="files_changed" from="FilePopupMenu" to="." method="refresh"]
 [connection signal="change_directory" from="FileBrowsingController" to="." method="_full_directory_path_setter"]
+[connection signal="folder_changed" from="FolderPoller" to="." method="refresh" unbinds=1]

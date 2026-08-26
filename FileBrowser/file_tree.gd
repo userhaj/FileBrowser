@@ -58,11 +58,6 @@ func folder_at_mouse() -> String:
 	return path
 
 func _input(event):
-	if event is InputEventKey and Input.is_key_pressed(KEY_F1):
-		var arr = get_expanded_folders()
-		print(arr)
-		refresh()
-	
 	# Handle rename hotkey F2
 	if event is InputEventKey and Input.is_key_pressed(KEY_F2):
 		var selected_trees: Array[TreeItem] = get_selected_tree_items()
@@ -140,6 +135,7 @@ func files_dropped(files: PackedStringArray):
 # Change current directoy, removes all icons and adds icons for full_path
 func set_directory(full_path: String):
 	$FileBrowsingController.set_directory(full_path)
+	$FolderPoller.only_poll_folder(full_path)
 
 
 # Current working directory
@@ -162,9 +158,15 @@ func _fill_fold(tree_item: TreeItem):
 		if not tree_item.collapsed:
 			_fill_fold(tree_item.get_first_child())
 		tree_item = tree_item.get_next()
+
 	
 # Clears Children, Adds folder/files based on current directory
 func refresh():
+	# Save scroll to restore point after refresh
+	var original_scroll = get_scroll()
+	var scroll_to_tree_item = get_item_at_position(Vector2(size.x/2,size.y-5))
+	var scroll_to_path = path_from_TreeItem(scroll_to_tree_item) if scroll_to_tree_item else ""
+	
 	if tree_root:
 		# Get current fold structure (is folder expanded?)
 		_fold_structure.clear()
@@ -204,7 +206,30 @@ func refresh():
 			wiggle_animate(folder.label)
 		
 		_sort_tree.call_deferred(get_root(), _sort_column, _is_sort_ascending)
+	
+	# Set scroll to where it was recorded before
+	if scroll_to_path:
+		_scroll_vector2_near_path.call_deferred(original_scroll, scroll_to_path)
 
+
+# Godot only allows scrolling to items, no manual control of scroll bar
+# But all items are cleared and remade, attempt to scroll to closest point
+func _scroll_vector2_near_path(scroll_position: Vector2, path:String):
+	var tree_item = _tree_item_from_path(path)
+	if tree_item:
+		scroll_to_item(tree_item.get_prev())
+		if get_scroll().y < scroll_position.y:
+			scroll_to_item(tree_item)
+	
+func _tree_item_from_path(filepath: String)->TreeItem:
+	var tree_item = get_root().get_first_child()
+	while tree_item:
+		var path = path_from_TreeItem(tree_item)
+		if path == filepath:
+			return tree_item
+		else:
+			tree_item = tree_item.get_next_in_tree()
+	return tree_item
 
 func _sort_tree(tree_item: TreeItem, sort_column: int, is_ascending: bool=true):
 	# default to first column if incorrect column given
@@ -254,6 +279,12 @@ func _on_item_collapsed(item:TreeItem):
 				item.remove_child(folder_path)
 			_add_sub_folder(item)
 		_sort_tree.call_deferred(item, _sort_column, _is_sort_ascending)
+		
+		$FolderPoller.add_folder_to_poll(path_from_TreeItem(item))
+	else:
+		var folder_path = path_from_TreeItem(item)
+		if folder_path:
+			$FolderPoller.erase(folder_path)
 
 
 func _add_sub_folder(tree_item: TreeItem):
@@ -519,6 +550,7 @@ func show_default_os_drives():
 	for drive_index in range(drive_count):
 		var drive_name = DirAccess.get_drive_name(drive_index)
 		_create_folder.call_deferred(tree_root, drive_name)
+		$FolderPoller.add_folder_to_poll(drive_name)
 
 
 func _on_item_mouse_selected(mouse_position: Vector2, mouse_button_index: int) -> void:
@@ -537,8 +569,7 @@ func _on_empty_clicked(click_position: Vector2, mouse_button_index: int) -> void
 		$FilePopupMenu.pre_popup(selected_paths)
 		$FilePopupMenu.position = get_screen_transform() * click_position
 		$FilePopupMenu.popup()
-
-
+		
 
 func _on_item_edited() -> void:
 	# Find edited TreeItem(s) and update them
