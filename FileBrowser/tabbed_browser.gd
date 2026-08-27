@@ -43,7 +43,8 @@ func _create_new_tab(path: String=""):
 
 func _create_new_tabs(paths: Array[String]):
 	for path in paths:
-		_create_new_tab(path)
+		if DirAccess.dir_exists_absolute(path):
+			_create_new_tab(path)
 
 
 func _mouse_at_empty_tab_bar() -> bool:
@@ -86,7 +87,7 @@ func new_tab(path: String, control):
 	control.folder_changed.connect(folder_changed.emit)
 	current_tab = index
 	# Add custom tabbed behavior
-	control.add_menu_command("Open In New Tab", "📂", _create_new_tabs, FilePopupMenu.FILETYPE_FLAG.SINGLE_FOLDER | FilePopupMenu.FILETYPE_FLAG.MULITPLE_FOLDER)
+	control.add_menu_command("Open In New Tab", "📂", _create_new_tabs, FilePopupMenu.FILETYPE_FLAG.SINGLE_FOLDER | FilePopupMenu.FILETYPE_FLAG.MULITPLE_FOLDER | FilePopupMenu.FILETYPE_FLAG.MIXED_FILES_FOLDERS)
 
 
 func _set_folder_as_tab_title(path: String, control: Control):
