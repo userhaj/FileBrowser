@@ -15,6 +15,8 @@ class_name FileTree
 @export var only_show_drives: bool = false
 @export var always_fit_name: bool = false
 @export var show_hidden_files: bool = true
+@onready var file_popup_menu: PopupMenu = $FilePopupMenu
+
 
 signal folder_changed(folder_path: String)
 @onready var old_min_width = {0:128, 1: 128}
@@ -588,3 +590,8 @@ func _on_item_edited() -> void:
 				# On failure revert to original name
 				else:
 					tree_item.set_text(0, true_object_name)
+
+func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, menu_for_filetype:FilePopupMenu.FILETYPE_FLAG):
+	if not is_node_ready():
+		await ready
+	file_popup_menu.add_menu_command(menu_text, emoji_icon, action, menu_for_filetype)

@@ -15,6 +15,7 @@ var _full_directory_path: String
 @onready var ctrl_f_line_edit_plus: LineEditPlus = $CtrlFPanelContainer/HBoxContainer/CtrlFLineEditPlus
 @onready var ctrl_f_exit_button: Button = $CtrlFPanelContainer/HBoxContainer/CtrlFExitButton
 @onready var ctrl_f_panel_container: PanelContainer = $CtrlFPanelContainer
+@onready var file_popup_menu: PopupMenu = $FilePopupMenu
 
 @export var show_hidden_files: bool = true
 
@@ -370,3 +371,6 @@ func _on_file_clicked(file_path: String) -> void:
 	$RunFileConfirmationDialog.set_files_to_open(PackedStringArray([file_path]))
 	$RunFileConfirmationDialog.position = get_screen_transform() * get_local_mouse_position()
 	$RunFileConfirmationDialog.popup()
+
+func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, menu_for_filetype: FilePopupMenu.FILETYPE_FLAG):
+	$FilePopupMenu.add_menu_command(menu_text, emoji_icon, action, menu_for_filetype)

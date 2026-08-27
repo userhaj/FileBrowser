@@ -36,9 +36,14 @@ func _input(event: InputEvent) -> void:
 		if _mouse_at_empty_tab_bar():
 			_create_new_tab()
 				
-func _create_new_tab():
+func _create_new_tab(path: String=""):
+	path = path if path else get_directory()
 	var default_browser = preload("res://FileBrowser/file_tree.tscn").instantiate()
-	new_tab(get_directory(), default_browser)
+	new_tab(path, default_browser)
+
+func _create_new_tabs(paths: Array[String]):
+	for path in paths:
+		_create_new_tab(path)
 
 
 func _mouse_at_empty_tab_bar() -> bool:
@@ -80,6 +85,8 @@ func new_tab(path: String, control):
 	control.set_directory(path)
 	control.folder_changed.connect(folder_changed.emit)
 	current_tab = index
+	# Add custom tabbed behavior
+	control.add_menu_command("Open In New Tab", "📂", _create_new_tabs, FilePopupMenu.FILETYPE_FLAG.SINGLE_FOLDER | FilePopupMenu.FILETYPE_FLAG.MULITPLE_FOLDER)
 
 
 func _set_folder_as_tab_title(path: String, control: Control):

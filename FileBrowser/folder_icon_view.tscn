@@ -9,13 +9,13 @@
 [ext_resource type="PackedScene" uid="uid://dftwbc3ldxac1" path="res://FileBrowser/ConfirmationDialogs/run_file_confirmation_dialog.tscn" id="7_ge0n4"]
 [ext_resource type="Script" uid="uid://benc4ab4rkgll" path="res://FileBrowser/BackendTools/folder_poller.gd" id="8_2xlx7"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_weov8"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_2xlx7"]
 viewport_path = NodePath("SubViewportFolder")
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_chhx5"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_weov8"]
 viewport_path = NodePath("SubViewportFile")
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_twvko"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_chhx5"]
 viewport_path = NodePath("SubViewportTrash")
 
 [node name="FolderIconView" type="Control" unique_id=475031514]
@@ -79,9 +79,9 @@ size_flags_horizontal = 8
 text = "x"
 
 [node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("6_ge0n4")]
-item_0/icon = SubResource("ViewportTexture_weov8")
-item_1/icon = SubResource("ViewportTexture_chhx5")
-item_3/icon = SubResource("ViewportTexture_twvko")
+item_0/icon = SubResource("ViewportTexture_2xlx7")
+item_1/icon = SubResource("ViewportTexture_weov8")
+item_3/icon = SubResource("ViewportTexture_chhx5")
 
 [node name="RunFileConfirmationDialog" parent="." unique_id=381305560 instance=ExtResource("7_ge0n4")]
 
