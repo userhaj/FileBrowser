@@ -47,7 +47,7 @@ func animate_action(_new_text: String):
 	star.global_position = get_position_of_last_character() 
 	star.random_bounce_star(32)
 	
-	var laser = preload("res://Laser/laser_draw_node_2d.gd").new()
+	var laser = preload("res://FileBrowser/Effects/laser_draw_node_2d.gd").new()
 	get_window().add_child(laser)
 	var lower_right = get_window().size
 	var lower_left = Vector2(0, lower_right.y)

@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://byylub0x8vqh0"]
+
+[ext_resource type="Script" uid="uid://bsmobc4ur5ywq" path="res://FileBrowser/FileBrowsingContainers/file_tree.gd" id="1_gvwle"]
+[ext_resource type="PackedScene" uid="uid://cnrjg1q6m5y36" path="res://FileBrowser/FileBrowsingContainers/Components/sub_viewport_single_label.tscn" id="2_kkmcr"]
+[ext_resource type="PackedScene" uid="uid://behydyevo5qgt" path="res://FileBrowser/FileBrowsingContainers/Components/file_popup_menu.tscn" id="3_a1033"]
+[ext_resource type="PackedScene" uid="uid://dftwbc3ldxac1" path="res://FileBrowser/FileBrowsingContainers/ConfirmationDialogs/run_file_confirmation_dialog.tscn" id="4_fk4eg"]
+[ext_resource type="Script" uid="uid://diba812tgfd22" path="res://FileBrowser/FileBrowsingContainers/BackendTools/file_browsing_controller.gd" id="5_gq1em"]
+[ext_resource type="Script" uid="uid://benc4ab4rkgll" path="res://FileBrowser/FileBrowsingContainers/BackendTools/folder_poller.gd" id="6_tyrsn"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_gvwle"]
+viewport_path = NodePath("SubViewportFolder")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_kkmcr"]
+viewport_path = NodePath("SubViewportFile")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_a1033"]
+viewport_path = NodePath("SubViewportTrash")
+
+[node name="FileTree" type="Tree" unique_id=1822229957]
+propagate_maximum_size = true
+clip_contents = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+columns = 2
+column_titles_visible = true
+allow_reselect = true
+allow_rmb_select = true
+enable_recursive_folding = false
+hide_root = true
+select_mode = 2
+tile_scroll_hint = true
+script = ExtResource("1_gvwle")
+
+[node name="PopupMenu" type="PopupMenu" parent="." unique_id=588652292]
+oversampling_override = 1.0
+hide_on_item_selection = false
+hide_on_checkable_item_selection = false
+item_count = 1
+item_0/text = "Size"
+item_0/checkable = 1
+item_0/checked = true
+item_0/id = 1
+
+[node name="SubViewport" parent="." unique_id=1823223691 instance=ExtResource("2_kkmcr")]
+
+[node name="TimerDoubleClick" type="Timer" parent="." unique_id=319486497]
+wait_time = 0.5
+one_shot = true
+
+[node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("3_a1033")]
+item_0/icon = SubResource("ViewportTexture_gvwle")
+item_1/icon = SubResource("ViewportTexture_kkmcr")
+item_3/icon = SubResource("ViewportTexture_a1033")
+
+[node name="RunFileConfirmationDialog" parent="." unique_id=381305560 instance=ExtResource("4_fk4eg")]
+
+[node name="FileBrowsingController" type="Node" parent="." unique_id=105872847]
+script = ExtResource("5_gq1em")
+metadata/_custom_type_script = "uid://diba812tgfd22"
+
+[node name="FolderPoller" type="Node" parent="." unique_id=1814837655]
+script = ExtResource("6_tyrsn")
+metadata/_custom_type_script = "uid://benc4ab4rkgll"
+
+[connection signal="column_title_clicked" from="." to="." method="_on_column_title_clicked"]
+[connection signal="empty_clicked" from="." to="." method="_on_empty_clicked"]
+[connection signal="item_activated" from="." to="." method="_on_item_activated"]
+[connection signal="item_collapsed" from="." to="." method="_on_item_collapsed"]
+[connection signal="item_edited" from="." to="." method="_on_item_edited"]
+[connection signal="item_mouse_selected" from="." to="." method="_on_item_mouse_selected"]
+[connection signal="id_pressed" from="PopupMenu" to="." method="_on_popup_menu_id_pressed"]
+[connection signal="files_changed" from="FilePopupMenu" to="." method="refresh"]
+[connection signal="change_directory" from="FileBrowsingController" to="." method="_full_directory_path_setter"]
+[connection signal="folder_changed" from="FolderPoller" to="." method="refresh" unbinds=1]

@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://drjwj2xhyocps"]
+
+[ext_resource type="Script" uid="uid://b84dj28yuldsf" path="res://FileBrowser/FileBrowsingContainers/Components/select_box.gd" id="1_lyq84"]
+[ext_resource type="Shader" uid="uid://0mex374eebas" path="res://FileBrowser/rounded_corner.gdshader" id="1_pkuwc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mfpcb"]
+shader = ExtResource("1_pkuwc")
+shader_parameter/radius_scale = 0.1
+shader_parameter/rounded_corner_top_left = true
+shader_parameter/rounded_corner_top_right = true
+shader_parameter/rounded_corner_bottom_left = true
+shader_parameter/rounded_corner_bottom_right = true
+shader_parameter/width = 1.0
+shader_parameter/height = 1.0
+
+[node name="SelectBox" type="Control" unique_id=1050129504]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_lyq84")
+
+[node name="SelectColorRect" type="ColorRect" parent="." unique_id=2026919595]
+visible = false
+material = SubResource("ShaderMaterial_mfpcb")
+layout_mode = 0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.25882354)

@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://behydyevo5qgt"]
+
+[ext_resource type="Script" uid="uid://cbnseylg5e0cq" path="res://FileBrowser/FileBrowsingContainers/Components/file_popup_menu.gd" id="1_h775i"]
+[ext_resource type="PackedScene" uid="uid://bjae06o3ok3dq" path="res://FileBrowser/FileBrowsingContainers/Components/file_open_with.tscn" id="3_7b2hh"]
+[ext_resource type="PackedScene" uid="uid://dywoh8dfbfqli" path="res://FileBrowser/FileBrowsingContainers/ConfirmationDialogs/new_folder_confirmation_dialog.tscn" id="4_rketk"]
+[ext_resource type="PackedScene" uid="uid://drat35vjn1jey" path="res://FileBrowser/FileBrowsingContainers/ConfirmationDialogs/trash_file_confirmation_dialog.tscn" id="5_t6veh"]
+[ext_resource type="PackedScene" uid="uid://bg3yssvrl1tke" path="res://FileBrowser/FileBrowsingContainers/ConfirmationDialogs/new_file_confirmation_dialog.tscn" id="6_15wvk"]
+[ext_resource type="PackedScene" uid="uid://dftwbc3ldxac1" path="res://FileBrowser/FileBrowsingContainers/ConfirmationDialogs/run_file_confirmation_dialog.tscn" id="6_b4brb"]
+
+[node name="FilePopupMenu" type="PopupMenu" unique_id=1803370902]
+oversampling_override = 1.0
+size = Vector2i(142, 147)
+visible = true
+allow_search = false
+item_count = 5
+item_0/text = "New Folder"
+item_0/id = 0
+item_1/text = "New File"
+item_1/id = 1
+item_2/id = 999
+item_2/separator = true
+item_3/text = "Trash"
+item_3/id = 5
+item_4/id = 999
+item_4/separator = true
+script = ExtResource("1_h775i")
+
+[node name="FileOpenWithPopupMenu" parent="." unique_id=1581817408 instance=ExtResource("3_7b2hh")]
+visible = false
+
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1504490297]
+gui_embed_subwindows = true
+oversampling_override = 1.0
+
+[node name="NewFolderConfirmationDialog" parent="." unique_id=1501402080 instance=ExtResource("4_rketk")]
+
+[node name="TrashFileConfirmationDialog" parent="." unique_id=457647446 instance=ExtResource("5_t6veh")]
+
+[node name="NewFileConfirmationDialog" parent="." unique_id=1979710931 instance=ExtResource("6_15wvk")]
+
+[node name="RunFileConfirmationDialog" parent="." unique_id=381305560 instance=ExtResource("6_b4brb")]
+
+[connection signal="close_requested" from="." to="." method="_on_close_requested" flags=18]
+[connection signal="id_pressed" from="." to="." method="_on_id_pressed"]
+[connection signal="popup_hide" from="." to="." method="animate_drop"]
+[connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
+[connection signal="close_requested" from="FileOpenWithPopupMenu" to="." method="_on_close_requested" flags=18]
+[connection signal="confirmed" from="NewFolderConfirmationDialog" to="." method="_on_new_folder_confirmation_dialog_confirmed" flags=18]

@@ -1,0 +1,139 @@
+[gd_scene format=3 uid="uid://d4fyh375x0gay"]
+
+[ext_resource type="Shader" uid="uid://0mex374eebas" path="res://FileBrowser/rounded_corner.gdshader" id="1_5b3et"]
+[ext_resource type="Script" uid="uid://dhhshl741q82k" path="res://FileBrowser/FileBrowsingContainers/Components/folder.gd" id="1_p4ow7"]
+[ext_resource type="Shader" uid="uid://c0e4hq1t356ky" path="res://FileBrowser/border.gdshader" id="3_05hdt"]
+[ext_resource type="Script" uid="uid://cvbxs2ydf6ksb" path="res://FeatureAddedObjects/line_edit_plus.gd" id="5_oifgm"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_axquj"]
+shader = ExtResource("1_5b3et")
+shader_parameter/radius_scale = 0.2
+shader_parameter/rounded_corner_top_left = true
+shader_parameter/rounded_corner_top_right = true
+shader_parameter/rounded_corner_bottom_left = true
+shader_parameter/rounded_corner_bottom_right = true
+shader_parameter/width = 1.0
+shader_parameter/height = 1.0
+
+[sub_resource type="Gradient" id="Gradient_tldiu"]
+colors = PackedColorArray(0, 0, 0, 0.490196, 1, 1, 1, 0.490196)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_k0c74"]
+gradient = SubResource("Gradient_tldiu")
+fill_from = Vector2(1, 1)
+
+[sub_resource type="Gradient" id="Gradient_vf0y1"]
+colors = PackedColorArray(0, 0, 0, 0.509804, 1, 1, 1, 0.509804)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_5qqhj"]
+gradient = SubResource("Gradient_vf0y1")
+fill_from = Vector2(1, 0)
+fill_to = Vector2(1, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_bq7l0"]
+font_size = 24
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
+shadow_color = Color(0, 0, 0, 0.192157)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_242m3"]
+shader = ExtResource("3_05hdt")
+shader_parameter/border_size = 0.05
+shader_parameter/border_color = Color(0, 0, 0, 0.729412)
+
+[node name="Folder" type="TextureButton" unique_id=1829112246]
+material = SubResource("ShaderMaterial_axquj")
+custom_minimum_size = Vector2(64, 64)
+clip_contents = true
+offset_right = 64.0
+offset_bottom = 64.0
+mouse_filter = 1
+button_mask = 3
+texture_hover = SubResource("GradientTexture2D_k0c74")
+texture_focused = SubResource("GradientTexture2D_5qqhj")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("1_p4ow7")
+metadata/_edit_vertical_guides_ = [559.0, 563.0, 590.0, 35.0, 4.0, 31.0]
+metadata/_edit_horizontal_guides_ = [27.0]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1354517412]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer" unique_id=810682109]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ImageLabel" type="Label" parent="VBoxContainer" unique_id=431873875]
+layout_mode = 2
+size_flags_vertical = 3
+text = "📁"
+label_settings = SubResource("LabelSettings_bq7l0")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+
+[node name="NameLabel" type="Label" parent="VBoxContainer" unique_id=906046220]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+mouse_filter = 1
+text = "Default Folder"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 1
+text_overrun_behavior = 2
+
+[node name="SelectColorRect" type="ColorRect" parent="." unique_id=871411156]
+visible = false
+material = SubResource("ShaderMaterial_242m3")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=669960518]
+rect = Rect2(0, 0, 80, 75)
+
+[node name="TextureDeleteTimer" type="Timer" parent="." unique_id=1935105981]
+wait_time = 3.0
+
+[node name="DoubleClickTimer" type="Timer" parent="." unique_id=1606758192]
+wait_time = 0.5
+
+[node name="NameLineEditPlus" type="LineEdit" parent="." unique_id=628184420]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -2.25
+offset_top = -30.333336
+offset_right = 2.25
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("5_oifgm")
+metadata/_custom_type_script = "uid://cvbxs2ydf6ksb"
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]
+[connection signal="resized" from="." to="." method="_on_resized"]
+[connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_apply_texture_image_icon"]
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_remove_texture_image_icon"]
+[connection signal="timeout" from="TextureDeleteTimer" to="." method="_texture_delete"]
+[connection signal="timeout" from="DoubleClickTimer" to="." method="_on_double_click_timer_timeout"]
+[connection signal="focus_exited" from="NameLineEditPlus" to="." method="_on_name_line_edit_plus_focus_exited"]
+[connection signal="text_change_rejected" from="NameLineEditPlus" to="." method="_on_name_line_edit_plus_text_change_rejected"]
+[connection signal="text_submitted" from="NameLineEditPlus" to="." method="_on_name_line_edit_plus_text_submitted"]

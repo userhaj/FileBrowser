@@ -9,7 +9,7 @@ extends Control
 @onready var bookmarks: BookmarkItemList = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer/BookmarkItemList
 @onready var bookmark_container = $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer/PanelContainer
 @onready var file_menu: MenuButton = $PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton
-@onready var tabbed_browser: TabContainer = $PanelContainer/VBoxContainer/HSplitContainer/Control/TabbedBrowser
+@onready var tabbed_browser: FileTabContainer = $PanelContainer/VBoxContainer/HSplitContainer/Control/TabbedBrowser
 @onready var theme_popup_menu: PopupMenu = $ThemePopupMenu
 @onready var refresh_button: Button = $PanelContainer/VBoxContainer/MenuHBoxContainer/RefreshButton
 @onready var up_dir_button: Button = $PanelContainer/VBoxContainer/MenuHBoxContainer/UpDirButton
@@ -25,6 +25,11 @@ var folder_future_list = []
 
 enum VIEW_ID{FOLDER_TREE,ENTRY,BOOKMARKS,FILE_TREE}
 enum MENU_ID{NEW_WINDOW, QUIT, SETTINGS}
+
+var _menu_commands: Array[Array] = [
+	# Allow inner browser to open new windows through FilePopupMenu
+	["Open In New Window", "🪟", launch_new_windows, FilePopupMenu.FILETYPE_FLAG.SINGLE_FOLDER | FilePopupMenu.FILETYPE_FLAG.MULITPLE_FOLDER | FilePopupMenu.FILETYPE_FLAG.MIXED_FILES_FOLDERS]
+]
 
 func _ready():
 	set_current_path(current_path.simplify_path())
@@ -69,6 +74,12 @@ func _ready():
 	tabbed_browser.get_tab_bar().tab_close_pressed.disconnect(tabbed_browser._handle_close_tab)
 	tabbed_browser.get_tab_bar().tab_close_pressed.connect(_drop_tab)
 	
+	for menu in _menu_commands:
+		tabbed_browser.add_menu_command.bindv(menu).call()
+		folder_tree.add_menu_command.bindv(menu).call()
+	
+	
+	
 
 func _drop_tab(tab_idx):
 	if tabbed_browser.get_tab_count() > 1:
@@ -93,19 +104,40 @@ func _set_theme():
 func _handle_file_menu(id: int):
 	match id:
 		MENU_ID.NEW_WINDOW:
-			var new_window = Window.new()
-			new_window.size = Vector2(640, 480)
-			new_window.title = get_window().title + " 🪵"
-			new_window.position = get_window().position * 1.1
-			get_tree().root.add_child(new_window)
-			new_window.close_requested.connect(new_window.queue_free)
-			var new_file_browser = preload("res://FileBrowser/file_browser.tscn").instantiate()
-			new_window.add_child(new_file_browser)
-			new_window.show()
+			launch_new_window(get_directory())
 		MENU_ID.QUIT:
 			get_tree().quit()
 		MENU_ID.SETTINGS:
 			_on_settings_button_pressed()
+
+func launch_new_window(file_path: String = "", win_position: Vector2i=Vector2i()):
+	if not file_path:
+		file_path  = get_directory()
+	var new_window = Window.new()
+	new_window.size = get_tree().root.size
+	new_window.title = get_window().title + " 🪵"
+	if not win_position:
+		new_window.position = get_window().position + Vector2i(128, 128)  
+	else:
+		new_window.position = win_position
+	get_tree().root.add_child(new_window)
+	new_window.close_requested.connect(new_window.queue_free)
+	var new_file_browser = preload("res://FileBrowser/file_browser.tscn").instantiate()
+	new_file_browser.ready.connect(new_file_browser.set_directory.bind(file_path))
+	new_window.add_child(new_file_browser)
+	new_window.show()
+	
+
+func launch_new_windows(file_paths: Array[String]):
+	var win_position: Vector2i= get_window().position * 1.1 
+	for file_path in file_paths:
+		if not DisplayServer.screen_get_usable_rect().has_point(win_position+Vector2i(size)):
+			var viable_position = DisplayServer.screen_get_usable_rect().position
+			win_position = viable_position + Vector2i(128, 128) 
+		else:
+			win_position += Vector2i(128, 128)  
+		if DirAccess.dir_exists_absolute(file_path):
+			launch_new_window(file_path, win_position)
 
 # Loads from save file window posititions
 func visual_load():
@@ -129,7 +161,12 @@ func set_current_path(full_path: String):
 	if self.current_path != self.tabbed_browser.get_directory():
 		self.tabbed_browser.set_directory(self.current_path)
 
-		
+func set_directory(full_path: String):
+	set_current_path(full_path)
+
+func get_directory():
+	return current_path
+
 func _on_up_dir_button_pressed():
 	var new_path = self.current_path.get_base_dir()
 	set_current_path(new_path)

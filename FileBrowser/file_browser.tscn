@@ -3,10 +3,10 @@
 [ext_resource type="Script" uid="uid://d20ud65y5yrro" path="res://FileBrowser/file_browser.gd" id="1_83ygx"]
 [ext_resource type="Script" uid="uid://cvbxs2ydf6ksb" path="res://FeatureAddedObjects/line_edit_plus.gd" id="3_cveyf"]
 [ext_resource type="PackedScene" uid="uid://bmro1s4aghein" path="res://FileBrowser/bookmark_item_list.tscn" id="4_nvgqa"]
-[ext_resource type="PackedScene" uid="uid://dups46gqlxh47" path="res://FileBrowser/tabbed_browser.tscn" id="6_0y5oy"]
-[ext_resource type="PackedScene" uid="uid://cnrjg1q6m5y36" path="res://FileBrowser/sub_viewport_single_label.tscn" id="7_2acyp"]
+[ext_resource type="PackedScene" uid="uid://dups46gqlxh47" path="res://FileBrowser/FileBrowsingContainers/tabbed_browser.tscn" id="6_0y5oy"]
+[ext_resource type="PackedScene" uid="uid://cnrjg1q6m5y36" path="res://FileBrowser/FileBrowsingContainers/Components/sub_viewport_single_label.tscn" id="7_2acyp"]
 [ext_resource type="PackedScene" uid="uid://ds45fvtgt8nk7" path="res://FileBrowser/Settings/settings_window.tscn" id="7_cus0t"]
-[ext_resource type="PackedScene" uid="uid://byylub0x8vqh0" path="res://FileBrowser/file_tree.tscn" id="7_n7rbv"]
+[ext_resource type="PackedScene" uid="uid://byylub0x8vqh0" path="res://FileBrowser/FileBrowsingContainers/file_tree.tscn" id="7_n7rbv"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_nvgqa"]
 viewport_path = NodePath("ViewPopupMenu/SubViewportTree")
@@ -108,6 +108,7 @@ size_flags_horizontal = 3
 
 [node name="TabbedBrowser" parent="PanelContainer/VBoxContainer/HSplitContainer/Control" unique_id=603231445 instance=ExtResource("6_0y5oy")]
 layout_mode = 1
+anchors_preset = 15
 size_flags_horizontal = 3
 
 [node name="ViewPopupMenu" type="PopupMenu" parent="." unique_id=2084791024]
