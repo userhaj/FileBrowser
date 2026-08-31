@@ -2,6 +2,8 @@ extends TabContainer
 class_name FileTabContainer
 
 signal folder_changed(path: String)
+# Provides tab control on creation
+signal new_tab_created(control: Control)
 
 enum menu{NEW_TAB, SET_VIEW}
 
@@ -17,9 +19,6 @@ var _menu_commands: Array[Array] = [
 ]
 
 func _init() -> void:
-	# Add OS base dir as default tab
-	new_tab(DirAccess.get_drive_name(0), _default_file_browsing_container.instantiate())
-
 	var pop = PopupMenu.new()
 	pop.add_item("New Tab")
 	pop.add_item("Change View")
@@ -28,6 +27,11 @@ func _init() -> void:
 	set_popup(pop)
 	
 	get_tab_bar().tab_close_pressed.connect(_handle_close_tab)
+
+func _ready() -> void:
+	# Add OS base dir as default tab
+	if get_tab_count() < 1:
+		new_tab(DirAccess.get_drive_name(0), _default_file_browsing_container.instantiate())
 
 func _handle_close_tab(tab: int):
 	if get_tab_count() > 1:
@@ -105,6 +109,9 @@ func new_tab(path: String, control):
 	# Add custom tabbed behavior
 	for menu_commmand in _menu_commands:
 		control.add_menu_command.bindv(menu_commmand).call()
+	
+	# Notify of new tab
+	new_tab_created.emit(control)
 
 
 func _set_folder_as_tab_title(path: String, control: Control):
@@ -117,13 +124,15 @@ func _set_folder_as_tab_title(path: String, control: Control):
 # Pass set_directory call on to current tab
 func set_directory(path: String):
 	var tab = get_current_tab_control()
-	if tab.has_method("set_directory"):
+	if tab and tab.has_method("set_directory"):
 		tab.set_directory(path)
+	else:
+		new_tab(path, _default_file_browsing_container.instantiate())
 
 
 func get_directory() -> String:
 	var tab = get_current_tab_control()
-	if tab.has_method("get_directory"):
+	if tab and tab.has_method("get_directory"):
 		return tab.get_directory()
 	return ""
 
@@ -144,4 +153,7 @@ func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, m
 	# Add command to open tabs
 	for tab in get_tab_count():
 		get_tab_control(tab).add_menu_command(menu_text, emoji_icon, action, menu_for_filetype)
-	
+
+
+func get_popup_menus() -> Array[PopupMenu]:
+	return get_current_tab_control().get_popup_menus()

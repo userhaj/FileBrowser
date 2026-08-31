@@ -221,12 +221,7 @@ func refresh():
 				for file in dir_access.get_files():
 					_create_file.call_deferred(tree_root, _full_directory_path.path_join(file))
 		
-		
-		# Notify user that refresh occured by wiggling folders
-		var folder = get_node_or_null("📁")
-		if folder:
-			wiggle_animate(folder.label)
-		
+		# Sort again on refresh
 		_sort_tree.call_deferred(get_root(), _sort_column, _is_sort_ascending)
 	
 	# Set scroll to where it was recorded before
@@ -253,31 +248,22 @@ func _tree_item_from_path(filepath: String)->TreeItem:
 			tree_item = tree_item.get_next_in_tree()
 	return tree_item
 
-func _sort_tree(tree_item: TreeItem, sort_column: int, is_ascending: bool=true):
+func _sort_tree(tree_item, sort_column: int, is_ascending: bool=true):
 	# default to first column if incorrect column given
 	sort_column = sort_column if sort_column < columns else 0
-	var items: Array[TreeItem] = tree_item.get_children()
-	if is_ascending:
-		items.sort_custom(func(a,b): return a.get_text(sort_column).naturalnocasecmp_to(b.get_text(sort_column)) < 0 )
-	else:
-		items.sort_custom(func(a,b): return a.get_text(sort_column).naturalnocasecmp_to(b.get_text(sort_column)) > 0 )
-	for index in range(items.size()-1):
-		items[index+1].move_after(items[index])
-	
-	for child in items:
-		_sort_tree(child, sort_column, is_ascending)
+	if tree_item:
+		var items: Array[TreeItem] = tree_item.get_children()
+		if is_ascending:
+			items.sort_custom(func(a,b): return a.get_text(sort_column).naturalnocasecmp_to(b.get_text(sort_column)) < 0 )
+		else:
+			items.sort_custom(func(a,b): return a.get_text(sort_column).naturalnocasecmp_to(b.get_text(sort_column)) > 0 )
+		for index in range(items.size()-1):
+			items[index+1].move_after(items[index])
+		
+		for child in items:
+			if child is TreeItem:
+				_sort_tree(child, sort_column, is_ascending)
 
-
-func wiggle_animate(control: Control):
-	if control:
-		# Add animation minimal to folders
-		control.pivot_offset = Vector2(8, 8)
-		var rot = create_tween()
-		rot.set_trans(Tween.TRANS_ELASTIC)
-		rot.set_ease(Tween.EASE_OUT)
-		control.rotation_degrees = -15
-		rot.tween_property(control, "rotation_degrees", 0, 0.75) 
-	
 
 # Returns list of expanded folders in tree
 func get_expanded_folders() -> Array[String]:
@@ -615,3 +601,6 @@ func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, m
 	if not is_node_ready():
 		await ready
 	file_popup_menu.add_menu_command(menu_text, emoji_icon, action, menu_for_filetype)
+
+func get_popup_menus():
+	return [file_popup_menu, $PopupMenu]

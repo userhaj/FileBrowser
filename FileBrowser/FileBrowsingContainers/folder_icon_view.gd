@@ -377,3 +377,6 @@ func _on_file_clicked(file_path: String) -> void:
 
 func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, menu_for_filetype: FilePopupMenu.FILETYPE_FLAG):
 	$FilePopupMenu.add_menu_command(menu_text, emoji_icon, action, menu_for_filetype)
+
+func get_popup_menus():
+	return [file_popup_menu]

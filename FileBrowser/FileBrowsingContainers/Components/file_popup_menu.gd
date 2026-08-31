@@ -187,8 +187,7 @@ func ask_trash_selected_items():
 		trash_file_confirmation_dialog.position = DisplayServer.mouse_get_position()
 
 
-func _on_close_requested(source: Window) -> void:
-	Animate.drop_window(source)
+func _on_close_requested(_source: Window) -> void:
 	_id_callables.clear()
 
 	

@@ -1,7 +1,7 @@
 extends Control
 
 
-@onready var current_path: String = DirAccess.get_drive_name(0)
+@onready var current_path: String
 @onready var current_path_line_edit: LineEditPlus = $PanelContainer/VBoxContainer/MenuHBoxContainer/CurrentPathLineEdit
 @onready var file_button: Button = $PanelContainer/VBoxContainer/MenuHBoxContainer/FileButton
 @onready var view_popup_menu: PopupMenu = $ViewPopupMenu
@@ -32,7 +32,8 @@ var _menu_commands: Array[Array] = [
 ]
 
 func _ready():
-	set_current_path(current_path.simplify_path())
+	if get_window() == get_tree().root:
+		set_directory(current_path.simplify_path())
 	# Load save values
 	visual_load()
 	folder_tree.show_default_os_drives()
@@ -71,21 +72,22 @@ func _ready():
 	bookmarks.item_clicked.connect(Animate.wiggle.call_deferred.bind(-1.5, 0.25).unbind(3), CONNECT_APPEND_SOURCE_OBJECT)
 	current_path_line_edit.focus_entered.connect(Animate.wiggle.call_deferred.bind(-1.5, 0.25), CONNECT_APPEND_SOURCE_OBJECT)
 	
+	# Remove tabbed browsers tab removal, and add new animated close
 	tabbed_browser.get_tab_bar().tab_close_pressed.disconnect(tabbed_browser._handle_close_tab)
 	tabbed_browser.get_tab_bar().tab_close_pressed.connect(_drop_tab)
 	
 	for menu in _menu_commands:
 		tabbed_browser.add_menu_command.bindv(menu).call()
 		folder_tree.add_menu_command.bindv(menu).call()
-	
-	
-	
 
+
+# Animated drop for tab removal
 func _drop_tab(tab_idx):
 	if tabbed_browser.get_tab_count() > 1:
 		var control := tabbed_browser.get_tab_control(tab_idx)
 		Animate.drop_control_free(control)
 
+# New windows/viewports do not carry over theme, as a fix copy main window theme
 func _set_theme():
 	# Set main window Default Theme
 	if get_window() == get_tree().root:
@@ -122,10 +124,11 @@ func launch_new_window(file_path: String = "", win_position: Vector2i=Vector2i()
 		new_window.position = win_position
 	get_tree().root.add_child(new_window)
 	new_window.close_requested.connect(new_window.queue_free)
-	var new_file_browser = preload("res://FileBrowser/file_browser.tscn").instantiate()
-	new_file_browser.ready.connect(new_file_browser.set_directory.bind(file_path))
+	var new_file_browser := preload("res://FileBrowser/file_browser.tscn").instantiate()
 	new_window.add_child(new_file_browser)
 	new_window.show()
+	new_file_browser.set_directory.call_deferred(file_path)
+
 	
 
 func launch_new_windows(file_paths: Array[String]):
@@ -154,22 +157,22 @@ func visual_save():
 	config.set_value("display", "$PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer.split_offsets", $PanelContainer/VBoxContainer/HSplitContainer/PanelContainer/VSplitContainer.split_offsets)
 	config.save(settings_file_name)
 
-func set_current_path(full_path: String):
+func set_directory(full_path: String):
+	if not is_node_ready():
+		await ready
 	# Set current path
 	self.current_path = full_path.simplify_path()
 	current_path_line_edit.text = self.current_path
 	if self.current_path != self.tabbed_browser.get_directory():
 		self.tabbed_browser.set_directory(self.current_path)
 
-func set_directory(full_path: String):
-	set_current_path(full_path)
 
 func get_directory():
 	return current_path
 
 func _on_up_dir_button_pressed():
 	var new_path = self.current_path.get_base_dir()
-	set_current_path(new_path)
+	set_directory(new_path)
 
 
 func _on_h_slider_value_changed(value):
@@ -206,7 +209,6 @@ func _on_view_popup_menu_id_pressed(id):
 			view_popup_menu.set_item_checked(idx, self.tabbed_browser.visible)
 
 
-
 # Settings clicked
 func _on_settings_button_pressed() -> void:
 	popup_true_centered($SettingsWindow, get_window())
@@ -221,7 +223,7 @@ func popup_true_centered(popup: Window, window: Window):
 	
 
 func _on_current_path_line_edit_text_submitted(new_text: String) -> void:
-	set_current_path(new_text)
+	set_directory(new_text)
 
 
 func _on_refresh_button_pressed() -> void:
@@ -249,3 +251,15 @@ func _on_theme_popup_menu_id_pressed(id: int) -> void:
 	var new_theme = load(external_theme_path)
 	new_theme.set_meta("file_path", external_theme_path)
 	get_window().set_theme(new_theme)
+
+func get_popup_menus() -> Array[PopupMenu]:
+	return [$FilePopupMenu, view_popup_menu, theme_popup_menu]
+
+
+func _on_tabbed_browser_new_tab_created(control: Control) -> void:
+	if control.has_method("get_popup_menus"):
+		for popup_menu: PopupMenu in control.get_popup_menus():
+			popup_menu.close_requested.connect(Animate.drop_window, CONNECT_APPEND_SOURCE_OBJECT)
+			for child in popup_menu.get_children():
+				if child is Window:
+					child.close_requested.connect(Animate.drop_window, CONNECT_APPEND_SOURCE_OBJECT)
