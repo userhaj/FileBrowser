@@ -8,14 +8,23 @@ var _running_threads = []
 var thread_queue = []
 var bind_queue = []
 
-var max_thread_count = max(2, OS.get_processor_count() * 2 )
+var max_thread_count = max(2, OS.get_processor_count())
+
+# Creating a new thread is expensive, initial thread creation is best at load time
+var _available_threads = range(max_thread_count).map(func(_a): return Thread.new())
+
 
 # Add Callable a queue. callback_content must take single argument of call_work return type
 func enqueue(call_work: Callable, callback_content:Callable):
-	var thread = Thread.new()
+	var thread = _available_threads.pop_front()
 	thread_queue.push_back(thread)
 	bind_queue.push_back(_thread_return_work.bind(thread, call_work, callback_content))
 	_update_queue()
+	_available_threads.append(Thread.new())
+
+func clear():
+	thread_queue.clear()
+	bind_queue.clear()
 
 # Runs work, then calls cleanup methods
 func _thread_return_work(thread, call_work: Callable, callback_content):
@@ -23,9 +32,9 @@ func _thread_return_work(thread, call_work: Callable, callback_content):
 	if call_work and call_work.is_valid():
 		var work = call_work.call()
 		var callback = callback_content.bind(work)
-		call_deferred("_end_thread", thread, callback)
+		_end_thread.call_deferred(thread, callback)
 	else:
-		call_deferred("_end_thread", thread, null)
+		_end_thread.call_deferred(thread, null)
 
 # Called upon end of work; removes thread from queue
 func _end_thread(thread:Thread, callback):

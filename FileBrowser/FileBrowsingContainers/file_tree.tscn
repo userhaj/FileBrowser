@@ -41,11 +41,23 @@ script = ExtResource("1_gvwle")
 oversampling_override = 1.0
 hide_on_item_selection = false
 hide_on_checkable_item_selection = false
-item_count = 1
+item_count = 4
 item_0/text = "Size"
 item_0/checkable = 1
 item_0/checked = true
 item_0/id = 1
+item_1/text = "Type"
+item_1/checkable = 1
+item_1/checked = true
+item_1/id = 2
+item_2/text = "Date Modified"
+item_2/checkable = 1
+item_2/checked = true
+item_2/id = 3
+item_3/text = "Date Accessed"
+item_3/checkable = 1
+item_3/checked = true
+item_3/id = 4
 
 [node name="SubViewport" parent="." unique_id=1823223691 instance=ExtResource("2_kkmcr")]
 
@@ -77,4 +89,3 @@ metadata/_custom_type_script = "uid://benc4ab4rkgll"
 [connection signal="id_pressed" from="PopupMenu" to="." method="_on_popup_menu_id_pressed"]
 [connection signal="files_changed" from="FilePopupMenu" to="." method="refresh"]
 [connection signal="change_directory" from="FileBrowsingController" to="." method="_full_directory_path_setter"]
-[connection signal="folder_changed" from="FolderPoller" to="." method="refresh" unbinds=1]

@@ -22,11 +22,13 @@ signal folder_changed(folder_path: String)
 @onready var old_min_width = {0:128, 1: 128}
 var _full_directory_path: String
 var tree_root: TreeItem
-var column_titles = ["Name", "Size"]
+var column_titles = ["Name", "Size", "Type", "Date Modified", "Accessed"]
+enum column{NAME, SIZE, TYPE, DATE_MODIFIED, ACCESSED}
 var _fold_structure = {}
-var _sort_column = 0
+var _sort_column = column.NAME
 var _is_sort_ascending = true
 var dragging_resize_column: int = -1
+var _refresh_id: int
 
 # TODO get icons from outside self
 var icons : Dictionary = {"dll": "📚", "txt": "🗒️", "exe": "🚀", "conf": "⚙️",\
@@ -127,7 +129,7 @@ func _gui_input(event: InputEvent) -> void:
 func _column_title_end_near(pixel_nearness_plus_minus=32)-> int:
 	# Is over title bar
 	if get_local_mouse_position().y <= _get_title_row_height():
-		var column_over = get_column_at_position(Vector2(get_local_mouse_position().x, _get_title_row_height()+1))
+		var column_over: int = get_column_at_position(Vector2(get_local_mouse_position().x, _get_title_row_height()+1))
 		var mouse_x = get_local_mouse_position().x
 		var true_column_width = get_item_area_rect(get_root(), column_over).size.x
 		# Measure true x distance to right side of column
@@ -137,9 +139,13 @@ func _column_title_end_near(pixel_nearness_plus_minus=32)-> int:
 		column_width_from_0 -= get_scroll().x # minus scroll not counted in local x
 		# Is at the end of column
 		if (column_width_from_0 - mouse_x) < pixel_nearness_plus_minus:
+			while column_over > 0 and get_column_title(column_over) == "":
+				column_over -= 1
 			return column_over
 		# Is at the begining of the next column
 		elif abs((column_width_from_0 - mouse_x)-true_column_width) < pixel_nearness_plus_minus:
+			while column_over-1 > 0 and get_column_title(column_over-1) == "":
+				column_over -= 1
 			if column_over > 0: # Do not affect beginning of first column
 				return column_over-1
 	
@@ -149,7 +155,7 @@ func _column_title_end_near(pixel_nearness_plus_minus=32)-> int:
 
 func _ready():
 	columns = column_titles.size()
-	call_thread_safe("_set_column_titles")
+	_set_column_titles.call_deferred()
 	
 	enable_drag_unfolding = true
 
@@ -212,6 +218,9 @@ func _fill_fold(tree_item: TreeItem):
 	
 # Clears Children, Adds folder/files based on current directory
 func refresh():
+	var this_refresh_id = randi()
+	_refresh_id = this_refresh_id
+	
 	# Save scroll to restore point after refresh
 	var original_scroll = get_scroll()
 	var scroll_to_tree_item = get_item_at_position(Vector2(size.x/2,size.y-5))
@@ -229,28 +238,44 @@ func refresh():
 		# Remove current directory content
 		clear()
 		
+		
 		if not tree_root:
 			tree_root = create_item()
 			tree_root.set_text(0, "root")
 		hide_root = true
 		
-		
 		if show_folders:
 			var dir_access = DirAccess.open(self._full_directory_path)
 			if dir_access:
 				dir_access.include_hidden = show_hidden_files
+				var count = 0
 				for directory in dir_access.get_directories():
+					# Prevent frame drop on loop
+					if not count % 100:
+						await RenderingServer.frame_post_draw
+					# Guarantee current refresh is latest
+					if _refresh_id != this_refresh_id:
+						return
 					_create_folder.call_deferred(tree_root, _full_directory_path.path_join(directory))
+					count += 1
 		
 		if show_files:
 			var dir_access = DirAccess.open(self._full_directory_path)
 			if dir_access:
 				dir_access.include_hidden = show_hidden_files
+				var count = 0
 				for file in dir_access.get_files():
+					if not count % 100:
+						await RenderingServer.frame_post_draw
+					# Guarantee current refresh is latest
+					if _refresh_id != this_refresh_id: 
+						return
 					_create_file.call_deferred(tree_root, _full_directory_path.path_join(file))
+					count += 1
+					
 		
 		# Sort again on refresh
-		_sort_tree.call_deferred(get_root(), _sort_column, _is_sort_ascending)
+		_sort_tree.call_deferred(tree_root, _sort_column, _is_sort_ascending)
 	
 	# Set scroll to where it was recorded before
 	if scroll_to_path:
@@ -336,68 +361,109 @@ func _add_sub_folder(tree_item: TreeItem):
 				var full_path = path.path_join(file_name)
 				# If folder, create TreeItem folder
 				if show_folders and DirAccess.dir_exists_absolute(full_path):
-					# Adding child is not animation/thread safe, must call deferred
-					call_deferred("_create_folder", tree_item, full_path)
+					_create_folder.call_deferred(tree_item, full_path)
 				elif show_files and FileAccess.file_exists(full_path):
-					call_deferred("_create_file", tree_item, full_path)
+					_create_file.call_deferred(tree_item, full_path)
 				# Check next folder
 				file_name = dir.get_next()
 
 # Create a TreeItem folder on given TreeItem
 func _create_folder(base_tree_item, full_path: String, label_full_path: bool=false):
-	# Create folder TreeItem with saved path
-	var new_tree_item: TreeItem = create_item(base_tree_item)
-	new_tree_item.collapsed = true
-	var label_text = full_path if label_full_path else full_path.get_file()
-	if label_text == "": # Unix / has no folder name
-		label_text = "/"
-	new_tree_item.set_text(0, label_text) # On folders get_file() gets last folder name
-	new_tree_item.set_metadata(0, full_path)
-	var dirAcc = DirAccess.open(full_path)
-	var folder_contents_count = 0
-	if dirAcc:
-		dirAcc.include_hidden = true
-		var dir_count = dirAcc.get_directories().size()
-		var file_count = dirAcc.get_files().size()
-		folder_contents_count = dir_count + file_count
-		# Set size column size
-		var size_column_index = column_titles.find("Size")
-		if size_column_index >= 0 and size_column_index < columns: # Only set size if it exists
-			new_tree_item.set_text(size_column_index, str(folder_contents_count)+" objects")
-	new_tree_item.set_icon(0, create_get_subview_label("📁").get_texture())
-	
-	# Create place holder item on folders with sub-content
-	if folder_contents_count > 0:
-		create_item(new_tree_item)
-	
-	# Uncollapse if saved as open folder
-	new_tree_item.collapsed = _fold_structure.get(full_path, true)
-	
-	# Optional no-trim of folder/file names
-	if always_fit_name:
-		new_tree_item.set_text_overrun_behavior(0, TextServer.OVERRUN_NO_TRIMMING)
+	if base_tree_item:
+		# Create folder TreeItem with saved path
+		var new_tree_item: TreeItem = create_item(base_tree_item)
+		new_tree_item.collapsed = true
+		var label_text = full_path if label_full_path else full_path.get_file()
+		if label_text == "": # Unix / has no folder name
+			label_text = "/"
+		new_tree_item.set_text(0, label_text) # On folders get_file() gets last folder name
+		new_tree_item.set_metadata(0, full_path)
+		var dirAcc = DirAccess.open(full_path)
+		var folder_contents_count = 0
+		if dirAcc:
+			dirAcc.include_hidden = true
+			var dir_count = dirAcc.get_directories().size()
+			var file_count = dirAcc.get_files().size()
+			folder_contents_count = dir_count + file_count
+			
+			# Set size column size
+			var size_column_index = column_titles.find(column_titles[column.SIZE])
+			if size_column_index >= 0 and size_column_index < columns: # Only set size if it exists
+				new_tree_item.set_text(size_column_index, str(folder_contents_count)+" objects")
+				
+			# Set date modified column
+			var date_modified = FileAccess.get_modified_time(full_path)
+			var date_modified_column_index = column_titles.find(column_titles[column.DATE_MODIFIED])
+			if date_modified_column_index >= 0 and date_modified_column_index < columns: # Only set size if it exists
+				new_tree_item.set_text(date_modified_column_index, Time.get_datetime_string_from_unix_time(date_modified, true))
+			
+			# Set date accessed column
+			var date_accessed = FileAccess.get_access_time(full_path)
+			var date_accessed_column_index = column_titles.find(column_titles[column.ACCESSED])
+			if date_accessed_column_index >= 0 and date_accessed_column_index < columns: # Only set size if it exists
+				new_tree_item.set_text(date_accessed_column_index, Time.get_datetime_string_from_unix_time(date_accessed, true))
+			
+		# Set type column
+		var type_column_index = column_titles.find(column_titles[column.TYPE])
+		if type_column_index >= 0 and type_column_index < columns: # Only set size if it exists
+			new_tree_item.set_text(type_column_index, "Folder")
+			
+			
+		new_tree_item.set_icon(0, create_get_subview_label("📁").get_texture())
+		
+		# Create place holder item on folders with sub-content
+		if folder_contents_count > 0:
+			create_item(new_tree_item)
+		
+		# Uncollapse if saved as open folder
+		new_tree_item.collapsed = _fold_structure.get(full_path, true)
+		
+		# Optional no-trim of folder/file names
+		if always_fit_name:
+			new_tree_item.set_text_overrun_behavior(0, TextServer.OVERRUN_NO_TRIMMING)
 
 # Create a TreeItem file on given TreeItem
 func _create_file(base_tree_item, full_path: String):
-	# Create folder TreeItem with saved path
-	var new_tree_item: TreeItem = create_item(base_tree_item)
-	new_tree_item.collapsed = true
-	new_tree_item.set_text(0, full_path.get_file()) # On folders get_file() gets last folder name
-	new_tree_item.set_metadata(0, full_path)
-	var file_size := FileAccess.get_size(full_path)
-	# Ignore -1 error and report as 0 bytes
-	file_size = file_size if file_size >= 0 else 0
-	new_tree_item.set_text(1, str(file_size) + " bytes")
-	
-	# Find icon to use based on extension
-	var ext: String = full_path.get_extension()
-	var icon_emoji: String = icons.get(ext, "📄")
-	# Get the previously memory loaded texture if available
-	var subview = create_get_subview_label(icon_emoji)
-	# Set icon using same texture/memory for all same emojis
-	new_tree_item.set_icon(0, subview.get_texture())
-	if always_fit_name:
-		new_tree_item.set_text_overrun_behavior(0, TextServer.OVERRUN_NO_TRIMMING)
+	if base_tree_item:
+		# Create folder TreeItem with saved path
+		var new_tree_item: TreeItem = create_item(base_tree_item)
+		new_tree_item.collapsed = true
+		new_tree_item.set_text(0, full_path.get_file()) # On folders get_file() gets last folder name
+		new_tree_item.set_metadata(0, full_path)
+		var file_size := FileAccess.get_size(full_path)
+		# Ignore -1 error and report as 0 bytes
+		file_size = file_size if file_size >= 0 else 0
+		new_tree_item.set_text(column.SIZE, str(file_size) + " bytes")
+		
+		# Set date modified column
+		var date_modified = FileAccess.get_modified_time(full_path)
+		var date_modified_column_index = column_titles.find(column_titles[column.DATE_MODIFIED])
+		if date_modified_column_index >= 0 and date_modified_column_index < columns: # Only set size if it exists
+			new_tree_item.set_text(date_modified_column_index, Time.get_datetime_string_from_unix_time(date_modified, true))
+		
+		# Set date accessed column
+		var date_accessed = FileAccess.get_access_time(full_path)
+		var date_accessed_column_index = column_titles.find(column_titles[column.ACCESSED])
+		if date_accessed_column_index >= 0 and date_accessed_column_index < columns: # Only set size if it exists
+			new_tree_item.set_text(date_accessed_column_index, Time.get_datetime_string_from_unix_time(date_accessed, true))
+			
+		
+		# Set type column
+		var type_column_index = column_titles.find(column_titles[column.TYPE])
+		if type_column_index >= 0 and type_column_index < columns: # Only set size if it exists
+			new_tree_item.set_text.call_deferred(column_titles.find(column_titles[column.TYPE]), full_path.get_extension() )
+			
+		
+		# Find icon to use based on extension
+		var ext: String = full_path.get_extension()
+		var icon_emoji: String = icons.get(ext, "📄")
+		# Get the previously memory loaded texture if available
+		var subview = create_get_subview_label(icon_emoji)
+		# Set icon using same texture/memory for all same emojis
+		new_tree_item.set_icon(0, subview.get_texture())
+		if always_fit_name:
+			new_tree_item.set_text_overrun_behavior(0, TextServer.OVERRUN_NO_TRIMMING)
+
 
 # Returns subview with given emoji, makes new subview if not yet made
 func create_get_subview_label(emoji: String):
@@ -442,7 +508,7 @@ func _on_popup_menu_id_pressed(id: int) -> void:
 		old_min_width.set(col_index, get_column_width(col_index))
 		set_column_custom_minimum_width(col_index, 0)
 		set_column_title(col_index, "")
-		
+
 
 func get_selected_tree_items() -> Array[TreeItem]:
 	var selected: Array[TreeItem] = []
@@ -559,6 +625,9 @@ func get_global_file_area_rect() -> Rect2:
 	return file_rect
 
 func _get_title_row_height() -> int:
+	if not get_root():
+		create_item()
+		hide_root = true
 	var root_y = get_item_area_rect(get_root()).position.y
 	var scroll_y = get_scroll().y
 	var title_row_height = root_y + scroll_y

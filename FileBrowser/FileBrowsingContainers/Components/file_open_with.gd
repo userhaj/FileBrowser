@@ -20,6 +20,11 @@ func _ready() -> void:
 	else: # Use saved default files
 		_load_app_cache()
 
+func get_mime_type(absolute_file_path: String)->String:
+	if "nux" in OS.get_name():
+		return linux_file_mime_type_get(absolute_file_path)
+	
+	return absolute_file_path.get_extension()
 
 # Save mimes dictionary to file
 func _save_app_cache():
@@ -87,7 +92,6 @@ func add_open_with_menu_item(app: Dictionary, file_to_open: String):
 # Run open_file using a given .desktop file
 func linux_run_desktop_file(desktop_file: String, open_file: String):
 	var _pid = OS.create_process("gio", PackedStringArray(["launch", desktop_file, open_file]), true)
-
 
 
 # Gets system mimetype for given file

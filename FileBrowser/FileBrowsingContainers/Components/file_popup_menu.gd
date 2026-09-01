@@ -23,6 +23,8 @@ signal files_changed
 @onready var trash_file_confirmation_dialog: ConfirmationDialog = $TrashFileConfirmationDialog
 @onready var new_file_confirmation_dialog: ConfirmationDialog = $NewFileConfirmationDialog
 @onready var run_file_confirmation_dialog: ConfirmationDialog = $RunFileConfirmationDialog
+@onready var file_open_with_popup_menu: PopupMenu = $FileOpenWithPopupMenu
+
 
 var is_ready: bool = true
 var files: PackedStringArray
@@ -206,3 +208,6 @@ func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, m
 func add_submenu(id, text, emoji_icon, popup_menu):
 	add_submenu_node_item(text, popup_menu, id)
 	set_item_icon(get_item_index(id), _texture_from_text(emoji_icon))
+
+func get_file_type(absolute_file_path: String)->String:
+	return file_open_with_popup_menu.get_mime_type(absolute_file_path)

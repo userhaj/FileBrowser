@@ -32,8 +32,6 @@ var _menu_commands: Array[Array] = [
 ]
 
 func _ready():
-	if get_window() == get_tree().root:
-		set_directory(current_path.simplify_path())
 	# Load save values
 	visual_load()
 	folder_tree.show_default_os_drives()
@@ -76,9 +74,13 @@ func _ready():
 	tabbed_browser.get_tab_bar().tab_close_pressed.disconnect(tabbed_browser._handle_close_tab)
 	tabbed_browser.get_tab_bar().tab_close_pressed.connect(_drop_tab)
 	
+	# Add custom menu commands (Open in new window)
 	for menu in _menu_commands:
 		tabbed_browser.add_menu_command.bindv(menu).call()
 		folder_tree.add_menu_command.bindv(menu).call()
+	
+	if get_window() == get_tree().root:
+		set_directory(DirAccess.get_drive_name(0))
 
 
 # Animated drop for tab removal
@@ -162,9 +164,10 @@ func set_directory(full_path: String):
 		await ready
 	# Set current path
 	self.current_path = full_path.simplify_path()
-	current_path_line_edit.text = self.current_path
-	if self.current_path != self.tabbed_browser.get_directory():
-		self.tabbed_browser.set_directory(self.current_path)
+	if current_path:
+		current_path_line_edit.text = self.current_path
+		if self.current_path != self.tabbed_browser.get_directory():
+			self.tabbed_browser.set_directory(self.current_path)
 
 
 func get_directory():

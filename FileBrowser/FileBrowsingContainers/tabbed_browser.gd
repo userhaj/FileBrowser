@@ -11,6 +11,9 @@ const FILE_TREE = preload("uid://byylub0x8vqh0")
 const FOLDER_ICON_VIEW = preload("uid://c3celv4vu6p5t")
 var _default_file_browsing_container = FILE_TREE
 
+var directory: String:
+	get = get_directory, set = set_directory
+
 
 # Menus added to each new tab, each array is called on add_menu_command()
 var _menu_commands: Array[Array] = [
@@ -31,7 +34,7 @@ func _init() -> void:
 func _ready() -> void:
 	# Add OS base dir as default tab
 	if get_tab_count() < 1:
-		new_tab(DirAccess.get_drive_name(0), _default_file_browsing_container.instantiate())
+		new_tab("", _default_file_browsing_container.instantiate())
 
 func _handle_close_tab(tab: int):
 	if get_tab_count() > 1:
@@ -103,7 +106,8 @@ func new_tab(path: String, control):
 	index = index if index < get_tab_count() else get_tab_count() - 1
 	set_tab_title(index, path.get_file())
 	control.folder_changed.connect(_set_folder_as_tab_title, CONNECT_APPEND_SOURCE_OBJECT)
-	control.set_directory(path)
+	if path:
+		control.set_directory(path)
 	control.folder_changed.connect(folder_changed.emit)
 	current_tab = index
 	# Add custom tabbed behavior

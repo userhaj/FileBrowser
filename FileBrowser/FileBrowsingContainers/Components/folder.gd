@@ -81,7 +81,8 @@ func set_image(full_path: String):
 	self.image_path = full_path
 	self.is_image_set = true
 	if self._thread_queue:
-		self._thread_queue.enqueue(_image_texture_from_path.bind(self.image_path, $VisibleOnScreenNotifier2D.is_on_screen), set_image_texture)
+		self._thread_queue.enqueue(_image_texture_from_path.bind(self.image_path, $VisibleOnScreenNotifier2D.is_on_screen), set_image_texture.call_deferred)
+	# If thread queue does not exist, create and handle thread work
 	else:
 		self._set_image_non_queue_thread = Thread.new()
 		self._set_image_non_queue_thread.start(_set_image_thread_work.bind(self.image_path, $VisibleOnScreenNotifier2D.is_on_screen))

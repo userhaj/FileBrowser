@@ -18,19 +18,23 @@ func goto_parent_folder():
 # Call to emit change_directory and update history
 func set_directory(new_path: String, clear_forward_history: bool=true):
 	
-	# Update folder history (if not already there)
-	if folder_past_list.size() > 0:
-		if folder_past_list.back() != new_path:
-			folder_past_list.append(current_path)
-	else:
-		folder_past_list.append(current_path)
-	
-	if clear_forward_history:
-		folder_future_list.clear()
+	# Ignore blank
+	if new_path:
+		# Update folder history (if not already there)
+		if folder_past_list.size() > 0:
+			if folder_past_list.back() != new_path:
+				if current_path:
+					folder_past_list.append(current_path)
+		else:
+			if current_path:
+				folder_past_list.append(current_path)
 		
-	current_path = new_path
-	# Notify connected of change request
-	change_directory.emit(current_path)
+		if clear_forward_history:
+			folder_future_list.clear()
+			
+		current_path = new_path
+		# Notify connected of change request
+		change_directory.emit(current_path)
 
 # Handle history back request, including change directory emission
 func history_back():
