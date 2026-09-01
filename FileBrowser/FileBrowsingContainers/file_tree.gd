@@ -113,10 +113,38 @@ func _unhandled_input(event: InputEvent) -> void:
 				tree_item = tree_item.get_next_visible()
 
 func _gui_input(event: InputEvent) -> void:
-	# On column click, start column resize
+	# On column title cursor end click, start column resize
 	if event is InputEventMouse and event.is_pressed():
 		if get_local_mouse_position().y <= _get_title_row_height():
-			dragging_resize_column = get_column_at_position(Vector2(event.position.x, _get_title_row_height()+1))
+			dragging_resize_column = _column_title_end_near()
+	
+	# Set resize cursor if near title column end
+	if event is InputEventMouse and not event.is_pressed():
+		mouse_default_cursor_shape = Control.CURSOR_HSIZE if _column_title_end_near() >= 0 else Control.CURSOR_ARROW
+
+
+# Returns the column index that the mouse is nearest to the end of. Or -1 if not near a column title end
+func _column_title_end_near(pixel_nearness_plus_minus=32)-> int:
+	# Is over title bar
+	if get_local_mouse_position().y <= _get_title_row_height():
+		var column_over = get_column_at_position(Vector2(get_local_mouse_position().x, _get_title_row_height()+1))
+		var mouse_x = get_local_mouse_position().x
+		var true_column_width = get_item_area_rect(get_root(), column_over).size.x
+		# Measure true x distance to right side of column
+		var column_width_from_0 = 0
+		for i in column_over+1:
+			column_width_from_0 += get_item_area_rect(get_root(), i).size.x
+		column_width_from_0 -= get_scroll().x # minus scroll not counted in local x
+		# Is at the end of column
+		if (column_width_from_0 - mouse_x) < pixel_nearness_plus_minus:
+			return column_over
+		# Is at the begining of the next column
+		elif abs((column_width_from_0 - mouse_x)-true_column_width) < pixel_nearness_plus_minus:
+			if column_over > 0: # Do not affect beginning of first column
+				return column_over-1
+	
+	# At the mid point of column title or not over title at all
+	return -1
 
 
 func _ready():
@@ -535,7 +563,7 @@ func _get_title_row_height() -> int:
 	var scroll_y = get_scroll().y
 	var title_row_height = root_y + scroll_y
 	return title_row_height
-	
+
 
 func _get_v_scroll_bar_width() -> int:
 	# Sum margins of scrollbar to get width
