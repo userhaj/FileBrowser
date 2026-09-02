@@ -70,6 +70,14 @@ func _ready():
 	bookmarks.item_clicked.connect(Animate.wiggle.call_deferred.bind(-1.5, 0.25).unbind(3), CONNECT_APPEND_SOURCE_OBJECT)
 	current_path_line_edit.focus_entered.connect(Animate.wiggle.call_deferred.bind(-1.5, 0.25), CONNECT_APPEND_SOURCE_OBJECT)
 	
+	# Drop animation
+	if folder_tree.has_method("get_popup_menus"):
+		for popup_menu: PopupMenu in folder_tree.get_popup_menus():
+			popup_menu.close_requested.connect(Animate.drop_window, CONNECT_APPEND_SOURCE_OBJECT)
+			for child in popup_menu.get_children():
+				if child is Window:
+					child.close_requested.connect(Animate.drop_window, CONNECT_APPEND_SOURCE_OBJECT)
+	
 	# Remove tabbed browsers tab removal, and add new animated close
 	tabbed_browser.get_tab_bar().tab_close_pressed.disconnect(tabbed_browser._handle_close_tab)
 	tabbed_browser.get_tab_bar().tab_close_pressed.connect(_drop_tab)

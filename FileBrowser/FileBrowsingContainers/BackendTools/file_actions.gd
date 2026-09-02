@@ -56,22 +56,22 @@ static func _copy(files: PackedStringArray, target_folder: String, percent_callb
 
 		if is_file: # File copy action
 			var dir_access := DirAccess.open(target_folder)
-			var err = dir_access.copy(file, target_location) if dir_access else FAILED
+			var err
+			if is_move:
+				err = dir_access.rename(file, target_location) if dir_access else FAILED
+			else:
+				err = dir_access.copy(file, target_location) if dir_access else FAILED
 			# Delete all original copied files if there are no errors
 			if err == OK:
-				if is_move:
-					# TODO Items SHOULD be removed, but use trash until all bugs fixed
-					#dir_access.remove(file)
-					OS.move_to_trash(file)
+				# Copy/Move success
+				pass
 		else: # Folder copy action
-			var err_array: Array = copy_files(file, target_location)
+			var err_array: Array = copy_files(file, target_location, is_move)
 			var error_sum = err_array.reduce(func(accum, number): return accum + number)
 			# Delete all original copied files if there are no errors
 			if error_sum == 0:
-				if is_move:
-					# TODO Items SHOULD be removed, but use trash until all bugs fixed
-					#dir_access.remove(file)
-					OS.move_to_trash(file)
+				# Copy/Move success
+				pass
 		# Notify completion percent
 		files_complete += 1.0
 		percent_callback.call_deferred(files_complete / file_count)
@@ -136,12 +136,16 @@ static func replace_array(what: String, forwhat: String, array: Array[String]):
 		array[index] = array[index].replace(what, forwhat)
 
 # Shallow copy just files from one folder to target
-static func copy_files(originating_dir: String, target_dir: String)-> Array[Error]:
+static func copy_files(originating_dir: String, target_dir: String, is_move: bool=false)-> Array[Error]:
 	if not DirAccess.dir_exists_absolute(target_dir):
 		DirAccess.make_dir_recursive_absolute(target_dir)
 	var errors: Array[Error] = []
 	var dir_access := DirAccess.open(originating_dir)
 	for file in dir_access.get_files():
-		var err = dir_access.copy(originating_dir.path_join(file), target_dir.path_join(file))
+		var err
+		if is_move:
+			err = dir_access.rename(originating_dir.path_join(file), target_dir.path_join(file))
+		else:
+			err = dir_access.copy(originating_dir.path_join(file), target_dir.path_join(file))
 		errors.append(err)
 	return errors
