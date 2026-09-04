@@ -5,16 +5,17 @@ signal folder_changed(path: String)
 # Provides tab control on creation
 signal new_tab_created(control: Control)
 
-enum menu{NEW_TAB, SET_VIEW}
-
 const FILE_TREE = preload("uid://byylub0x8vqh0")
 const FOLDER_ICON_VIEW = preload("uid://c3celv4vu6p5t")
 var _default_file_browsing_container = FILE_TREE
+const SUB_VIEWPORT_SINGLE_LABEL = preload("uid://cnrjg1q6m5y36")
 
 var directory: String:
 	get = get_directory, set = set_directory
 
 var tab_pop_up: PopupMenu
+enum TABPOPUP{NEW_TAB, CHANGE_VIEW, CLOSE_TAB}
+var tab_popup_icons = {TABPOPUP.NEW_TAB: "📂", TABPOPUP.CHANGE_VIEW: "👀", TABPOPUP.CLOSE_TAB: "❌"}
 
 
 # Menus added to each new tab, each array is called on add_menu_command()
@@ -25,8 +26,8 @@ var _menu_commands: Array[Array] = [
 
 func _init() -> void:
 	tab_pop_up = PopupMenu.new()
-	tab_pop_up.add_item("New Tab")
-	tab_pop_up.add_item("Change View")
+	for key in TABPOPUP.keys():
+		tab_pop_up.add_icon_item(SubViewPortSingleLabel.texture_from_text(tab_popup_icons[TABPOPUP[key]], self),key.capitalize())
 	tab_pop_up.index_pressed.connect(_menu_handle)
 	add_child(tab_pop_up)
 	set_popup(tab_pop_up)
@@ -45,11 +46,17 @@ func _handle_close_tab(tab: int):
 		closing_tab.queue_free()
 
 func _menu_handle(index: int):
+	var tab_index = tab_pop_up.get_meta("Tab")
 	match index:
-		menu.NEW_TAB:
+		TABPOPUP.NEW_TAB:
 			_create_new_tab()
-		menu.SET_VIEW:
-			swap_view()
+		TABPOPUP.CHANGE_VIEW:
+			swap_view(tab_index)
+		TABPOPUP.CLOSE_TAB:
+			if tab_index < 0:
+				_handle_close_tab(get_tab_count()-1)
+			else:
+				_handle_close_tab(tab_index)
 
 
 func _input(event: InputEvent) -> void:
@@ -60,10 +67,13 @@ func _input(event: InputEvent) -> void:
 func _tab_bar_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_pressed():
 		var mouse_pos = get_tab_bar().get_local_mouse_position()
+		tab_pop_up.set_meta("Tab", -1)
 		for index in get_tab_count():
 			if get_tab_bar().get_tab_rect(index).has_point(mouse_pos):
-				tab_pop_up.position=get_tab_bar().get_screen_transform() * mouse_pos
-				tab_pop_up.popup()
+				tab_pop_up.set_meta("Tab", index)
+				break
+		tab_pop_up.position=get_tab_bar().get_screen_transform() * mouse_pos
+		tab_pop_up.popup()
 				
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -97,23 +107,24 @@ func _mouse_at_empty_tab_bar() -> bool:
 			return true
 	return false
 
-func swap_view():
-	var old_control = get_current_tab_control()
-	var old_index = get_tab_idx_from_control(old_control)
+func swap_view(tab_index=-1):
+	var old_control = get_current_tab_control() if tab_index < 0 else get_tab_control(tab_index)
 	var new_control
 	if old_control is FileTree:
 		new_control = FOLDER_ICON_VIEW.instantiate()
 	else:
 		new_control = FILE_TREE.instantiate()
 	
-	new_tab(old_control.get_directory(), new_control)
-	old_control.free()
-	move_child.call_deferred(new_control, old_index+2)
-	set_deferred("current_tab", old_index)
+	new_tab(old_control.get_directory(), new_control, old_control)
 	
-
-func new_tab(path: String, control):
-	add_child(control)
+	
+func new_tab(path: String, control: Control, old_control=null):
+	# Add new control at place of old control (or just add new)
+	if not old_control:
+		add_child(control)
+	else:
+		old_control.add_sibling(control)
+		old_control.queue_free()
 	var index = get_tab_idx_from_control(control)
 	index = index if index < get_tab_count() else get_tab_count() - 1
 	set_tab_title(index, path.get_file())
@@ -171,5 +182,9 @@ func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, m
 		get_tab_control(tab).add_menu_command(menu_text, emoji_icon, action, menu_for_filetype)
 
 
-func get_popup_menus() -> Array[PopupMenu]:
-	return get_current_tab_control().get_popup_menus().append(tab_pop_up)
+func get_popup_menus() -> Array:
+	var popup_menus = get_current_tab_control().get_popup_menus()
+	if popup_menus:
+		popup_menus.append(tab_pop_up)
+		return popup_menus
+	return [tab_pop_up]

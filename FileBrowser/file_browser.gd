@@ -24,7 +24,7 @@ var folder_past_list = []
 var folder_future_list = []
 
 enum VIEW_ID{FOLDER_TREE,ENTRY,BOOKMARKS,FILE_TREE}
-enum MENU_ID{NEW_WINDOW, QUIT, SETTINGS}
+enum MENU_ID{NEW_WINDOW, QUIT, SETTINGS, SHOW_HIDE, THEME}
 
 var _menu_commands: Array[Array] = [
 	# Allow inner browser to open new windows through FilePopupMenu
@@ -45,14 +45,21 @@ func _ready():
 	for id in VIEW_ID.size():
 		view_popup_menu.set_item_icon(view_popup_menu.get_item_index(id), view_popup_menu.get_child(id).get_texture())
 	# Add showhide submenu
-	file_menu.get_popup().add_submenu_node_item("Show/Hide", view_popup_menu)
+	file_menu.get_popup().add_submenu_node_item("Show/Hide", view_popup_menu, MENU_ID.SHOW_HIDE)
+	file_menu.get_popup().set_item_icon(file_menu.get_popup().get_item_index(MENU_ID.SHOW_HIDE), SubViewPortSingleLabel.texture_from_text("🫣", self))
 	# Add theme submenu
 	
 	theme_popup_menu.get_parent().remove_child(theme_popup_menu)
-	file_menu.get_popup().add_submenu_node_item("Theme", theme_popup_menu)
+	file_menu.get_popup().add_submenu_node_item("Theme", theme_popup_menu, MENU_ID.THEME)
+	file_menu.get_popup().set_item_icon(file_menu.get_popup().get_item_index(MENU_ID.THEME), SubViewPortSingleLabel.texture_from_text("💄", self))
+	
+	file_menu.get_popup().set_item_icon(file_menu.get_popup().get_item_index(MENU_ID.SETTINGS), SubViewPortSingleLabel.texture_from_text("⚙️", self))
+	
+	file_menu.get_popup().set_item_icon(file_menu.get_popup().get_item_index(MENU_ID.NEW_WINDOW), SubViewPortSingleLabel.texture_from_text("🪟", self))
 	
 	# Set QUIT button to end
 	file_menu.get_popup().set_item_index(file_menu.get_popup().get_item_index(MENU_ID.QUIT),-1)
+	file_menu.get_popup().set_item_icon(file_menu.get_popup().get_item_index(MENU_ID.QUIT), SubViewPortSingleLabel.texture_from_text("☠️", self))
 	file_menu.get_popup().close_requested.connect(_on_close_requested, CONNECT_APPEND_SOURCE_OBJECT)
 	# #########################
 
@@ -71,12 +78,8 @@ func _ready():
 	current_path_line_edit.focus_entered.connect(Animate.wiggle.call_deferred.bind(-1.5, 0.25), CONNECT_APPEND_SOURCE_OBJECT)
 	
 	# Drop animation
-	if folder_tree.has_method("get_popup_menus"):
-		for popup_menu: PopupMenu in folder_tree.get_popup_menus():
-			popup_menu.close_requested.connect(Animate.drop_window, CONNECT_APPEND_SOURCE_OBJECT)
-			for child in popup_menu.get_children():
-				if child is Window:
-					child.close_requested.connect(Animate.drop_window, CONNECT_APPEND_SOURCE_OBJECT)
+	_add_animation_to_popup_menus(folder_tree)
+	_add_animation_to_popup_menus(tabbed_browser)
 	
 	# Remove tabbed browsers tab removal, and add new animated close
 	tabbed_browser.get_tab_bar().tab_close_pressed.disconnect(tabbed_browser._handle_close_tab)
@@ -90,6 +93,15 @@ func _ready():
 	if get_window() == get_tree().root:
 		set_directory(DirAccess.get_drive_name(0))
 
+func _add_animation_to_popup_menus(control: Control):
+	if control.has_method("get_popup_menus"):
+		for popup_menu: PopupMenu in control.get_popup_menus():
+			if not popup_menu.close_requested.is_connected(Animate.drop_window):
+				popup_menu.close_requested.connect(Animate.drop_window, CONNECT_APPEND_SOURCE_OBJECT)
+			for child in popup_menu.get_children():
+				if child is Window:
+					if not child.close_requested.is_connected(Animate.drop_window):
+						child.close_requested.connect(Animate.drop_window, CONNECT_APPEND_SOURCE_OBJECT)
 
 # Animated drop for tab removal
 func _drop_tab(tab_idx):
