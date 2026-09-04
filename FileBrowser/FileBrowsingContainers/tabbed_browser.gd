@@ -14,6 +14,8 @@ var _default_file_browsing_container = FILE_TREE
 var directory: String:
 	get = get_directory, set = set_directory
 
+var tab_pop_up: PopupMenu
+
 
 # Menus added to each new tab, each array is called on add_menu_command()
 var _menu_commands: Array[Array] = [
@@ -22,14 +24,15 @@ var _menu_commands: Array[Array] = [
 ]
 
 func _init() -> void:
-	var pop = PopupMenu.new()
-	pop.add_item("New Tab")
-	pop.add_item("Change View")
-	pop.index_pressed.connect(_menu_handle)
-	add_child(pop)
-	set_popup(pop)
+	tab_pop_up = PopupMenu.new()
+	tab_pop_up.add_item("New Tab")
+	tab_pop_up.add_item("Change View")
+	tab_pop_up.index_pressed.connect(_menu_handle)
+	add_child(tab_pop_up)
+	set_popup(tab_pop_up)
 	
 	get_tab_bar().tab_close_pressed.connect(_handle_close_tab)
+	get_tab_bar().gui_input.connect(_tab_bar_gui_input)
 
 func _ready() -> void:
 	# Add OS base dir as default tab
@@ -53,6 +56,15 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
 		if _mouse_at_empty_tab_bar():
 			_create_new_tab()
+
+func _tab_bar_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_pressed():
+		var mouse_pos = get_tab_bar().get_local_mouse_position()
+		for index in get_tab_count():
+			if get_tab_bar().get_tab_rect(index).has_point(mouse_pos):
+				tab_pop_up.position=get_tab_bar().get_screen_transform() * mouse_pos
+				tab_pop_up.popup()
+				
 
 func _unhandled_input(event: InputEvent) -> void:
 		# Close current tab
@@ -160,4 +172,4 @@ func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, m
 
 
 func get_popup_menus() -> Array[PopupMenu]:
-	return get_current_tab_control().get_popup_menus()
+	return get_current_tab_control().get_popup_menus().append(tab_pop_up)
