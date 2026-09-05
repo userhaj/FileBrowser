@@ -5,6 +5,9 @@ signal folder_selected(full_path:String)
 
 const SAVE_FILE: String = "user://Settings"
 var last_item_clicked: int = -1
+@onready var popup_menu: PopupMenu = $PopupMenu
+var _id_callables = {}
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -16,6 +19,7 @@ func _ready() -> void:
 			var all_bookmarks = config.get_section_keys("bookmark")
 			for path in all_bookmarks:
 				add_folder(path)
+	popup_menu.add_icon_item(SubViewPortSingleLabel.texture_from_text("❌", self), "Unbookmark", 0)
 			
 
 func _get_drag_data(at_position: Vector2) -> Variant:
@@ -86,6 +90,18 @@ func _on_popup_menu_index_pressed(index: int) -> void:
 		_remove_path_from_settings(get_item_tooltip(last_item_clicked))
 		remove_item(last_item_clicked)
 
-
 func _on_item_selected(index: int) -> void:
 	folder_selected.emit(get_item_tooltip(index))
+	
+func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, menu_for_filetype:FilePopupMenu.FILETYPE_FLAG):
+	var id = ResourceUID.create_id() & 0xFFFFFF  # Guarantee 24bits id
+	_id_callables.set(id, action)
+	popup_menu.add_icon_item(SubViewPortSingleLabel.texture_from_text(emoji_icon, self), menu_text, id)
+
+
+func _on_popup_menu_id_pressed(id: int) -> void:
+	if _id_callables.has(id):
+		_id_callables.get(id).bind(PackedStringArray([get_item_tooltip(last_item_clicked)])).call()
+
+func get_popup_menus() -> Array:
+	return [popup_menu]

@@ -80,6 +80,7 @@ func _ready():
 	# Drop animation
 	_add_animation_to_popup_menus(folder_tree)
 	_add_animation_to_popup_menus(tabbed_browser)
+	_add_animation_to_popup_menus(bookmarks)
 	
 	# Remove tabbed browsers tab removal, and add new animated close
 	tabbed_browser.get_tab_bar().tab_close_pressed.disconnect(tabbed_browser._handle_close_tab)
@@ -89,6 +90,11 @@ func _ready():
 	for menu in _menu_commands:
 		tabbed_browser.add_menu_command.bindv(menu).call()
 		folder_tree.add_menu_command.bindv(menu).call()
+	
+	# Add tab commands to folder tree
+	for menu_command in tabbed_browser.menu_commands:
+		folder_tree.add_menu_command.bindv(menu_command).call()
+		bookmarks.add_menu_command.bindv(menu_command).call()
 	
 	if get_window() == get_tree().root:
 		set_directory(DirAccess.get_drive_name(0))

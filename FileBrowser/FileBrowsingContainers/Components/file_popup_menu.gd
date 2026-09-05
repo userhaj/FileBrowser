@@ -203,6 +203,11 @@ func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, m
 	new_menu.set(MENUPROP.ID, id)
 	if not _added_menus.has(menu_for_filetype):
 		_added_menus.set(menu_for_filetype, [])
+	var menu_list: Array = _added_menus.get(menu_for_filetype)
+	# Prevent duplicate menus
+	for menu in menu_list:
+		if menu[0] == new_menu[0]:
+			return
 	_added_menus.get(menu_for_filetype).append(new_menu)
 	
 func add_submenu(id, text, emoji_icon, popup_menu):

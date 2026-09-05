@@ -16,12 +16,14 @@ var directory: String:
 var tab_pop_up: PopupMenu
 enum TABPOPUP{NEW_TAB, CHANGE_VIEW, CLOSE_TAB}
 var tab_popup_icons = {TABPOPUP.NEW_TAB: "📂", TABPOPUP.CHANGE_VIEW: "👀", TABPOPUP.CLOSE_TAB: "❌"}
+var _id_callables = {}
 
 
 # Menus added to each new tab, each array is called on add_menu_command()
-var _menu_commands: Array[Array] = [
+var menu_commands: Array[Array] = [
 	# Allow inner browser to open new tab through FilePopupMenu
-	["Open In New Tab", "📂", _create_new_tabs, FilePopupMenu.FILETYPE_FLAG.SINGLE_FOLDER | FilePopupMenu.FILETYPE_FLAG.MULITPLE_FOLDER | FilePopupMenu.FILETYPE_FLAG.MIXED_FILES_FOLDERS]
+	["Open In New Tab", "📂", _create_new_tabs, FilePopupMenu.FILETYPE_FLAG.SINGLE_FOLDER | FilePopupMenu.FILETYPE_FLAG.MULITPLE_FOLDER | FilePopupMenu.FILETYPE_FLAG.MIXED_FILES_FOLDERS],
+	["Change View", "👀", swap_view.unbind(1), FilePopupMenu.FILETYPE_FLAG.ALL]
 ]
 
 func _init() -> void:
@@ -57,6 +59,14 @@ func _menu_handle(index: int):
 				_handle_close_tab(get_tab_count()-1)
 			else:
 				_handle_close_tab(tab_index)
+	
+	var id = tab_pop_up.get_item_id(index)
+	if _id_callables.has(id):
+		if tab_index < 0:
+			tab_index = get_tab_count()-1
+		var file_browsing_control = get_tab_control(tab_index)
+		if file_browsing_control and file_browsing_control.has_method("get_directory"):
+			_id_callables[id].bind(PackedStringArray([file_browsing_control.get_directory()])).call()
 
 
 func _input(event: InputEvent) -> void:
@@ -134,7 +144,7 @@ func new_tab(path: String, control: Control, old_control=null):
 	control.folder_changed.connect(folder_changed.emit)
 	current_tab = index
 	# Add custom tabbed behavior
-	for menu_commmand in _menu_commands:
+	for menu_commmand in menu_commands:
 		control.add_menu_command.bindv(menu_commmand).call()
 	
 	# Notify of new tab
@@ -176,10 +186,15 @@ func refresh():
 
 func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, menu_for_filetype:FilePopupMenu.FILETYPE_FLAG):
 	# Add command for future opened tabs
-	_menu_commands.append([menu_text, emoji_icon, action, menu_for_filetype])
+	menu_commands.append([menu_text, emoji_icon, action, menu_for_filetype])
 	# Add command to open tabs
 	for tab in get_tab_count():
 		get_tab_control(tab).add_menu_command(menu_text, emoji_icon, action, menu_for_filetype)
+	
+	if menu_for_filetype | FilePopupMenu.FILETYPE_FLAG.SINGLE_FOLDER:
+		var id = ResourceUID.create_id() & 0xFFFFFF  # Guarantee 24bits id
+		_id_callables.set(id, action)
+		tab_pop_up.add_icon_item(SubViewPortSingleLabel.texture_from_text(emoji_icon, self), menu_text, id)
 
 
 func get_popup_menus() -> Array:
