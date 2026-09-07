@@ -93,7 +93,7 @@ func _on_popup_menu_index_pressed(index: int) -> void:
 func _on_item_selected(index: int) -> void:
 	folder_selected.emit(get_item_tooltip(index))
 	
-func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, menu_for_filetype:FilePopupMenu.FILETYPE_FLAG):
+func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, _menu_for_filetype:FilePopupMenu.FILETYPE_FLAG):
 	var id = ResourceUID.create_id() & 0xFFFFFF  # Guarantee 24bits id
 	_id_callables.set(id, action)
 	popup_menu.add_icon_item(SubViewPortSingleLabel.texture_from_text(emoji_icon, self), menu_text, id)

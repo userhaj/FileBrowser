@@ -286,9 +286,4 @@ func get_popup_menus() -> Array[PopupMenu]:
 
 
 func _on_tabbed_browser_new_tab_created(control: Control) -> void:
-	if control.has_method("get_popup_menus"):
-		for popup_menu: PopupMenu in control.get_popup_menus():
-			popup_menu.close_requested.connect(Animate.drop_window, CONNECT_APPEND_SOURCE_OBJECT)
-			for child in popup_menu.get_children():
-				if child is Window:
-					child.close_requested.connect(Animate.drop_window, CONNECT_APPEND_SOURCE_OBJECT)
+	_add_animation_to_popup_menus(control)
