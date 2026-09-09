@@ -17,7 +17,6 @@ class_name FileTree
 @export var show_hidden_files: bool = true
 @onready var file_popup_menu: PopupMenu = $FilePopupMenu
 
-
 signal folder_changed(folder_path: String)
 @onready var old_min_width = {0:128, 1: 128}
 var _full_directory_path: String
@@ -28,7 +27,14 @@ var _fold_structure = {}
 var _sort_column = column.NAME
 var _is_sort_ascending = true
 var dragging_resize_column: int = -1
-var _refresh_id: int
+var _refresh_id: int = 0
+var _icons_used = {}
+@onready var _unique_theme_type = "Tree" + "_byylub0x8vqh0"
+var edit_theme
+var _tree_item_font_size = 0
+var tree_item_font_size :int :
+	set(value): set_tree_item_font_size(value)
+	get: return _tree_item_font_size
 
 # TODO get icons from outside self
 var icons : Dictionary = {"dll": "📚", "txt": "🗒️", "exe": "🚀", "conf": "⚙️",\
@@ -102,7 +108,59 @@ func _input(event):
 		# Stop resizing on mouse release
 		if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 			dragging_resize_column = -1
+	
+	var has_mouse_focus = get_rect().has_point(get_local_mouse_position())
+	# Handle Ctrl+MouseScroll as Icon resize
+	if event is InputEventMouseButton and event.ctrl_pressed and visible and has_mouse_focus:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			tree_item_font_size += 3
+			accept_event()
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			tree_item_font_size -= 3
+			accept_event()
 
+func set_tree_item_font_size(value: int):
+	if value <= 0:
+		return
+	_tree_item_font_size = value
+	edit_theme = ThemeDB.get_project_theme()
+	if not edit_theme:
+		edit_theme = get_tree().root.theme
+	
+	
+	edit_theme.set_font_size("font_size", _unique_theme_type, value)
+	_alter_icons(value)
+	
+	for icon in _icons_used:
+		var subview: SubViewPortSingleLabel = get_node_or_null(icon)
+		subview.resize(Vector2(value, value))
+
+
+
+func _alter_icons(value):
+	var default_tree_icons = {"arrow_collapsed": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"none\" stroke=\"#b2b2b2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\".45\" stroke-width=\"2\" d=\"m6 11 3-3-3-3\"/></svg>", \
+		"arrow": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"none\" stroke=\"#b2b2b2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\".45\" stroke-width=\"2\" d=\"m5 7 3 3 3-3\"/></svg>"
+		 }
+	var svg_scale = value/16.0 if value > 16 else 1.0
+	for icon_name in default_tree_icons:
+		var img = Image.new()
+		img.load_svg_from_string(default_tree_icons[icon_name], svg_scale)
+		var icon = ImageTexture.create_from_image(img)
+		edit_theme.set_icon(icon_name, _unique_theme_type, icon)
+	
+	# Scale space for fold image
+	var margin_scale = int(16.0 * svg_scale) if svg_scale > 1 else 16
+	edit_theme.set_constant("item_margin", _unique_theme_type, margin_scale)
+
+func _get_all_tree_items() -> Array:
+	var all = []
+	var tree_item: TreeItem= get_root().get_first_child()
+	while tree_item:
+		all.append(tree_item)
+		tree_item = tree_item.get_next()
+	return all
+	
+	
 
 func _unhandled_input(event: InputEvent) -> void:
 	# Select all Ctrl+A
@@ -158,6 +216,18 @@ func _ready():
 	_set_column_titles.call_deferred()
 	
 	enable_drag_unfolding = true
+	theme_type_variation = _unique_theme_type
+	if not get_tree().root.is_node_ready():
+		await get_tree().root.ready
+	if get_tree().root.theme:
+		get_tree().root.get_theme().set_type_variation(_unique_theme_type, "Tree")
+		edit_theme = theme if theme else get_tree().root.theme
+	else:
+		theme = Theme.new()
+		theme.set_type_variation(_unique_theme_type, "Tree")
+	_tree_item_font_size = edit_theme.get_font_size("font_size", _unique_theme_type)
+
+
 
 func _enter_tree() -> void:
 	# Handle dropped files
@@ -407,9 +477,11 @@ func _create_folder(base_tree_item, full_path: String, label_full_path: bool=fal
 		var type_column_index = column_titles.find(column_titles[column.TYPE])
 		if type_column_index >= 0 and type_column_index < columns: # Only set size if it exists
 			new_tree_item.set_text(type_column_index, "Folder")
-			
-			
-		new_tree_item.set_icon(0, create_get_subview_label("📁").get_texture())
+		
+		var icon_emoji = "📁"
+		_icons_used.set(icon_emoji, 0)
+		new_tree_item.set_icon(0, SubViewPortSingleLabel.texture_from_text(icon_emoji, self))
+		SubViewPortSingleLabel.get_make(icon_emoji, self).resize(Vector2(tree_item_font_size, tree_item_font_size))
 		
 		# Create place holder item on folders with sub-content
 		if folder_contents_count > 0:
@@ -457,26 +529,15 @@ func _create_file(base_tree_item, full_path: String):
 		# Find icon to use based on extension
 		var ext: String = full_path.get_extension()
 		var icon_emoji: String = icons.get(ext, "📄")
-		# Get the previously memory loaded texture if available
-		var subview = create_get_subview_label(icon_emoji)
-		# Set icon using same texture/memory for all same emojis
-		new_tree_item.set_icon(0, subview.get_texture())
+		
+		_icons_used.set(icon_emoji, 0)
+		new_tree_item.set_icon(0, SubViewPortSingleLabel.texture_from_text(icon_emoji, self))
+		SubViewPortSingleLabel.get_make(icon_emoji, self).resize(Vector2(tree_item_font_size, tree_item_font_size))
+
 		if always_fit_name:
 			new_tree_item.set_text_overrun_behavior(0, TextServer.OVERRUN_NO_TRIMMING)
 
 
-# Returns subview with given emoji, makes new subview if not yet made
-func create_get_subview_label(emoji: String):
-	var subview = get_node_or_null(emoji)
-	if not subview: # Icon not in memory
-		# Load emoji to texture object
-		subview = SUB_VIEWPORT_SINGLE_LABEL.instantiate()
-		subview.set_text(emoji)
-		# Set name as emoji for easy get/null on line above
-		subview.name = emoji
-		# Label>Subview>Texture>Tree Item texture only work if added and "visible"
-		add_child(subview)
-	return subview
 
 func _on_column_title_clicked(_column: int, mouse_button_index: int) -> void:
 	if mouse_button_index == MOUSE_BUTTON_RIGHT:

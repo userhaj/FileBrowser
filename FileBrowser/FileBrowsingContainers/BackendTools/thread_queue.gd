@@ -30,7 +30,7 @@ func clear():
 func _thread_return_work(thread, call_work: Callable, callback_content):
 	# Work may be null/stale, validate before calling
 	if call_work and call_work.is_valid():
-		var work = call_work.call()
+		var work = await call_work.call()
 		var callback = callback_content.bind(work)
 		_end_thread.call_deferred(thread, callback)
 	else:

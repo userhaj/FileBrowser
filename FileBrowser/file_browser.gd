@@ -126,6 +126,7 @@ func _set_theme():
 		var new_theme = load(external_theme_path)
 		new_theme.set_meta("file_path", external_theme_path)
 		get_window().set_theme(new_theme)
+		ProjectSettings.set_setting("gui/theme/custom", external_theme_path)
 	# Set child window theme to match main window
 	else:
 		get_window().set_theme(get_tree().root.get_window().get_theme())
