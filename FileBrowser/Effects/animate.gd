@@ -34,8 +34,9 @@ static func drop_window(old_window: Window):
 	var tween = fake_window.create_tween()
 	tween.set_ease(tween.EASE_OUT)
 	tween.set_trans(tween.TRANS_BOUNCE)
-	tween.tween_property(image, "position:y", fake_window.size.y, drop_time)
-	tween.tween_callback(fake_window.queue_free).set_delay(drop_time)
+	tween.tween_property(image, "position:y", fake_window.size.y+fake_window.size.x/2, drop_time)
+	tween.tween_callback(fake_window.set_visible.bind(false))
+	tween.tween_callback(fake_window.queue_free)
 	var rotate_tween = fake_window.create_tween()
 	rotate_tween.tween_property(image, "rotation_degrees",45, drop_time)
 
@@ -69,7 +70,7 @@ static func drop_control_free(control: Control):
 	tween.set_ease(tween.EASE_OUT)
 	tween.set_trans(tween.TRANS_BOUNCE)
 	tween.tween_property(fake_window, "position:y", screen_size.y, drop_time)
-	tween.tween_callback(fake_window.queue_free).set_delay(drop_time)
+	tween.tween_callback(fake_window.queue_free)
 	control.pivot_offset = control.size / 2
 	var rotate_tween = fake_window.create_tween()
 	rotate_tween.tween_property(control, "rotation_degrees",5, drop_time)
