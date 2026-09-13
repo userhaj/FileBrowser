@@ -123,6 +123,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			$RunFileConfirmationDialog.set_files_to_open(selected_paths)
 			$RunFileConfirmationDialog.position = get_screen_transform() * get_local_mouse_position()
 			$RunFileConfirmationDialog.popup()
+	
+	# Delete selected files on "Delete" key
+	if event is InputEventKey and Input.is_key_pressed(KEY_DELETE) and \
+	# Multiple FileTrees may be available, only affect focused File Tree
+	not event.is_echo() and has_focus():
+		var selected = PackedStringArray(get_selected_paths())
+		if selected:
+			$TrashFileConfirmationDialog.ask_trash_files(selected)
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -135,6 +143,11 @@ func _gui_input(event: InputEvent) -> void:
 			$FilePopupMenu.position = get_screen_transform() * get_local_mouse_position()
 			$FilePopupMenu.call_deferred("popup")
 			accept_event()
+	
+	# Grab focus if any mouse buttons occured inside container
+	if event is InputEventMouseButton:
+		if get_rect().has_point(get_local_mouse_position()):
+			grab_focus()
 	
 
 # Current working directory

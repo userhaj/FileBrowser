@@ -24,12 +24,16 @@ func _copy_root_theme():
 			theme_resource.set_type_variation("EmojiFont", "Label")
 		$PanelContainer/Label.set_theme(theme_resource)
 		var label_set = LabelSettings.new()
-		label_set.font = theme_resource.get_font("font", "EmojiFont")
-		label_set.font_size = $PanelContainer/Label.label_settings.font_size
-		label_set.font_color = theme_resource.get_color("font_color", "EmojiFont")
+		var theme_font = theme_resource.get_font("font", "EmojiFont")
+		var theme_color = theme_resource.get_color("font_color", "EmojiFont")
+		var theme_size = theme_resource.get_font_size("font_size", "EmojiFont")
+		label_set.font = theme_font if theme_font else $PanelContainer/Label.label_settings.font
+		label_set.font_size = $PanelContainer/Label.label_settings.font_size if $PanelContainer/Label.label_settings.font_size else theme_size
+		label_set.font_color = theme_color if theme_resource.has_color("font_color", "EmojiFont") else $PanelContainer/Label.label_settings.font_color
+		size = Vector2(label_set.font_size, label_set.font_size)
 		$PanelContainer/Label.label_settings = label_set
 
-# Converts an emoji into a texture
+# Converts an emoji into a texture, just call get_texture() if already have object
 static func texture_from_text(emoji_text:String, caller: Object) -> ViewportTexture:
 	# Attempt to reuse past subviewports, else make a new one
 	var subview = get_make(emoji_text, caller)
@@ -48,8 +52,18 @@ func set_text(new_text: String):
 	$PanelContainer/Label.text = new_text
 
 func resize(vector: Vector2):
+	# Do nothing on 0 or null call
+	if not vector:
+		return
+	# Do nothing on no-change call
+	if vector.y == size.y:
+		return
+	
 	size = vector
 	var label_set = LabelSettings.new()
 	label_set.font_size = vector.y
 	label_set.font = $PanelContainer/Label.label_settings.font
+	label_set.font_color = $PanelContainer/Label.label_settings.font_color
 	$PanelContainer/Label.label_settings = label_set
+	
+		

@@ -3,6 +3,7 @@ extends ConfirmationDialog
 @onready var _files_to_trash := PackedStringArray()
 
 func ask_trash_files(files_to_trash: PackedStringArray):
+	position = DisplayServer.mouse_get_position()
 	_files_to_trash = files_to_trash
 	if len(files_to_trash) == 0:
 		push_error("TrashFileConfrimationDialog.ask_trash_files() called on empty file list")

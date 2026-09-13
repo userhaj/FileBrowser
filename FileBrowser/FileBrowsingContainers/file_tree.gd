@@ -29,7 +29,16 @@ var _is_sort_ascending = true
 var dragging_resize_column: int = -1
 var _refresh_id: int = 0
 var _icons_used = {}
-@onready var _unique_theme_type = "Tree" + "_byylub0x8vqh0"
+var _unique_theme_type:
+	get:
+		var theme_type = "Tree"
+		if show_folders:
+			theme_type += "_show_folders"
+		if show_files:
+			theme_type += "_show_files"
+		if only_show_drives:
+			theme_type += "_only_show_drives"
+		return theme_type
 var edit_theme
 var _tree_item_font_size = 0
 var tree_item_font_size :int :
@@ -113,27 +122,30 @@ func _input(event):
 	# Handle Ctrl+MouseScroll as Icon resize
 	if event is InputEventMouseButton and event.ctrl_pressed and visible and has_mouse_focus:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			tree_item_font_size += 3
+			tree_item_font_size += 1
 			accept_event()
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			tree_item_font_size -= 3
+			tree_item_font_size -= 1
 			accept_event()
 
 func set_tree_item_font_size(value: int):
-	if value <= 0:
+	if value <= 0 or value ==_tree_item_font_size:
 		return
+	
+	
 	_tree_item_font_size = value
 	edit_theme = ThemeDB.get_project_theme()
 	if not edit_theme:
-		edit_theme = get_tree().root.theme
-	
-	
+		edit_theme = get_tree().root.theme if get_tree().root.theme else theme
+
+	edit_theme.set_type_variation(_unique_theme_type, "Tree")
 	edit_theme.set_font_size("font_size", _unique_theme_type, value)
 	_alter_icons(value)
 	
 	for icon in _icons_used:
 		var subview: SubViewPortSingleLabel = get_node_or_null(icon)
 		subview.resize(Vector2(value, value))
+	
 
 
 
@@ -171,6 +183,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			while tree_item:
 				tree_item.select(0)
 				tree_item = tree_item.get_next_visible()
+	
+	# Delete selected files on "Delete" key
+	if event is InputEventKey and Input.is_key_pressed(KEY_DELETE) and \
+	# Multiple FileTrees may be available, only affect focused File Tree
+	not event.is_echo() and visible and has_focus():
+		var selected = PackedStringArray(get_selected_paths())
+		if selected:
+			$TrashFileConfirmationDialog.ask_trash_files(selected)
 
 func _gui_input(event: InputEvent) -> void:
 	# On column title cursor end click, start column resize
@@ -225,7 +245,9 @@ func _ready():
 	else:
 		theme = Theme.new()
 		theme.set_type_variation(_unique_theme_type, "Tree")
-	_tree_item_font_size = edit_theme.get_font_size("font_size", _unique_theme_type)
+	
+	if edit_theme:
+		_tree_item_font_size = edit_theme.get_font_size("font_size", _unique_theme_type)
 
 
 
@@ -480,8 +502,9 @@ func _create_folder(base_tree_item, full_path: String, label_full_path: bool=fal
 		
 		var icon_emoji = "📁"
 		_icons_used.set(icon_emoji, 0)
-		new_tree_item.set_icon(0, SubViewPortSingleLabel.texture_from_text(icon_emoji, self))
-		SubViewPortSingleLabel.get_make(icon_emoji, self).resize(Vector2(tree_item_font_size, tree_item_font_size))
+		var subview = SubViewPortSingleLabel.get_make(icon_emoji, self)
+		subview.resize(Vector2(tree_item_font_size, tree_item_font_size))
+		new_tree_item.set_icon(0, subview.get_texture())
 		
 		# Create place holder item on folders with sub-content
 		if folder_contents_count > 0:
@@ -531,8 +554,9 @@ func _create_file(base_tree_item, full_path: String):
 		var icon_emoji: String = icons.get(ext, "📄")
 		
 		_icons_used.set(icon_emoji, 0)
-		new_tree_item.set_icon(0, SubViewPortSingleLabel.texture_from_text(icon_emoji, self))
-		SubViewPortSingleLabel.get_make(icon_emoji, self).resize(Vector2(tree_item_font_size, tree_item_font_size))
+		var subview = SubViewPortSingleLabel.get_make(icon_emoji, self)
+		subview.resize(Vector2(tree_item_font_size, tree_item_font_size))
+		new_tree_item.set_icon(0, subview.get_texture())
 
 		if always_fit_name:
 			new_tree_item.set_text_overrun_behavior(0, TextServer.OVERRUN_NO_TRIMMING)

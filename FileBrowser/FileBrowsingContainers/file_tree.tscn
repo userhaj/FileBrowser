@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dftwbc3ldxac1" path="res://FileBrowser/FileBrowsingContainers/ConfirmationDialogs/run_file_confirmation_dialog.tscn" id="4_fk4eg"]
 [ext_resource type="Script" uid="uid://diba812tgfd22" path="res://FileBrowser/FileBrowsingContainers/BackendTools/file_browsing_controller.gd" id="5_gq1em"]
 [ext_resource type="Script" uid="uid://benc4ab4rkgll" path="res://FileBrowser/FileBrowsingContainers/BackendTools/folder_poller.gd" id="6_tyrsn"]
+[ext_resource type="PackedScene" uid="uid://drat35vjn1jey" path="res://FileBrowser/FileBrowsingContainers/ConfirmationDialogs/trash_file_confirmation_dialog.tscn" id="7_kkmcr"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_gvwle"]
 viewport_path = NodePath("SubViewportFolder")
@@ -79,6 +80,8 @@ metadata/_custom_type_script = "uid://diba812tgfd22"
 [node name="FolderPoller" type="Node" parent="." unique_id=1814837655]
 script = ExtResource("6_tyrsn")
 metadata/_custom_type_script = "uid://benc4ab4rkgll"
+
+[node name="TrashFileConfirmationDialog" parent="." unique_id=457647446 instance=ExtResource("7_kkmcr")]
 
 [connection signal="column_title_clicked" from="." to="." method="_on_column_title_clicked"]
 [connection signal="empty_clicked" from="." to="." method="_on_empty_clicked"]
