@@ -8,13 +8,13 @@
 [ext_resource type="Script" uid="uid://benc4ab4rkgll" path="res://FileBrowser/FileBrowsingContainers/BackendTools/folder_poller.gd" id="6_tyrsn"]
 [ext_resource type="PackedScene" uid="uid://drat35vjn1jey" path="res://FileBrowser/FileBrowsingContainers/ConfirmationDialogs/trash_file_confirmation_dialog.tscn" id="7_kkmcr"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_gvwle"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_kkmcr"]
 viewport_path = NodePath("SubViewportFolder")
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_kkmcr"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_a1033"]
 viewport_path = NodePath("SubViewportFile")
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_a1033"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_fk4eg"]
 viewport_path = NodePath("SubViewportTrash")
 
 [node name="FileTree" type="Tree" unique_id=1822229957]
@@ -67,9 +67,9 @@ wait_time = 0.5
 one_shot = true
 
 [node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("3_a1033")]
-item_0/icon = SubResource("ViewportTexture_gvwle")
-item_1/icon = SubResource("ViewportTexture_kkmcr")
-item_3/icon = SubResource("ViewportTexture_a1033")
+item_0/icon = SubResource("ViewportTexture_kkmcr")
+item_1/icon = SubResource("ViewportTexture_a1033")
+item_3/icon = SubResource("ViewportTexture_fk4eg")
 
 [node name="RunFileConfirmationDialog" parent="." unique_id=381305560 instance=ExtResource("4_fk4eg")]
 
@@ -92,3 +92,4 @@ metadata/_custom_type_script = "uid://benc4ab4rkgll"
 [connection signal="id_pressed" from="PopupMenu" to="." method="_on_popup_menu_id_pressed"]
 [connection signal="files_changed" from="FilePopupMenu" to="." method="refresh"]
 [connection signal="change_directory" from="FileBrowsingController" to="." method="_full_directory_path_setter"]
+[connection signal="folder_changed" from="FolderPoller" to="." method="refresh" unbinds=1]
