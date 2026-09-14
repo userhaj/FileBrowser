@@ -197,10 +197,28 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouse and event.is_pressed():
 		if get_local_mouse_position().y <= _get_title_row_height():
 			dragging_resize_column = _column_title_end_near()
+		
+		if get_global_file_area_rect().has_point(event.global_position) and \
+		event.button_mask == MOUSE_BUTTON_LEFT and \
+		not $SelectBox.is_selecting:
+			$SelectBox.start_selecting_on_drag(get_local_mouse_position())
 	
 	# Set resize cursor if near title column end
-	if event is InputEventMouse and not event.is_pressed():
-		mouse_default_cursor_shape = Control.CURSOR_HSIZE if _column_title_end_near() >= 0 else Control.CURSOR_ARROW
+	#if event is InputEventMouse and not event.is_pressed():
+		#mouse_default_cursor_shape = Control.CURSOR_HSIZE if _column_title_end_near() >= 0 else Control.CURSOR_ARROW
+
+	#if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and \
+	#get_global_file_area_rect().has_point(get_global_mouse_position()) and not $SelectBox.is_selecting:
+		#$SelectBox.start_selecting(get_local_mouse_position())
+		#accept_event()
+	
+	if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and \
+	$SelectBox.is_selecting and get_viewport().gui_get_drag_data():
+		$SelectBox.cancel_select()
+	
+	if event is InputEventMouse and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and $SelectBox.is_selecting:
+		$SelectBox.stop_selecting()
+		
 
 
 # Returns the column index that the mouse is nearest to the end of. Or -1 if not near a column title end
@@ -500,11 +518,13 @@ func _create_folder(base_tree_item, full_path: String, label_full_path: bool=fal
 		if type_column_index >= 0 and type_column_index < columns: # Only set size if it exists
 			new_tree_item.set_text(type_column_index, "Folder")
 		
+		# Set Icon
 		var icon_emoji = "📁"
 		_icons_used.set(icon_emoji, 0)
 		var subview = SubViewPortSingleLabel.get_make(icon_emoji, self)
 		subview.resize(Vector2(tree_item_font_size, tree_item_font_size))
 		new_tree_item.set_icon(0, subview.get_texture())
+		
 		
 		# Create place holder item on folders with sub-content
 		if folder_contents_count > 0:
@@ -557,6 +577,7 @@ func _create_file(base_tree_item, full_path: String):
 		var subview = SubViewPortSingleLabel.get_make(icon_emoji, self)
 		subview.resize(Vector2(tree_item_font_size, tree_item_font_size))
 		new_tree_item.set_icon(0, subview.get_texture())
+		
 
 		if always_fit_name:
 			new_tree_item.set_text_overrun_behavior(0, TextServer.OVERRUN_NO_TRIMMING)
@@ -625,7 +646,13 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 	if not get_item_at_position(at_position):
 		return null
 	
+	var clicked_column = get_column_at_position(at_position)
+	var clicked_item = get_item_at_position(at_position)
 	
+	# Do not drag if item is non-selected and not clicked on name
+	if clicked_column > 0 and not clicked_item.is_selected(0):
+		return null
+		
 	# Get selected folders/files
 	var selected: Array[TreeItem] = get_selected_tree_items()
 	var folders: = []
@@ -768,7 +795,7 @@ func _on_item_edited() -> void:
 		for tree_item in selected_trees:
 			var path = path_from_TreeItem(tree_item)
 			var true_object_name = path.get_file()
-			var shown_name = tree_item.get_text(0)
+			var shown_name = tree_item.get_text(column.NAME)
 			if true_object_name != shown_name:
 				var new_path = path.get_base_dir().path_join(shown_name)
 				var rename_attempt = DirAccess.rename_absolute(path, new_path)
@@ -777,7 +804,7 @@ func _on_item_edited() -> void:
 					set_path_on_TreeItem(tree_item, new_path)
 				# On failure revert to original name
 				else:
-					tree_item.set_text(0, true_object_name)
+					tree_item.set_text(column.NAME, true_object_name)
 
 func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, menu_for_filetype:FilePopupMenu.FILETYPE_FLAG):
 	if not is_node_ready():
@@ -786,3 +813,25 @@ func add_menu_command(menu_text: String, emoji_icon: String, action: Callable, m
 
 func get_popup_menus():
 	return [file_popup_menu, $PopupMenu]
+
+
+func select_area(selected_area: Rect2):
+	# Select new files if not adding to select with ctrl or shift key
+	if not Input.is_key_pressed(KEY_SHIFT) or not Input.is_key_pressed(KEY_CTRL):
+		deselect_all()
+		# wait for deselect to occur to avoid deselect on new selection
+		await RenderingServer.frame_post_draw
+	
+	# Find first tree item selected
+	var selected_local_position = selected_area.position - get_global_rect().position
+	var tree_item: TreeItem = get_item_at_position(selected_local_position)
+	# Select all items within rect
+	while tree_item:
+		var tree_rect = get_global_transform() * get_item_area_rect(tree_item)
+		if selected_area.intersects(tree_rect):
+			tree_item.select(column.NAME)
+		else:
+			# Stop search on first item not in rect
+			break
+		tree_item = tree_item.get_next_visible()
+		

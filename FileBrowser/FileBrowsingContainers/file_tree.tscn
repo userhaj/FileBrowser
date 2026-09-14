@@ -7,14 +7,15 @@
 [ext_resource type="Script" uid="uid://diba812tgfd22" path="res://FileBrowser/FileBrowsingContainers/BackendTools/file_browsing_controller.gd" id="5_gq1em"]
 [ext_resource type="Script" uid="uid://benc4ab4rkgll" path="res://FileBrowser/FileBrowsingContainers/BackendTools/folder_poller.gd" id="6_tyrsn"]
 [ext_resource type="PackedScene" uid="uid://drat35vjn1jey" path="res://FileBrowser/FileBrowsingContainers/ConfirmationDialogs/trash_file_confirmation_dialog.tscn" id="7_kkmcr"]
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_kkmcr"]
-viewport_path = NodePath("SubViewportFolder")
+[ext_resource type="PackedScene" uid="uid://drjwj2xhyocps" path="res://FileBrowser/FileBrowsingContainers/Components/select_box.tscn" id="8_a1033"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_a1033"]
-viewport_path = NodePath("SubViewportFile")
+viewport_path = NodePath("SubViewportFolder")
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_fk4eg"]
+viewport_path = NodePath("SubViewportFile")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_gq1em"]
 viewport_path = NodePath("SubViewportTrash")
 
 [node name="FileTree" type="Tree" unique_id=1822229957]
@@ -67,9 +68,9 @@ wait_time = 0.5
 one_shot = true
 
 [node name="FilePopupMenu" parent="." unique_id=1803370902 instance=ExtResource("3_a1033")]
-item_0/icon = SubResource("ViewportTexture_kkmcr")
-item_1/icon = SubResource("ViewportTexture_a1033")
-item_3/icon = SubResource("ViewportTexture_fk4eg")
+item_0/icon = SubResource("ViewportTexture_a1033")
+item_1/icon = SubResource("ViewportTexture_fk4eg")
+item_3/icon = SubResource("ViewportTexture_gq1em")
 
 [node name="RunFileConfirmationDialog" parent="." unique_id=381305560 instance=ExtResource("4_fk4eg")]
 
@@ -83,6 +84,10 @@ metadata/_custom_type_script = "uid://benc4ab4rkgll"
 
 [node name="TrashFileConfirmationDialog" parent="." unique_id=457647446 instance=ExtResource("7_kkmcr")]
 
+[node name="SelectBox" parent="." unique_id=1050129504 instance=ExtResource("8_a1033")]
+layout_mode = 1
+mouse_filter = 2
+
 [connection signal="column_title_clicked" from="." to="." method="_on_column_title_clicked"]
 [connection signal="empty_clicked" from="." to="." method="_on_empty_clicked"]
 [connection signal="item_activated" from="." to="." method="_on_item_activated"]
@@ -93,3 +98,4 @@ metadata/_custom_type_script = "uid://benc4ab4rkgll"
 [connection signal="files_changed" from="FilePopupMenu" to="." method="refresh"]
 [connection signal="change_directory" from="FileBrowsingController" to="." method="_full_directory_path_setter"]
 [connection signal="folder_changed" from="FolderPoller" to="." method="refresh" unbinds=1]
+[connection signal="selected_area" from="SelectBox" to="." method="select_area"]
