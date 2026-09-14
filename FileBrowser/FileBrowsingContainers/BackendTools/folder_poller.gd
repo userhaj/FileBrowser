@@ -34,6 +34,9 @@ func add_folder_to_poll(folder_path: String, clear_previous: bool=false):
 	if clear_previous:
 		clear()
 	var full_path = folder_path.simplify_path()
+	# Do not add non-folders or non-existant folders
+	if not DirAccess.dir_exists_absolute(full_path):
+		return
 	target_folders.set(full_path, 0)
 	_stored_data.set(full_path, {})
 	var files_and_folders = Array(DirAccess.get_files_at(full_path)).map(func(element): return full_path.path_join(element))
