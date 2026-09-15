@@ -45,6 +45,8 @@ var tree_item_font_size :int :
 	set(value): set_tree_item_font_size(value)
 	get: return _tree_item_font_size
 
+var _is_tree_item_selected_before_click: bool = false
+
 # TODO get icons from outside self
 var icons : Dictionary = {"dll": "📚", "txt": "🗒️", "exe": "🚀", "conf": "⚙️",\
  "ini": "⚙️", "py": "🐍", "pyw": "🐍", "url": "🕸️", "htm": "🕸️", "html": "🕸️",\
@@ -145,6 +147,16 @@ func set_tree_item_font_size(value: int):
 	for icon in _icons_used:
 		var subview: SubViewPortSingleLabel = get_node_or_null(icon)
 		subview.resize(Vector2(value, value))
+
+
+func _get_text_size(text: String) -> Vector2:
+	if not edit_theme:
+		edit_theme = ThemeDB.get_project_theme()
+		if not edit_theme:
+			edit_theme = get_tree().root.theme if get_tree().root.theme else theme
+
+	var font = edit_theme.get_font("font", _unique_theme_type)
+	return font.get_string_size(text)
 	
 
 
@@ -198,10 +210,16 @@ func _gui_input(event: InputEvent) -> void:
 		if get_local_mouse_position().y <= _get_title_row_height():
 			dragging_resize_column = _column_title_end_near()
 		
+		# Mouse click within file area
 		if get_global_file_area_rect().has_point(event.global_position) and \
 		event.button_mask == MOUSE_BUTTON_LEFT and \
 		not $SelectBox.is_selecting:
+			# Only create select box if click turns into a drag
 			$SelectBox.start_selecting_on_drag(get_local_mouse_position())
+		
+		# Notify if clicked item is selected before this click
+		var item = get_item_at_position(event.position)
+		_is_tree_item_selected_before_click = item.is_selected(0) if item else false
 	
 	# Set resize cursor if near title column end
 	#if event is InputEventMouse and not event.is_pressed():
@@ -649,9 +667,21 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 	var clicked_column = get_column_at_position(at_position)
 	var clicked_item = get_item_at_position(at_position)
 	
-	# Do not drag if item is non-selected and not clicked on name
-	if clicked_column > 0 and not clicked_item.is_selected(0):
+	# Do not drag if item is non-selected and not clicked on name column
+	if clicked_column != column.NAME and not clicked_item.is_selected(column.NAME):
 		return null
+	else:
+		# Do not drag on non-selected items when click on non-text area
+		if not _is_tree_item_selected_before_click:
+			# Get full text area from left side to end of text name
+			var icon_width = clicked_item.get_icon(column.NAME).get_width()
+			var string_width = _get_text_size(clicked_item.get_text(column.NAME)).x
+			var margin = _get_fold_width(clicked_item)
+			var after_text = icon_width + string_width + margin
+			# Prevent drag data when clicking in empty space to right of text
+			if at_position.x > after_text:
+				return null
+		
 		
 	# Get selected folders/files
 	var selected: Array[TreeItem] = get_selected_tree_items()
@@ -834,4 +864,17 @@ func select_area(selected_area: Rect2):
 			# Stop search on first item not in rect
 			break
 		tree_item = tree_item.get_next_visible()
+
+
+func _get_fold_width(tree_item: TreeItem):
+	if edit_theme is Theme:
+		var margin = edit_theme.get_constant("item_margin", _unique_theme_type)
+		var fold_arrow_width = edit_theme.get_icon("checked", _unique_theme_type).get_width()
+		var level = 0 # Ignore root
+		var parent: TreeItem = tree_item.get_parent()
+		while parent:
+			level += 1
+			parent = parent.get_parent()
 		
+		return level * (margin + fold_arrow_width)
+	
