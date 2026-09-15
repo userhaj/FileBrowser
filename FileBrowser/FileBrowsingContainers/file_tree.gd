@@ -854,6 +854,9 @@ func select_area(selected_area: Rect2):
 	
 	# Find first tree item selected
 	var selected_local_position = selected_area.position - get_global_rect().position
+	
+	# Fix selection selection to not include out of bounds area
+	selected_local_position = selected_local_position.clamp(Vector2(0,_get_title_row_height()), Vector2().max(selected_local_position))
 	var tree_item: TreeItem = get_item_at_position(selected_local_position)
 	# Select all items within rect
 	while tree_item:
