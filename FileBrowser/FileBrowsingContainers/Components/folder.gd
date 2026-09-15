@@ -199,16 +199,8 @@ func set_path(abs_path: String, text_icon: String = ""):
 		
 func get_abs_path():
 	return self.path
-	
 
-func _on_pressed() -> void:
-	if clicked:
-		emit_signal("double_clicked")
-		clicked = false
-	else:
-		clicked = true
-		$DoubleClickTimer.start(0.5)
-		
+
 func _on_double_click_timer_timeout() -> void:
 	clicked = false
 
@@ -235,3 +227,12 @@ func _on_name_line_edit_plus_text_submitted(new_filename: String) -> void:
 	if rename_attempt == OK:
 		set_path(new_path)
 		
+
+
+func _on_button_down() -> void:
+	if clicked:
+		double_clicked.emit()
+		clicked = false
+	else:
+		clicked = true
+		$DoubleClickTimer.start(0.5)

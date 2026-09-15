@@ -75,6 +75,7 @@ stretch_mode = 5
 [node name="ImageLabel" type="Label" parent="VBoxContainer" unique_id=431873875]
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 1
 text = "📁"
 label_settings = SubResource("LabelSettings_bq7l0")
 horizontal_alignment = 1
@@ -125,7 +126,7 @@ offset_right = 2.25
 grow_horizontal = 2
 grow_vertical = 0
 
-[connection signal="pressed" from="." to="." method="_on_pressed"]
+[connection signal="button_down" from="." to="." method="_on_button_down"]
 [connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="screen_entered" from="VisibleOnScreenNotifier2D" to="." method="_apply_texture_image_icon"]
 [connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_remove_texture_image_icon"]

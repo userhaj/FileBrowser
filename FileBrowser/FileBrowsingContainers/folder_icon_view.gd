@@ -164,6 +164,10 @@ func get_folder_buttons() -> Array[Node]:
 
 # Change current directoy, removes all icons and adds icons for full_path
 func set_directory(full_path: String):
+	$FileBrowsingController.set_directory(full_path)
+	
+
+func _actual_set_directory(full_path: String):
 	self._full_directory_path = full_path.simplify_path()
 	refresh()
 	emit_signal("folder_changed", full_path)
@@ -177,7 +181,7 @@ func refresh():
 	if dir_access:
 		dir_access.include_hidden = show_hidden_files
 		for directory in dir_access.get_directories():
-			var button = FOLDER.instantiate()
+			var button: FolderLargeIconButton = FOLDER.instantiate()
 			button.set_thread_queue(self._thread_queue)
 			var path = self._full_directory_path + "/" + directory
 			button.double_clicked.connect(set_directory.bind(path))
