@@ -1,0 +1,3 @@
+[submodule "FileBrowser/FileBrowsingContainers"]
+	path = FileBrowser/FileBrowsingContainers
+	url = https://github.com/userhaj/FileBrowsingContainers.git
